@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Default suite">
+	<test verbose="2" name="Default test">
+		<groups>		        
+			<run>
+				<include name="assert" description="the asserted one"/>
+				<include name="fail" description="the failure"/>
+				<include name="broken" description="im broken"/>
+			</run>
+		</groups>
+		<classes>
+			<class name="com.testng.tests.Test1" />
+		</classes>
+	</test> <!-- Default test -->
+</suite> <!-- Default suite -->

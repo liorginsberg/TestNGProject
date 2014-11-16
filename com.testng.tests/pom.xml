@@ -1,0 +1,108 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.testng.tests</groupId>
+	<artifactId>com.testng.tests</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<dependencies>
+		<dependency>
+			<groupId>com.testng.infra</groupId>
+			<artifactId>com.testng.infra</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<version>2.3</version>
+					<executions>
+						<execution>
+							<goals>
+								<goal>single</goal>
+							</goals>
+							<id>create-lib</id>
+							<phase>package</phase>
+							<configuration>
+								<appendAssemblyId>false</appendAssemblyId>
+								<outputDirectory>${project.basedir}</outputDirectory>
+								<ignoreDirFormatExtensions>true</ignoreDirFormatExtensions>
+								<descriptors>
+									<descriptor>src/main/assembly/create-lib.xml</descriptor>
+								</descriptors>
+								<finalName>lib</finalName>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<artifactId>maven-clean-plugin</artifactId>
+					<version>2.5</version>
+					<executions>
+						<execution>
+							<id>auto-clean</id>
+							<phase>clean</phase>
+							<goals>
+								<goal>clean</goal>
+							</goals>
+							<configuration>
+								<filesets>
+									<fileset>
+										<directory>lib</directory>
+										<includes>
+											<include>**/*.*</include>
+										</includes>
+									</fileset>
+								</filesets>
+								<failOnError>false</failOnError>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-antrun-plugin</artifactId>
+					<version>1.7</version>
+					<executions>
+						<execution>
+							<id>default-cli</id>
+							<configuration>
+								<target>
+									<property name="compile_classpath" refid="maven.compile.classpath" />
+									<property name="runtime_classpath" refid="maven.runtime.classpath" />
+									<property name="test_classpath" refid="maven.test.classpath" />
+									<property name="plugin_classpath" refid="maven.plugin.classpath" />
+
+									<tstamp>
+										<format property="ts" pattern="S"/>
+									</tstamp>
+									<propertyfile file="my.properties"
+										comment="This File is Auto-Genetarted. Do Not Modify!.">
+										<entry key="BUILD_TIMESATMP" value="${ts}" />
+										<entry key="BUILD_TIME" type="date" value="now" pattern="DDD HH:mm" />
+										<entry key="BASE_DIR" value="${basedir}" />
+										<entry key="JAVA_HOME" value="${java.home}" />
+										<entry key="M2_HOME" value="${env.M2_HOME}" />
+										<entry key="TARGET_DIRECTORY" value="${project.build.directory}" />
+										<entry key="CLASSES_DIRECTORY" value="${project.build.outputDirectory}" />
+										<entry key="PROJECT_NAME" value="${project.name}" />
+										<entry key="PROJECT_FINAL_NAME" value="${project.build.finalName}" />
+										<entry key="SYSTEM_LINE_SEPARATOR" value="${line.separator}" />
+										<entry key="FROM_PARANT" value="${project.parent.name}" />
+										<entry key="TEST_CLASSPATH" value="${test_classpath}" />
+										<entry key="RUNTIME_CLASSPATH" value="${test_classpath}" />
+									</propertyfile>
+								</target>
+							</configuration>
+							<goals>
+								<goal>run</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+</project>
