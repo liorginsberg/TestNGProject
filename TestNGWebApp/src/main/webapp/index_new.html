@@ -1,0 +1,195 @@
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>jsTree</title>
+
+<link rel="stylesheet"
+	href="http://static.jstree.com/3.0.2/assets/bootstrap/css/bootstrap.min.css" />
+<link rel="stylesheet"
+	href="http://static.jstree.com/3.0.2/assets/dist/themes/default/style.min.css" />
+
+
+<script>
+// 	function run() {
+// 		$.post('HelloServlet',"",function(rsp){
+			
+// 		});
+// 	}
+	var eventSource;
+	window.$q = [];
+	window.$ = window.jQuery = function(a) {
+		window.$q.push(a);
+	};
+	var ws;
+	$(function() {
+// 		eventSource = new EventSource("HelloServlet");
+// 		eventSource.onmessage = function(event) {
+// 			$('#log').append("<p>" + event.data + "</p>");
+// 		};
+	     console.log( "ready!" );
+		ws = new WebSocket("ws://localhost:8080/WebSocketTestServlet");
+		ws.onopen = function(event) {
+			alert("ws.onopen");
+			ws.send("execute");
+			
+		}
+		ws.onmessage = function(event) {
+			console.log("onmessage:" + event.data);
+		}
+		ws.onclose = function(event) {
+			console.log("ws.onclose");
+		} 
+	});
+</script>
+<link rel="alternate" type="application/rss+xml" title="RSS 2.0"
+	href="/feed.xml" />
+<script>
+	WR = "/";
+</script>
+</head>
+<body>
+	<div class="row">
+		<div class="col-md-4 col-sm-8 col-xs-8">
+			<button type="button" onclick="demo_create();">Create</button>
+			<button type="button" onclick="demo_rename();">Rename</button>
+			<button type="button" onclick="demo_delete();">Delete</button>
+		</div>
+	</div>
+	<div class="row">
+		<div id="jstree_demo" class="demo"
+			style="margin-top: 1em; min-height: 200px;"></div>
+			<div id="log" style="display: block;"></div>
+		<script>
+			function demo_create() {
+				var ref = $('#jstree_demo').jstree(true), sel = ref
+						.get_selected();
+				if (!sel.length) {
+					return false;
+				}
+				sel = sel[0];
+				sel = ref.create_node(sel, {
+					"type" : "file"
+				});
+				if (sel) {
+					ref.edit(sel);
+				}
+			};
+			function demo_rename() {
+				var ref = $('#jstree_demo').jstree(true), sel = ref
+						.get_selected();
+				if (!sel.length) {
+					return false;
+				}
+				sel = sel[0];
+				ref.edit(sel);
+			};
+			function demo_delete() {
+				var ref = $('#jstree_demo').jstree(true), sel = ref
+						.get_selected();
+				if (!sel.length) {
+					return false;
+				}
+				ref.delete_node(sel);
+			};
+			function customMenu(node) {
+				// The default set of all items
+				var items = {
+					renameItem : { // The "rename" menu item
+						label : "Rename",
+						action : function() {
+						}
+					},
+					deleteItem : { // The "delete" menu item
+						label : "Delete",
+						action : function() {
+						}
+					}
+				};
+
+				if ($(node).hasClass("folder")) {
+					// Delete the "delete" menu item
+					delete items.deleteItem;
+				}
+
+				return items;
+			}
+			$(function() {
+				var to = false;
+				$('#demo_q').keyup(function() {
+					if (to) {
+						clearTimeout(to);
+					}
+					to = setTimeout(function() {
+						var v = $('#demo_q').val();
+						$('#jstree_demo').jstree(true).search(v);
+					}, 250);
+				});
+				testData = [ "#", {
+					"id" : "#1",
+					"text" : "My Computer",
+					"children" : [ {
+						"id" : "t1",
+						"text" : "test1()",
+						"type" : "test"
+					}, {
+						"id" : "t2",
+						"text" : "test2()",
+						"type" : "test"
+					}, {
+						"id" : "t3",
+						"text" : "test3()",
+						"type" : "test"
+					} ]
+				} ];
+				$('#jstree_demo').jstree(
+						{
+							"core" : {
+								"animation" : 0,
+								"check_callback" : true,
+								"themes" : {
+									"stripes" : true
+								},
+								'data' : testData
+							},
+							"types" : {
+								"#" : {
+									"max_children" : 1,
+									"max_depth" : 5,
+									"valid_children" : [ "suite" ],
+									"icon" : "/img/stkfrm.gif",
+								},
+								"suite" : {
+									"icon" : "/img/suite.gif",
+									"valid_children" : [ "suite", "test" ]
+								},
+								"test" : {
+									"icon" : "/img/test.gif"
+								}
+
+							},
+							"plugins" : [ "contextmenu", "dnd", "search",
+									"state", "types", "wholerow" ],
+							"contextmenu" : {
+								"items" : customMenu
+							}
+
+						});
+
+			});
+		</script>
+	</div>
+
+	<script
+		src="http://static.jstree.com/3.0.2/assets/jquery-1.10.2.min.js"></script>
+	<script
+		src="http://static.jstree.com/3.0.2/assets/jquery.address-1.6.js"></script>
+	<script src="http://static.jstree.com/3.0.2/assets/dist/jstree.min.js"></script>
+	<script>
+		$.each($q, function(i, f) {
+			$(f)
+		});
+		$q = null;
+	</script>
+</body>
+</html>
