@@ -1,0 +1,143 @@
+{
+    "name": "classes",
+    "type": "directory",
+    "children": [{
+        "name": "com",
+        "type": "directory",
+        "children": [{
+            "name": "testng",
+            "type": "directory",
+            "children": [{
+                "name": "tests",
+                "type": "directory",
+                "children": [{
+                    "name": "listeners",
+                    "type": "directory",
+                    "children": []
+                },
+                    {
+                        "name": "mock",
+                        "type": "directory",
+                        "children": [{
+                            "name": "inner",
+                            "type": "directory",
+                            "children": [{
+                                "name": "InnerMockTests",
+                                "type": "file",
+                                "file_type": "class",
+                                "test_methods": [{
+                                    "className": "com.testng.tests.mock.inner.InnerMockTests",
+                                    "method_name": "test1"
+                                },
+                                    {
+                                        "className": "com.testng.tests.mock.inner.InnerMockTests",
+                                        "method_name": "test2"
+                                    },
+                                    {
+                                        "className": "com.testng.tests.mock.inner.InnerMockTests",
+                                        "method_name": "test3"
+                                    }]
+                            }]
+                        },
+                            {
+                                "name": "MockTests",
+                                "type": "file",
+                                "file_type": "class",
+                                "test_methods": [{
+                                    "className": "com.testng.tests.mock.MockTests",
+                                    "method_name": "test1"
+                                },
+                                    {
+                                        "className": "com.testng.tests.mock.MockTests",
+                                        "method_name": "test2"
+                                    },
+                                    {
+                                        "className": "com.testng.tests.mock.MockTests",
+                                        "method_name": "test3"
+                                    }]
+                            },
+                            {
+                                "name": "MockTests2",
+                                "type": "file",
+                                "file_type": "class",
+                                "test_methods": [{
+                                    "className": "com.testng.tests.mock.MockTests2",
+                                    "method_name": "test1"
+                                },
+                                    {
+                                        "className": "com.testng.tests.mock.MockTests2",
+                                        "method_name": "test2"
+                                    },
+                                    {
+                                        "className": "com.testng.tests.mock.MockTests2",
+                                        "method_name": "test3"
+                                    }]
+                            }]
+                    },
+                    {
+                        "name": "MyCodeTests",
+                        "type": "file",
+                        "file_type": "class",
+                        "test_methods": [{
+                            "className": "com.testng.tests.MyCodeTests",
+                            "method_name": "testAdd",
+                            "params": ["num1",
+                                "num2"]
+                        }]
+                    },
+                    {
+                        "name": "Test1",
+                        "type": "file",
+                        "file_type": "class",
+                        "test_methods": [{
+                            "className": "com.testng.tests.Test1",
+                            "method_name": "testMethod2"
+                        },
+                            {
+                                "className": "com.testng.tests.Test1",
+                                "method_name": "testMethod1"
+                            },
+                            {
+                                "className": "com.testng.tests.Test1",
+                                "method_name": "testBroken",
+                                "params": ["str",
+                                    "last"]
+                            },
+                            {
+                                "className": "com.testng.tests.Test1",
+                                "method_name": "testMethod3"
+                            },
+                            {
+                                "className": "com.testng.tests.Test1",
+                                "method_name": "testMethod5"
+                            },
+                            {
+                                "className": "com.testng.tests.Test1",
+                                "method_name": "throwExpectedException1ShouldPass"
+                            },
+                            {
+                                "className": "com.testng.tests.Test1",
+                                "method_name": "throwExpectedException2ShouldPass"
+                            }]
+                    }]
+            }]
+        }]
+    },
+        {
+            "name": "META-INF",
+            "type": "directory",
+            "children": [{
+                "name": "maven",
+                "type": "directory",
+                "children": [{
+                    "name": "com.testng",
+                    "type": "directory",
+                    "children": [{
+                        "name": "com.testng",
+                        "type": "directory",
+                        "children": []
+                    }]
+                }]
+            }]
+        }]
+}
