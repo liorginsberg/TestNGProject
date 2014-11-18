@@ -17,25 +17,24 @@ import com.google.gson.JsonPrimitive;
 
 public class Main2 {
 
-
 	public static void main(String[] args) throws Exception {
 		long timeStart = System.nanoTime();
 		String classPath = null;
 		String classesFolder = null;
 		Properties prop = new Properties();
 		InputStream input = null;
-	 
+
 		try {
-	 
+
 			input = new FileInputStream("D:\\testNGwork\\com.testng.tests\\my.properties");
-	 
+
 			// load a properties file
 			prop.load(input);
-	 
+
 			// get the property value and print it out
 			classPath = prop.getProperty("TEST_CLASSPATH");
 			classesFolder = prop.getProperty("CLASSES_DIRECTORY");
-	 
+
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {
@@ -48,31 +47,46 @@ public class Main2 {
 			}
 		}
 		String[] classPathElements = classPath.split(";");
-		for(String path: classPathElements) {
-			if(path.contains("6.8.8") || path.contains("infra")) {
+		for (String path : classPathElements) {
+			if (path.contains("6.8.8") || path.contains("infra")) {
 				continue;
 			}
 			File f = new File(path);
-			if(f.isFile()) {
+			if (f.isFile()) {
 				URL jarfile = new URL("jar", "", "file:" + f.getAbsolutePath() + "!/");
 				ClassPathHack.addURL(jarfile);
 			} else {
 				ClassPathHack.addFile(f);
 			}
 		}
-//		File classesFolder = new File("D:\\testNGwork\\com.testng.tests\\target\\classes\\");
-//
-//		// File jcommanderJar = new
-//		// File("D:\\testNGwork\\com.testng.tests\\libs\\jcommander-1.27.jar");
-//
-//		// URL jcommanderJarFile = new URL("jar", "", "file:" +
-//		// jcommanderJar.getAbsolutePath() + "!/");
-//		File testngJar = new File("D:\\testNGwork\\com.testng.tests\\libs\\testng-6.8.8.jar");
-//		URL jarfile = new URL("jar", "", "file:" + testngJar.getAbsolutePath() + "!/");
-//		// ClassPathHack.addURL(jcommanderJarFile);
-//		ClassPathHack.addURL(jarfile);
-//		ClassPathHack.addFile(classesFolder);
-		JsonObject root = getDirectoryAsJsonJsTreeFormat(new File(classesFolder));
+		// File classesFolder = new
+		// File("D:\\testNGwork\\com.testng.tests\\target\\classes\\");
+		//
+		// // File jcommanderJar = new
+		// //
+		// File("D:\\testNGwork\\com.testng.tests\\libs\\jcommander-1.27.jar");
+		//
+		// // URL jcommanderJarFile = new URL("jar", "", "file:" +
+		// // jcommanderJar.getAbsolutePath() + "!/");
+		// File testngJar = new
+		// File("D:\\testNGwork\\com.testng.tests\\libs\\testng-6.8.8.jar");
+		// URL jarfile = new URL("jar", "", "file:" +
+		// testngJar.getAbsolutePath() + "!/");
+		// // ClassPathHack.addURL(jcommanderJarFile);
+		// ClassPathHack.addURL(jarfile);
+		// ClassPathHack.addFile(classesFolder);
+		JsonObject root = new JsonObject();
+		root.addProperty("text", prop.getProperty("PROJECT_NAME"));
+		root.addProperty("type", "root");
+		JsonArray children = new JsonArray();
+		for(File file: new File(classesFolder).listFiles()) {
+			JsonObject obj = getDirectoryAsJsonJsTreeFormat(file);
+			if(obj.has("type")) {
+				children.add(obj);
+			}
+		}
+		root.add("children", children);
+		//JsonObject root = getDirectoryAsJsonJsTreeFormat(new File(classesFolder));
 		System.out.println("create json took: " + (System.nanoTime() - timeStart) + " nano seconds");
 
 		System.out.println(root);
@@ -130,42 +144,33 @@ public class Main2 {
 		}
 		return node;
 	}
-	
-	
-	 =============================
+
 	public static JsonObject getDirectoryAsJsonJsTreeFormat(File mainFile) throws Exception {
 		JsonObject node = new JsonObject();
-		node.addProperty("name", removeFileExtention(mainFile));
+		node.addProperty("text", removeFileExtention(mainFile));
 		if (mainFile.isFile()) {
-			node.addProperty("node_type", "file");
 			if (isClassFile(mainFile)) {
-				node.addProperty("file_type", "class");
 				JsonArray testMethods = getTestMethodsJsonJSTreeFormat(mainFile);
-				if (testMethods == null) {
-					node.addProperty("file_type", "non_class");
-				} else {
+				if (testMethods != null) {
+					node.addProperty("type", "class_node");
 					node.add("children", testMethods);
 				}
-			} else {
-				node.addProperty("file_type", "non_class");
 			}
 		} else {
-			node.addProperty("type", "directory");
+			node.addProperty("type", "package_node");
 			JsonArray children = new JsonArray();
 			for (File file : mainFile.listFiles()) {
-				JsonObject obj = getDirectoryAsJson(file);
-				if (obj.has("file_type") && !("class".equals(obj.get("file_type").getAsString()))) {
-					continue;
+				JsonObject obj = getDirectoryAsJsonJsTreeFormat(file);
+				if (obj.has("type")) {
+					children.add(obj);
 				}
-				children.add(obj);
 			}
 			node.add("children", children);
 		}
 		return node;
 	}
 
-	
-	//TODO - DONE!! Move to the rest
+	// TODO - DONE!! Move to the rest
 	private static JsonArray getTestMethodsJsonJSTreeFormat(File file) throws ClassNotFoundException {
 		JsonArray testMethods = null;
 
@@ -179,18 +184,19 @@ public class Main2 {
 				continue;
 			}
 			JsonObject methodObj = new JsonObject();
-			methodObj.addProperty("className", classFullName);
-			methodObj.addProperty("methodName", m.getName());
-			methodObj.addProperty("testName", testAnnotation.testName());
+			JsonObject li_attr_obj = new JsonObject();
+			li_attr_obj.addProperty("className", classFullName);
+			li_attr_obj.addProperty("methodName", m.getName());
+			li_attr_obj.addProperty("testName", testAnnotation.testName());
 			methodObj.addProperty("type", "test_method_node");
-			methodObj.addProperty("text", m.getName() + (testAnnotation.testName() != null  ? (" - " + testAnnotation.testName()) : ""));
+			methodObj.addProperty("text", m.getName() + (!testAnnotation.testName().isEmpty() ? (" - " + testAnnotation.testName()) : ""));
 			Parameters parametersAnnotation = m.getAnnotation(Parameters.class);
 			if (parametersAnnotation != null) {
 				String[] params = parametersAnnotation.value();
-				if(m.getParameterTypes().length > params.length) {
+				if (m.getParameterTypes().length > params.length) {
 					System.out.println("the method " + m.getName() + " takes more prameters than decleared in @Parameters");
 					continue;
-				} else if(m.getParameterTypes().length < params.length) {
+				} else if (m.getParameterTypes().length < params.length) {
 					System.out.println("the method " + m.getName() + " takes less prameters than decleared in @Parameters");
 					continue;
 				}
@@ -198,19 +204,18 @@ public class Main2 {
 				for (String param : params) {
 					paramsArray.add(new JsonPrimitive(param));
 				}
-				
-				JsonObject li_attr_obj = new JsonObject();
+
 				li_attr_obj.add("params", paramsArray);
-				methodObj.add("li_attr", li_attr_obj);
 			}
 			if (testMethods == null) {
 				testMethods = new JsonArray();
 			}
+			methodObj.add("li_attr", li_attr_obj);
 			testMethods.add(methodObj);
 		}
 		return testMethods;
 	}
-	
+
 	private static JsonArray getTestMethods(File file) throws ClassNotFoundException {
 		JsonArray testMethods = null;
 
@@ -229,9 +234,9 @@ public class Main2 {
 			Parameters parametersAnnotation = m.getAnnotation(Parameters.class);
 			if (parametersAnnotation != null) {
 				String[] params = parametersAnnotation.value();
-				if(m.getParameterTypes().length > params.length) {
+				if (m.getParameterTypes().length > params.length) {
 					System.out.println("the method " + m.getName() + " takes more prameters than decleared in @Parameters");
-				} else if(m.getParameterTypes().length < params.length) {
+				} else if (m.getParameterTypes().length < params.length) {
 					System.out.println("the method " + m.getName() + " takes less prameters than decleared in @Parameters");
 				}
 				JsonArray paramsArray = new JsonArray();

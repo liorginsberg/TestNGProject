@@ -1,143 +1,186 @@
 {
-    "name": "classes",
-    "type": "directory",
+    "text": "com.testng.tests",
+    "type": "root",
     "children": [{
-        "name": "com",
-        "type": "directory",
+        "text": "com",
+        "type": "package_node",
         "children": [{
-            "name": "testng",
-            "type": "directory",
+            "text": "testng",
+            "type": "package_node",
             "children": [{
-                "name": "tests",
-                "type": "directory",
+                "text": "tests",
+                "type": "package_node",
                 "children": [{
-                    "name": "listeners",
-                    "type": "directory",
-                    "children": []
-                },
-                    {
-                        "name": "mock",
-                        "type": "directory",
+                    "text": "mock",
+                    "type": "package_node",
+                    "children": [{
+                        "text": "inner",
+                        "type": "package_node",
                         "children": [{
-                            "name": "inner",
-                            "type": "directory",
+                            "text": "InnerMockTests",
+                            "type": "class_node",
                             "children": [{
-                                "name": "InnerMockTests",
-                                "type": "file",
-                                "file_type": "class",
-                                "test_methods": [{
+                                "type": "test_method_node",
+                                "text": "test1 - InnerMoclTestTest1",
+                                "li_attr": {
                                     "className": "com.testng.tests.mock.inner.InnerMockTests",
-                                    "method_name": "test1"
-                                },
-                                    {
-                                        "className": "com.testng.tests.mock.inner.InnerMockTests",
-                                        "method_name": "test2"
-                                    },
-                                    {
-                                        "className": "com.testng.tests.mock.inner.InnerMockTests",
-                                        "method_name": "test3"
-                                    }]
-                            }]
-                        },
-                            {
-                                "name": "MockTests",
-                                "type": "file",
-                                "file_type": "class",
-                                "test_methods": [{
-                                    "className": "com.testng.tests.mock.MockTests",
-                                    "method_name": "test1"
-                                },
-                                    {
-                                        "className": "com.testng.tests.mock.MockTests",
-                                        "method_name": "test2"
-                                    },
-                                    {
-                                        "className": "com.testng.tests.mock.MockTests",
-                                        "method_name": "test3"
-                                    }]
+                                    "methodName": "test1",
+                                    "testName": "InnerMoclTestTest1"
+                                }
                             },
-                            {
-                                "name": "MockTests2",
-                                "type": "file",
-                                "file_type": "class",
-                                "test_methods": [{
-                                    "className": "com.testng.tests.mock.MockTests2",
-                                    "method_name": "test1"
+                                {
+                                    "type": "test_method_node",
+                                    "text": "test2 - InnerMoclTestTest1",
+                                    "li_attr": {
+                                        "className": "com.testng.tests.mock.inner.InnerMockTests",
+                                        "methodName": "test2",
+                                        "testName": "InnerMoclTestTest1"
+                                    }
                                 },
-                                    {
-                                        "className": "com.testng.tests.mock.MockTests2",
-                                        "method_name": "test2"
-                                    },
-                                    {
-                                        "className": "com.testng.tests.mock.MockTests2",
-                                        "method_name": "test3"
-                                    }]
-                            }]
-                    },
-                    {
-                        "name": "MyCodeTests",
-                        "type": "file",
-                        "file_type": "class",
-                        "test_methods": [{
-                            "className": "com.testng.tests.MyCodeTests",
-                            "method_name": "testAdd",
-                            "params": ["num1",
-                                "num2"]
+                                {
+                                    "type": "test_method_node",
+                                    "text": "test3 - InnerMoclTestTest1",
+                                    "li_attr": {
+                                        "className": "com.testng.tests.mock.inner.InnerMockTests",
+                                        "methodName": "test3",
+                                        "testName": "InnerMoclTestTest1"
+                                    }
+                                }]
                         }]
                     },
+                        {
+                            "text": "MockTests",
+                            "type": "class_node",
+                            "children": [{
+                                "type": "test_method_node",
+                                "text": "test1 - ",
+                                "li_attr": {
+                                    "className": "com.testng.tests.mock.MockTests",
+                                    "methodName": "test1",
+                                    "testName": ""
+                                }
+                            },
+                                {
+                                    "type": "test_method_node",
+                                    "text": "test2 - ",
+                                    "li_attr": {
+                                        "className": "com.testng.tests.mock.MockTests",
+                                        "methodName": "test2",
+                                        "testName": ""
+                                    }
+                                },
+                                {
+                                    "type": "test_method_node",
+                                    "text": "test3 - ",
+                                    "li_attr": {
+                                        "className": "com.testng.tests.mock.MockTests",
+                                        "methodName": "test3",
+                                        "testName": ""
+                                    }
+                                }]
+                        },
+                        {
+                            "text": "MockTests2",
+                            "type": "class_node",
+                            "children": [{
+                                "type": "test_method_node",
+                                "text": "test1 - ",
+                                "li_attr": {
+                                    "className": "com.testng.tests.mock.MockTests2",
+                                    "methodName": "test1",
+                                    "testName": ""
+                                }
+                            },
+                                {
+                                    "type": "test_method_node",
+                                    "text": "test2 - ",
+                                    "li_attr": {
+                                        "className": "com.testng.tests.mock.MockTests2",
+                                        "methodName": "test2",
+                                        "testName": ""
+                                    }
+                                },
+                                {
+                                    "type": "test_method_node",
+                                    "text": "test3 - ",
+                                    "li_attr": {
+                                        "className": "com.testng.tests.mock.MockTests2",
+                                        "methodName": "test3",
+                                        "testName": ""
+                                    }
+                                }]
+                        }]
+                },
                     {
-                        "name": "Test1",
-                        "type": "file",
-                        "file_type": "class",
-                        "test_methods": [{
-                            "className": "com.testng.tests.Test1",
-                            "method_name": "testMethod2"
+                        "text": "Test1",
+                        "type": "class_node",
+                        "children": [{
+                            "type": "test_method_node",
+                            "text": "throwExpectedException1ShouldPass - ",
+                            "li_attr": {
+                                "className": "com.testng.tests.Test1",
+                                "methodName": "throwExpectedException1ShouldPass",
+                                "testName": ""
+                            }
                         },
                             {
-                                "className": "com.testng.tests.Test1",
-                                "method_name": "testMethod1"
+                                "type": "test_method_node",
+                                "text": "throwExpectedException2ShouldPass - ",
+                                "li_attr": {
+                                    "className": "com.testng.tests.Test1",
+                                    "methodName": "throwExpectedException2ShouldPass",
+                                    "testName": ""
+                                }
                             },
                             {
-                                "className": "com.testng.tests.Test1",
-                                "method_name": "testBroken",
-                                "params": ["str",
-                                    "last"]
+                                "type": "test_method_node",
+                                "text": "testMethod3 - ",
+                                "li_attr": {
+                                    "className": "com.testng.tests.Test1",
+                                    "methodName": "testMethod3",
+                                    "testName": ""
+                                }
                             },
                             {
-                                "className": "com.testng.tests.Test1",
-                                "method_name": "testMethod3"
+                                "type": "test_method_node",
+                                "text": "testMethod5 - ",
+                                "li_attr": {
+                                    "className": "com.testng.tests.Test1",
+                                    "methodName": "testMethod5",
+                                    "testName": ""
+                                }
                             },
                             {
-                                "className": "com.testng.tests.Test1",
-                                "method_name": "testMethod5"
+                                "type": "test_method_node",
+                                "text": "testMethod2 - ",
+                                "li_attr": {
+                                    "className": "com.testng.tests.Test1",
+                                    "methodName": "testMethod2",
+                                    "testName": ""
+                                }
                             },
                             {
-                                "className": "com.testng.tests.Test1",
-                                "method_name": "throwExpectedException1ShouldPass"
+                                "type": "test_method_node",
+                                "text": "testMethod1 - ",
+                                "li_attr": {
+                                    "className": "com.testng.tests.Test1",
+                                    "methodName": "testMethod1",
+                                    "testName": ""
+                                }
                             },
                             {
-                                "className": "com.testng.tests.Test1",
-                                "method_name": "throwExpectedException2ShouldPass"
+                                "type": "test_method_node",
+                                "text": "testBroken - ",
+                                "li_attr": {
+                                    "className": "com.testng.tests.Test1",
+                                    "methodName": "testBroken",
+                                    "testName": "",
+                                    "params": ["str",
+                                        "last"]
+                                }
                             }]
                     }]
             }]
         }]
-    },
-        {
-            "name": "META-INF",
-            "type": "directory",
-            "children": [{
-                "name": "maven",
-                "type": "directory",
-                "children": [{
-                    "name": "com.testng",
-                    "type": "directory",
-                    "children": [{
-                        "name": "com.testng",
-                        "type": "directory",
-                        "children": []
-                    }]
-                }]
-            }]
-        }]
+    }]
 }

@@ -38,6 +38,8 @@
         </div>
         <div class="demo col-lg-offset-2 col-lg-4">
             <h3>Test Inventory</h3>
+            <input type="text" id="search_test" value="" class="input"
+                   style="margin:0em auto 1em auto; display:block; padding:4px; border-radius:4px; border:1px solid silver;">
 
             <div id="jstree_test_inventory" class="inventory" style="margin-top: 1em; min-height: 200px;"></div>
         </div>
@@ -105,7 +107,7 @@
                             "check_callback": function (operation, node, node_parent, node_position, more) {
                                 // operation can be 'create_node', 'rename_node', 'delete_node', 'move_node' or 'copy_node'
                                 // in case of 'rename_node' node_position is filled with the new node name
-                                if(operation == "copy_node") {
+                                if (operation == "copy_node") {
 
                                 }
 //                                console.log("==== from jjstree_test_inventory ====")
@@ -141,7 +143,7 @@
                             },
                             "test_method_node": {
                                 "icon": "img/test.gif",
-                                "max_children" : 0
+                                "max_children": 0
                             }
 
                         },
@@ -163,16 +165,25 @@
                         },
                         "plugins": [ "contextmenu", "dnd",
                             "search", "state", "types"
-                            ],
+                        ],
                         "contextmenu": {
                             "items": customMenu
                         }
 
 
                     });
+            var to = false;
+            $('#search_test').keyup(function () {
+                if (to) {
+                    clearTimeout(to);
+                }
+                to = setTimeout(function () {
+                    var v = $('#search_test').val();
+                    $('#jstree_test_inventory').jstree(true).search(v);
+                }, 250);
+            });
 
-        })
-        ;
+        });
     </script>
 </div>
 
