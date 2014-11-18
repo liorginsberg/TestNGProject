@@ -72,7 +72,7 @@ public class Main2 {
 //		// ClassPathHack.addURL(jcommanderJarFile);
 //		ClassPathHack.addURL(jarfile);
 //		ClassPathHack.addFile(classesFolder);
-		JsonObject root = getDirectoryAsJson(new File(classesFolder));
+		JsonObject root = getDirectoryAsJsonJsTreeFormat(new File(classesFolder));
 		System.out.println("create json took: " + (System.nanoTime() - timeStart) + " nano seconds");
 
 		System.out.println(root);
@@ -102,14 +102,14 @@ public class Main2 {
 
 	public static JsonObject getDirectoryAsJson(File mainFile) throws Exception {
 		JsonObject node = new JsonObject();
-		node.addProperty("name", removeFileExtention(mainFile));
+		node.addProperty("text", removeFileExtention(mainFile));
 		if (mainFile.isFile()) {
-			node.addProperty("type", "file");
+			node.addProperty("node_type", "file");
 			if (isClassFile(mainFile)) {
-				node.addProperty("file_type", "class");
+				node.addProperty("type", "class_node");
 				JsonArray testMethods = getTestMethods(mainFile);
 				if (testMethods == null) {
-					node.addProperty("file_type", "non_class");
+					node.addProperty("file_type", "non_test_class");
 				} else {
 					node.add("test_methods", testMethods);
 				}
@@ -130,7 +130,87 @@ public class Main2 {
 		}
 		return node;
 	}
+	
+	
+	 =============================
+	public static JsonObject getDirectoryAsJsonJsTreeFormat(File mainFile) throws Exception {
+		JsonObject node = new JsonObject();
+		node.addProperty("name", removeFileExtention(mainFile));
+		if (mainFile.isFile()) {
+			node.addProperty("node_type", "file");
+			if (isClassFile(mainFile)) {
+				node.addProperty("file_type", "class");
+				JsonArray testMethods = getTestMethodsJsonJSTreeFormat(mainFile);
+				if (testMethods == null) {
+					node.addProperty("file_type", "non_class");
+				} else {
+					node.add("children", testMethods);
+				}
+			} else {
+				node.addProperty("file_type", "non_class");
+			}
+		} else {
+			node.addProperty("type", "directory");
+			JsonArray children = new JsonArray();
+			for (File file : mainFile.listFiles()) {
+				JsonObject obj = getDirectoryAsJson(file);
+				if (obj.has("file_type") && !("class".equals(obj.get("file_type").getAsString()))) {
+					continue;
+				}
+				children.add(obj);
+			}
+			node.add("children", children);
+		}
+		return node;
+	}
 
+	
+	//TODO - DONE!! Move to the rest
+	private static JsonArray getTestMethodsJsonJSTreeFormat(File file) throws ClassNotFoundException {
+		JsonArray testMethods = null;
+
+		String classFullName = getClassName(file);
+		Class c = Class.forName(classFullName);
+		Method[] methods = c.getDeclaredMethods();
+		for (Method m : methods) {
+			m.setAccessible(true);
+			Test testAnnotation = m.getAnnotation(Test.class);
+			if (testAnnotation == null) {
+				continue;
+			}
+			JsonObject methodObj = new JsonObject();
+			methodObj.addProperty("className", classFullName);
+			methodObj.addProperty("methodName", m.getName());
+			methodObj.addProperty("testName", testAnnotation.testName());
+			methodObj.addProperty("type", "test_method_node");
+			methodObj.addProperty("text", m.getName() + (testAnnotation.testName() != null  ? (" - " + testAnnotation.testName()) : ""));
+			Parameters parametersAnnotation = m.getAnnotation(Parameters.class);
+			if (parametersAnnotation != null) {
+				String[] params = parametersAnnotation.value();
+				if(m.getParameterTypes().length > params.length) {
+					System.out.println("the method " + m.getName() + " takes more prameters than decleared in @Parameters");
+					continue;
+				} else if(m.getParameterTypes().length < params.length) {
+					System.out.println("the method " + m.getName() + " takes less prameters than decleared in @Parameters");
+					continue;
+				}
+				JsonArray paramsArray = new JsonArray();
+				for (String param : params) {
+					paramsArray.add(new JsonPrimitive(param));
+				}
+				
+				JsonObject li_attr_obj = new JsonObject();
+				li_attr_obj.add("params", paramsArray);
+				methodObj.add("li_attr", li_attr_obj);
+			}
+			if (testMethods == null) {
+				testMethods = new JsonArray();
+			}
+			testMethods.add(methodObj);
+		}
+		return testMethods;
+	}
+	
 	private static JsonArray getTestMethods(File file) throws ClassNotFoundException {
 		JsonArray testMethods = null;
 

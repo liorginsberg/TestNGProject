@@ -82,7 +82,7 @@ function buildTree(data) {
     }
     if(data.type == "file") {
         node.type = "class_node";
-        if(node.has)
+        if(node.has){}
     }
 }
 
@@ -150,7 +150,7 @@ testInventoryData = {
                                             "id": "tset1",
                                             "text": "test1 = desc here",
                                             "type": "test_method_node",
-                                            "li_attr" : {"class" : "method", "href" : "com.testng.tests.MyCodeTests.test1"}
+                                            "li_attr" : {"person" : "[lior,lior2]","class" : "method", "href" : "com.testng.tests.MyCodeTests.test1"}
                                         },
                                         {
                                             "id": "tset2",
