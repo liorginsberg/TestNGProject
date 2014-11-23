@@ -30,7 +30,7 @@ public class Main
         server.setHandler(root);
         
         server.start();
-        String url = "http://localhost:8080/";
+        String url = "http://localhost:8080/test.html";
 
         if(Desktop.isDesktopSupported()){
             Desktop desktop = Desktop.getDesktop();

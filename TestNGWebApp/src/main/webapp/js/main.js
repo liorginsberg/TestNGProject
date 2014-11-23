@@ -1,4 +1,6 @@
 
+var currentProject = "";
+
 var guid = (function() {
     function s4() {
         return Math.floor((1 + Math.random()) * 0x10000)
@@ -94,12 +96,13 @@ function receivedText() {
             console.log( $("input").val());
             var propFileLoc = property[1].replace(/(\r\n|\n|\r)/gm,"");
             propFileLoc = propFileLoc + "\\"+ $('input').val().split(/(\\|\/)/g).pop()
+            currentProject = propFileLoc;
             $.ajax({
                 url: "ProjectLoaderServlet",
                 type: 'POST',
-                dataType: 'text',
-                data: "projLoc=" + propFileLoc,
-
+                dataType: 'json',
+                data: "projLoc=" + currentProject,
+                
                 success: function (data) {
                     $('#jstree_test_inventory').jstree(true).settings.core.data = data;
                     $('#jstree_test_inventory').jstree(true).refresh();
@@ -110,6 +113,27 @@ function receivedText() {
             });
         }
     });
+}
+
+function refreshTestProject() {
+	console.log("refreshing...")
+	
+    $.ajax({
+        url: "ProjectLoaderServlet",
+        type: 'POST',
+        dataType: 'json',
+        data: "projLoc=" + currentProject + "&preventCache="+new Date(),
+        
+        success: function (data) {
+            $('#jstree_test_inventory').jstree(true).settings.core.data = data;
+            $('#jstree_test_inventory').jstree(true).refresh();
+        },
+        error:function(data,status,er) {
+            alert("error: "+data+" status: "+status+" er:"+er);
+        }
+    });
+      
+  
 }
 
 

@@ -38,6 +38,7 @@
         </div>
         <div class="demo col-lg-offset-2 col-lg-4">
             <h3>Test Inventory</h3>
+            <button onclick="refreshTestProject()">refresh</button>
             <input type="text" id="search_test" value="" class="input"
                    style="margin:0em auto 1em auto; display:block; padding:4px; border-radius:4px; border:1px solid silver;">
 
@@ -65,9 +66,6 @@
 //                                console.log(more);
 
                                 return true;  //allow all other operations
-                            },
-                            "themes": {
-                                "stripes": true
                             },
                             'data': testData
                         },
@@ -119,10 +117,7 @@
 
                                 return more.is_multi;
 
-                            },
-                            "themes": {
-                                "stripes": true
-                            },
+                            },                           
                             'data': testInventoryData
                         },
                         "types": {

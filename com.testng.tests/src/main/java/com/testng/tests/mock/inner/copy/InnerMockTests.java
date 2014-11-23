@@ -1,4 +1,4 @@
-package com.testng.tests.mock.inner;
+package com.testng.tests.mock.inner.copy;
 
 import org.testng.Reporter;
 import org.testng.annotations.Test;

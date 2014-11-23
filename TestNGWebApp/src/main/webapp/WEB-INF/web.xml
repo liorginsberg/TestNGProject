@@ -13,6 +13,15 @@
     <url-pattern>/HelloServlet</url-pattern>
   </servlet-mapping>
   <servlet>
+    <servlet-name>ProjectLoaderServlet</servlet-name>
+    <display-name>ProjectLoaderServlet</display-name>
+    <servlet-class>org.testngwebrunner.app.ProjectLoaderServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ProjectLoaderServlet</servlet-name>
+    <url-pattern>/ProjectLoaderServlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
     <servlet-name>WebSocketTestServlet</servlet-name>
     <display-name>WebSocketTestServlet</display-name>
     <servlet-class>org.testngwebrunner.app.WebSocketTestServlet</servlet-class>
