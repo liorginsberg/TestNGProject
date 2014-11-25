@@ -7,6 +7,11 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 
 import javax.servlet.ServletException;
@@ -14,11 +19,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.jetty.util.log.Log;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.testngwebrunner.app.testcollector.ClassPathHack;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
@@ -36,7 +43,7 @@ public class ProjectLoaderServlet extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+
 		response.setContentType("application/json");
 		PrintWriter out = response.getWriter();
 
@@ -132,10 +139,54 @@ public class ProjectLoaderServlet extends HttpServlet {
 			}
 			if (children.size() > 0) {
 				node.addProperty("type", "package_node");
+				List<JsonElement> chiledList = jsonArrayToList(children);
+				
+				Collections.sort(chiledList, new Comparator<JsonElement>() {
+					@Override
+					public int compare(JsonElement a, JsonElement b) {
+						JsonObject joa = (JsonObject)a;
+						JsonObject job = (JsonObject)b;
+						
+						String aType = joa.get("type").getAsString();
+						String bType = job.get("type").getAsString();
+						
+						
+
+						if (aType.equals(bType)) {
+							String aText = joa.get("text").getAsString();
+							String bText = job.get("text").getAsString();
+							return aText.compareTo(bText);
+						}
+						if(aType.equals("package_node")) {
+							return -1;
+						} else {
+							return 1;
+						}
+					}
+				});
+				children = listToJsonArray(chiledList);
 				node.add("children", children);
 			}
 		}
+
 		return node;
+	}
+
+	private JsonArray listToJsonArray(List<JsonElement> list) {
+		JsonArray jsonArray = new JsonArray();
+		for (JsonElement element : list) {
+			jsonArray.add(element);
+		}
+		return jsonArray;
+	}
+
+	private List<JsonElement> jsonArrayToList(JsonArray jsonArray) {
+		List<JsonElement> list = new ArrayList<JsonElement>();
+		Iterator<JsonElement> it = jsonArray.iterator();
+		while (it.hasNext()) {
+			list.add((JsonElement) it.next());
+		}
+		return list;
 	}
 
 	// TODO - DONE!! Move to the rest

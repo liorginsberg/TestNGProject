@@ -73,7 +73,33 @@
 
                                 return true;  //allow all other operations
                             },
-                            'data': testData
+                            "data": {
+                                "text": "root",
+                                "type": "root",
+                                "children": [{
+                                    "text": "suite1",
+                                    "type": "suite_node",
+                                    "children": [{
+                                        "text": "test_container",
+                                        "type": "test_node"
+                                    }]}]
+                            }
+                        },
+                        "dnd": {
+                            "always_copy": false,
+                            "check_while_dragging": true,
+                            "is_draggable": function (nodes) {
+                                console.log(nodes);
+                                var drag = true;
+                                $.each(nodes, function () {
+//                                    if (this.type != "test_method_node") {
+//                                        console.log("cant drag element of type: " + this.type);
+//                                        drag = false;
+//                                    }
+                                });
+                                console.log(drag);
+                                return drag;
+                            }
                         },
                         "types": {
                             "#": {
@@ -84,15 +110,19 @@
                                 "valid_children": [ "suite" ],
                                 "icon": "img/stkfrm_obj.gif"
                             },
-                            "suite": {
+                            "suite_node": {
 
                                 "icon": "img/suite.gif",
-                                "valid_children": [ "suite", "test", "test_node" ]
+                                "valid_children": [ "suite", "test_node", "test_method_node" ]
                             },
-                            "test": {
-                                "icon": "img/test.gif"
+                            "test_node": {
+                                "icon": "img/test.gif",
+                                "valid_children": [ "suite", "test_node","test_method_node" ]
+                            },
+                            "test_method_node": {
+                                "icon": "img/test.gif",
+                                "max_children": 0
                             }
-
                         },
                         "plugins": [ "contextmenu", "dnd",
                             "search", "state", "types","checkbox" ],
@@ -144,7 +174,7 @@
                             },
                             "class_node": {
                                 "icon": "img/class_obj.png",
-                                "valid_children": [ "test_node" ]
+                                "valid_children": [ "test_method_node" ]
                             },
                             "test_method_node": {
                                 "icon": "img/test.gif",
@@ -195,6 +225,7 @@
 <script
         src="js/jquery-1.11.1.min.js"></script>
 <script src="jstree/jstree.min.js"></script>
+<script src="js/consts.js"></script>
 
 <script src="js/main.js"></script>
 <script>
