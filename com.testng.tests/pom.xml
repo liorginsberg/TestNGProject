@@ -83,6 +83,7 @@
 										<entry key="BUILD_TIMESATMP" value="${ts}" />
 										<entry key="BUILD_TIME" type="date" value="now" pattern="DDD HH:mm" />
 										<entry key="BASE_DIR" value="${basedir}" />
+										<entry key="SOURCE_DIR" value="${basedir}${file.separator}src${file.separator}main${file.separator}java"  />
 										<entry key="JAVA_HOME" value="${java.home}" />
 										<entry key="M2_HOME" value="${env.M2_HOME}" />
 										<entry key="TARGET_DIRECTORY" value="${project.build.directory}" />
@@ -90,7 +91,6 @@
 										<entry key="PROJECT_NAME" value="${project.name}" />
 										<entry key="PROJECT_FINAL_NAME" value="${project.build.finalName}" />
 										<entry key="SYSTEM_LINE_SEPARATOR" value="${line.separator}" />
-										<entry key="FROM_PARANT" value="${project.parent.name}" />
 										<entry key="TEST_CLASSPATH" value="${test_classpath}" />
 										<entry key="RUNTIME_CLASSPATH" value="${test_classpath}" />
 									</propertyfile>

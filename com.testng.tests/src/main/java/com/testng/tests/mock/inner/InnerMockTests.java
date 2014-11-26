@@ -13,7 +13,9 @@ public class InnerMockTests {
 	@Test(testName="InnerMoclTestTest1", description="")
 	public void test3() {
 		Reporter.log("InnerMockTests.test3 runs...", true);
-	}	
+	}
+	
+	/* This is not javadoc mock, will it show??*/
 	@Test(testName="InnerMoclTestTestNewName", description="")
 	public void testNewName() {
 		Reporter.log("InnerMockTests.test3 runs...", true);

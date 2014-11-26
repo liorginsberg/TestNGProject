@@ -33,6 +33,8 @@ import com.thoughtworks.qdox.model.JavaMethod;
 
 public class ProjectLoaderServlet extends HttpServlet {
 
+	private String sourceFolder = null;
+	
 	/**
 	 * 
 	 */
@@ -52,6 +54,7 @@ public class ProjectLoaderServlet extends HttpServlet {
 		long timeStart = System.nanoTime();
 		String classPath = null;
 		String classesFolder = null;
+		
 		Properties prop = new Properties();
 		InputStream input = null;
 		String propFile = request.getParameter("projLoc");
@@ -67,7 +70,7 @@ public class ProjectLoaderServlet extends HttpServlet {
 			// get the property value and print it out
 			classPath = prop.getProperty("TEST_CLASSPATH");
 			classesFolder = prop.getProperty("CLASSES_DIRECTORY");
-
+			sourceFolder = prop.getProperty("SOURCE_DIR");
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {
@@ -193,11 +196,15 @@ public class ProjectLoaderServlet extends HttpServlet {
 
 	// TODO - DONE!! Move to the rest
 	private JsonArray getTestMethodsJsonJSTreeFormat(File file) throws ClassNotFoundException, FileNotFoundException, IOException {
-		Map<String, String> javadocMethodsMap = JavadocExtractor.extractMethods(file);
+		
+		
 		
 		JsonArray testMethods = null;
 
 		String classFullName = getClassName(file);
+		String classSource = getClassSourceFile(file);
+		File classSourceFile = new File(classSource);
+		Map<String, String> javadocMethodsMap = JavadocExtractor.extractMethods(classSourceFile);
 		Class c = Class.forName(classFullName);
 		Method[] methods = c.getDeclaredMethods();
 		for (Method m : methods) {
@@ -238,6 +245,14 @@ public class ProjectLoaderServlet extends HttpServlet {
 			testMethods.add(methodObj);
 		}
 		return testMethods;
+	}
+	
+	private String getClassSourceFile(File file) {
+		String filePath = file.getAbsolutePath();
+		String classPath = filePath.split("classes\\\\")[1];
+		String javaFile = sourceFolder + File.separator + classPath.replace(".class", ".java");
+		return javaFile;
+		
 	}
 
 	private String getClassName(File file) {
