@@ -17,6 +17,12 @@ public class CopyOfCopyOfMockTests {
 	public void test2(String first, int second) {
 		Reporter.log("MockTests.test1 runs...", true);
 	}
+	/**
+	 * <h1 style="color:red">hello</h1>
+	 * 
+	 * @param first
+	 * @param second
+	 */
 	@Test
 	@Parameters(value={"first","second"})
 	public void test3(String first, int second) {
