@@ -76,7 +76,7 @@
 									<property name="plugin_classpath" refid="maven.plugin.classpath" />
 
 									<tstamp>
-										<format property="ts" pattern="S"/>
+										<format property="ts" pattern="S" />
 									</tstamp>
 									<propertyfile file="my.properties"
 										comment="This File is Auto-Genetarted. Do Not Modify!.">
@@ -98,6 +98,18 @@
 							</configuration>
 							<goals>
 								<goal>run</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<executions>
+						<execution>
+							<id>attach-sources</id>
+							<goals>
+								<goal>jar</goal>
 							</goals>
 						</execution>
 					</executions>

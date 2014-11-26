@@ -2,6 +2,7 @@ package org.testngwebrunner.app;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -12,6 +13,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.servlet.ServletException;
@@ -19,7 +21,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.jetty.util.log.Log;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.testngwebrunner.app.testcollector.ClassPathHack;
@@ -28,6 +29,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.thoughtworks.qdox.model.JavaMethod;
 
 public class ProjectLoaderServlet extends HttpServlet {
 
@@ -190,7 +192,9 @@ public class ProjectLoaderServlet extends HttpServlet {
 	}
 
 	// TODO - DONE!! Move to the rest
-	private JsonArray getTestMethodsJsonJSTreeFormat(File file) throws ClassNotFoundException {
+	private JsonArray getTestMethodsJsonJSTreeFormat(File file) throws ClassNotFoundException, FileNotFoundException, IOException {
+		Map<String, String> javadocMethodsMap = JavadocExtractor.extractMethods(file);
+		
 		JsonArray testMethods = null;
 
 		String classFullName = getClassName(file);
@@ -207,6 +211,7 @@ public class ProjectLoaderServlet extends HttpServlet {
 			li_attr_obj.addProperty("className", classFullName);
 			li_attr_obj.addProperty("methodName", m.getName());
 			li_attr_obj.addProperty("testName", testAnnotation.testName());
+			li_attr_obj.addProperty("testJavadoc", javadocMethodsMap.get(m.getName()));
 			methodObj.addProperty("type", "test_method_node");
 			methodObj.addProperty("text", m.getName() + (!testAnnotation.testName().isEmpty() ? (" - " + testAnnotation.testName()) : ""));
 			Parameters parametersAnnotation = m.getAnnotation(Parameters.class);
