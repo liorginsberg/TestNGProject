@@ -84,17 +84,38 @@ $(function () {
 
     $("#jstree_scenario_builder").on('copy_node.jstree', function (e, data) {
         console.log(e);
-        console.log(data);
-        var uuid = guid();
-        console.log("the new instace by copy is getting uuid:" + uuid);
+
         $.each(data.node.children_d, function (index, childID) {
-            childID = "#" + childID;
+            var ch_uuid = guid();
             console.log("child " + index + ":");
-            console.log($(childID))
+            var child_node = $('#jstree_scenario_builder').jstree(true).get_node(childID);
+//            child_node.id = ch_uuid;
+            child_node.li_attr.id = ch_uuid;
+            child_node.a_attr.id = ch_uuid + "_anchor";
         });
-        console.log(data.node.a_attr.id = uuid);
+
+        var uuid = guid();
+//        data.node.id = uuid;
+        data.node.li_attr.id = uuid;
+        data.node.a_attr.id = uuid + "_anchor";
     });
 });
+
+//not in use maybe later we will have problems
+function setUUIDNested(node, new_parent_id) {
+
+    node.parent = new_parent_id;
+    node.li_attr.id = uuid;
+    node.a_attr.id = uuid + "_anchor";
+    if (node.hasOwnProperty("children")) {
+
+        $.each(node.children, function(index, childID){
+            child_node = $('#jstree_scenario_builder').jstree(true).get_node(childID);
+            setUUIDNested(child_node, node.li_attr.id);
+        });
+    }
+
+}
 
 
 function receivedText() {

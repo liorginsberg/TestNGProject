@@ -77,7 +77,8 @@ $(function() {
         $.each(data.node.children_d, function(index, childID){
             childID = "#" + childID;
             console.log("child " + index + ":");
-            console.log($(childID))
+            var child_node = $('#tree-selector').jstree(true).get_node('node_id_here');
+            console.log(child_node);
         });
         console.log(data.node.a_attr.id = uuid);
     });
