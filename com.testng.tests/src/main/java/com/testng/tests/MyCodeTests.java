@@ -29,7 +29,7 @@ public class MyCodeTests extends TestListenerAdapter {
 
 	@Test(testName = "test add")
 	@Parameters({"num1","num2"})
-	public void testAdd() {
+	public void testAdd(int num1, int num2) {
 		Reporter.log("running testAdd("+ num1 +", " + num2 + ")", 0);
 		Reporter.log("running int res = myCode.add(a, b);", 1);
 		int res = myCode.add(num1, num2);
