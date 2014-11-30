@@ -65,7 +65,7 @@ public class MyCodeTests extends TestListenerAdapter {
 
 	@Override
 	public void onStart(ITestContext testContext) {
-		System.out.println("test context.getName() returns: " + testContext.getName());
+		System.out.println("test context.getName() returns: " + testContext.getName() + "=============================================$$$$$$$$$$$$$$");
 	}
 
 	public int getNum1() {

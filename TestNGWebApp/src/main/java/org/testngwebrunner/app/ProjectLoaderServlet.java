@@ -34,6 +34,7 @@ import com.thoughtworks.qdox.model.JavaMethod;
 public class ProjectLoaderServlet extends HttpServlet {
 
 	private String sourceFolder = null;
+	public static Properties currentProperties = null;
 	
 	/**
 	 * 
@@ -66,6 +67,7 @@ public class ProjectLoaderServlet extends HttpServlet {
 
 			// load a properties file
 			prop.load(input);
+			currentProperties = prop;
 
 			// get the property value and print it out
 			classPath = prop.getProperty("TEST_CLASSPATH");

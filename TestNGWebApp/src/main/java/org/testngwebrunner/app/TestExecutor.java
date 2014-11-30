@@ -1,11 +1,9 @@
 package org.testngwebrunner.app;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.File;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -17,7 +15,6 @@ import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
-import org.testng.TestNG;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlSuite;
@@ -33,75 +30,32 @@ public class TestExecutor implements IExecutionListener, ITestListener, LiveRepo
 	private Session session;
 	private String name;
 
-	public void runTests(Session session, String execJson) {
-//		LiveReporter.setListener(this);
-//		this.session = session;
-//		TestNG testng = new TestNG();
-//		List<XmlSuite> suites = buildXmlSuite(execJson);
-//		testng.setXmlSuites(suites);
-//
-//		testng.setDefaultSuiteName("root");
-//		testng.setVerbose(2);
-//		testng.addExecutionListener(this);
-//		testng.addListener(this);
-//		testng.addListener(new IInvokedMethodListener() {
-//
-//			@Override
-//			public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
-//
-//			}
-//
-//			@Override
-//			public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
-//				// TODO Auto-generated method stub
-//
-//			}
-//		});
-//
-//		testng.setTestClasses(new Class[] { MyCodeTests.class });
-//		testng.run();
+	public void runTests(Session session, String execJson) throws Exception {
+		LiveReporter.setListener(this);
+		this.session = session;
 
-	}
+		JsonParser parser = new JsonParser();
+		JsonObject execObb = (JsonObject)parser.parse(execJson);
 
-	public static void main(String[] args) throws Exception {
+		List<XmlSuite> suites = buildXmlSuite(execObb);
+		
 		String classPath = null;
-		String classesFolder = null;
 		
-		Properties prop = new Properties();
-		InputStream input = null;
-		String propFile = "D:\\TestNGProject\\com.testng.tests\\my.properties";
-		try {
-			input = new FileInputStream(propFile);
-
-			// load a properties file
-			prop.load(input);
-
-			// get the property value and print it out
-			classPath = prop.getProperty("TEST_CLASSPATH");
-			classPath = "D:\\TestNGProject\\TestNGWebApp\\target\\classes;" + classPath;
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		} finally {
-			if (input != null) {
-				try {
-					input.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+		//get latest properties of project under test
+		Properties prop = ProjectLoaderServlet.currentProperties;
+	
+		String suiteFolder = prop.getProperty("SUITES_DIR");
+		String generatedFile = suiteFolder + File.separator + suites.get(0).getName() + ".xml";
+		PrintWriter writer = new PrintWriter(generatedFile, "UTF-8");
+		writer.println(suites.get(0).toXml());
+		writer.close();
 		
-		testCommandLine(classPath);
-//		FileReader reader = new FileReader("D:\\sampJson.json");
-//		 
-//		JsonParser parser = new JsonParser();
-//		JsonObject execObb = (JsonObject)parser.parse(reader);
-//
-//		List<XmlSuite> suites = buildXmlSuite(execObb);
-//		TestNG testng = new TestNG();
-//		testng.setVerbose(2);
-//		testng.setXmlSuites(suites);
-//		testng.run();
+		// get the property value and print it out
+		classPath = prop.getProperty("TEST_CLASSPATH");
+		classPath = "D:\\TestNGProject\\TestNGWebApp\\target\\classes;" + classPath;
+		
+		testCommandLine(classPath, generatedFile);
+		
 	}
 	
 	private static List<XmlSuite> buildXmlSuite(JsonObject execObb) {
@@ -115,14 +69,12 @@ public class TestExecutor implements IExecutionListener, ITestListener, LiveRepo
 			XmlSuite xmlSuite = createXmlSuite(suitChild);
 			
 			suitesList.add(xmlSuite);
-			String xmlString = xmlSuite.toXml();// TODO Auto-generated method stub
-			System.out.println(xmlString);
 		}
 		return suitesList;
 	}
 	
-	private  static void testCommandLine(String command) throws Exception {
-	    Process p = Runtime.getRuntime().exec("cmd /c java -cp \""+ command  +"\"  org.testng.TestNG D:\\TestNGProject\\com.testng.tests\\src\\main\\resources\\suites\\auto-gen.xml -listener org.testngwebrunner.app.SimpleTesListenerImpl");
+	private  static void testCommandLine(String classpath, String xmlFile) throws Exception {
+	    Process p = Runtime.getRuntime().exec("cmd /c java -cp \""+ classpath  +"\"  org.testng.TestNG D:\\TestNGProject\\com.testng.tests\\src\\main\\resources\\suites\\ "+ xmlFile + " -listener org.testngwebrunner.app.SimpleTesListenerImpl;org.testngwebrunner.app.MyCodeTests");
 	    inheritIO(p.getInputStream(), System.out);
 	    inheritIO(p.getErrorStream(), System.err);
 
@@ -139,8 +91,6 @@ public class TestExecutor implements IExecutionListener, ITestListener, LiveRepo
 	    }).start();
 	}
 	
-	
-
 	//in case typ test_method_node
 	private static  XmlSuite createXmlSuite(JsonObject suiteJson) {
 		XmlSuite xmlSuite = new XmlSuite();
