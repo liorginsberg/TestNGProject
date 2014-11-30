@@ -5,7 +5,7 @@ import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 
-public class SimpleTesListenerImpl implements ITestListener {
+public class SimpleTesListenerImpl implements ITestListener, IExecutionListener {
 
 	
 		
@@ -54,6 +54,19 @@ public class SimpleTesListenerImpl implements ITestListener {
 	@Override
 	public void onFinish(ITestContext context) {
 		System.out.println("#################### OK COMMAND LINE - EXECUTION FAILURE ##################");
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onExecutionStart() {
+		System.out.println("EXE START !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+		
+	}
+
+	@Override
+	public void onExecutionFinish() {
+		System.out.println("EXE END !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 		// TODO Auto-generated method stub
 		
 	}

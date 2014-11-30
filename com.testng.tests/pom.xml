@@ -93,6 +93,8 @@
 										<entry key="SYSTEM_LINE_SEPARATOR" value="${line.separator}" />
 										<entry key="TEST_CLASSPATH" value="${test_classpath}" />
 										<entry key="RUNTIME_CLASSPATH" value="${test_classpath}" />
+										<entry key="RESOURCES_DIR" value="${basedir}${file.separator}src${file.separator}main${file.separator}resources" />
+										<entry key="SUITES_DIR" value="${basedir}${file.separator}src${file.separator}main${file.separator}resources/suites" />
 									</propertyfile>
 								</target>
 							</configuration>

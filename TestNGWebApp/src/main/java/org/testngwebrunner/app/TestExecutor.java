@@ -78,7 +78,7 @@ public class TestExecutor implements IExecutionListener, ITestListener, LiveRepo
 
 			// get the property value and print it out
 			classPath = prop.getProperty("TEST_CLASSPATH");
-			//classPath = "D:\\TestNGProject\\TestNGWebApp\\target\\classes;" + classPath;
+			classPath = "D:\\TestNGProject\\TestNGWebApp\\target\\classes;" + classPath;
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {
