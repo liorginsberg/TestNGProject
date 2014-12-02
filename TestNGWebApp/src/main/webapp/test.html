@@ -4,12 +4,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title>jsTree</title>
 
-    <link rel="stylesheet"
-          href="http://static.jstree.com/3.0.2/assets/bootstrap/css/bootstrap.min.css"/>
-<!--     <link rel="stylesheet" -->
-<!--           href="jstree/themes/default/style.min.css"/> -->
-<!--            <link rel="stylesheet" href="./assets/bootstrap/css/bootstrap.min.css" /> -->
-    <link rel="stylesheet" href="./assets/dist/themes/proton/style.css" />
+    <!--<link rel="stylesheet"-->
+          <!--href="jstree/themes/default/style.min.css"/>-->
+    <link rel="stylesheet" href="./assets/bootstrap/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="./assets/dist/themes/proton/style.css"/>
 
 
     <script>
@@ -33,6 +31,7 @@
         <div class="demo col-lg-3">
             <h3>Scenario</h3>
 
+            <button onclick="execute()">run</button>
             <div id="jstree_scenario_builder" class="demo"
                  style="margin-top: 1em; min-height: 200px;">
 
@@ -56,7 +55,7 @@
                     .jstree(
                     {
                         "core": {
-                        	"themes": {
+                            "themes": {
                                 'name': 'proton',
                                 'responsive': true
                             },
@@ -73,7 +72,41 @@
 
                                 return true;  //allow all other operations
                             },
-                            'data': testData
+                            "data": {
+                                "text": "root",
+                                "type": "root",
+                                "children": [
+                                    {
+                                        "text": "suite1",
+                                        "type": "suite_node",
+                                        "children": [
+                                            {
+                                                "text": "test_container",
+                                                "type": "test_node"
+                                            }
+                                        ]}
+                                ]
+                            }
+                        },
+                        "dnd": {
+                            "always_copy": false,
+                            "check_while_dragging": true,
+                            "is_draggable": function (nodes) {
+                                console.log(nodes);
+                                var drag = true;
+                                $.each(nodes, function () {
+//                                    if (this.type != "test_method_node") {
+//                                        console.log("cant drag element of type: " + this.type);
+//                                        drag = false;
+//                                    }
+                                });
+                                console.log(drag);
+                                return drag;
+                            }
+                        },
+                        "checkbox" : {
+                            "tie_selection": false,
+                            "whole_node": false
                         },
                         "types": {
                             "#": {
@@ -84,21 +117,25 @@
                                 "valid_children": [ "suite" ],
                                 "icon": "img/stkfrm_obj.gif"
                             },
-                            "suite": {
+                            "suite_node": {
 
                                 "icon": "img/suite.gif",
-                                "valid_children": [ "suite", "test", "test_node" ]
+                                "valid_children": [ "suite", "test_node", "test_method_node" ]
                             },
-                            "test": {
-                                "icon": "img/test.gif"
+                            "test_node": {
+                                "icon": "img/test.gif",
+                                "valid_children": [ "suite", "test_node", "test_method_node" ]
+                            },
+                            "test_method_node": {
+                                "icon": "img/test.gif",
+                                "max_children": 0
                             }
-
                         },
-                        "plugins": [ "contextmenu", "dnd",
-                            "search", "state", "types","checkbox" ],
                         "contextmenu": {
                             "items": customMenu
-                        }
+                        },
+                        "plugins": [ "contextmenu", "dnd",
+                            "search", "state", "types", "checkbox" ]
 
                     });
 
@@ -107,7 +144,7 @@
                     .jstree(
                     {
                         "core": {
-                        	"themes": {
+                            "themes": {
                                 'name': 'proton',
                                 'responsive': true
                             },
@@ -127,7 +164,7 @@
 
                                 return more.is_multi;
 
-                            },                           
+                            },
                             'data': testInventoryData
                         },
                         "types": {
@@ -144,7 +181,7 @@
                             },
                             "class_node": {
                                 "icon": "img/class_obj.png",
-                                "valid_children": [ "test_node" ]
+                                "valid_children": [ "test_method_node" ]
                             },
                             "test_method_node": {
                                 "icon": "img/test.gif",
@@ -168,12 +205,10 @@
                                 return drag;
                             }
                         },
-                        "plugins": [ "contextmenu", "dnd",
+                        "plugins": [ "dnd",
                             "search", "state", "types"
-                        ],
-                        "contextmenu": {
-                            "items": customMenu
-                        }
+                        ]
+
 
 
                     });
@@ -196,7 +231,7 @@
         src="js/jquery-1.11.1.min.js"></script>
 <script src="jstree/jstree.min.js"></script>
 
-<script src="js/main.js"></script>
+<script src="js/jstreeConfig.js"></script>
 <script>
     $.each($q, function (i, f) {
         $(f)

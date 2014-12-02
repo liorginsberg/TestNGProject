@@ -27,6 +27,19 @@ import com.google.gson.JsonParser;
 
 public class TestExecutor implements IExecutionListener, ITestListener, LiveReporterListener {
 
+	//colors for console
+	public static final String ANSI_RESET = "\u001B[0m";
+	public static final String ANSI_BLACK = "\u001B[30m";
+	public static final String ANSI_RED = "\u001B[31m";
+	public static final String ANSI_GREEN = "\u001B[32m";
+	public static final String ANSI_YELLOW = "\u001B[33m";
+	public static final String ANSI_BLUE = "\u001B[34m";
+	public static final String ANSI_PURPLE = "\u001B[35m";
+	public static final String ANSI_CYAN = "\u001B[36m";
+	public static final String ANSI_WHITE = "\u001B[37m";
+	
+	
+	
 	private Session session;
 	private String name;
 
@@ -35,85 +48,88 @@ public class TestExecutor implements IExecutionListener, ITestListener, LiveRepo
 		this.session = session;
 
 		JsonParser parser = new JsonParser();
-		JsonObject execObb = (JsonObject)parser.parse(execJson);
+		JsonObject execObb = (JsonObject) parser.parse(execJson);
 
 		List<XmlSuite> suites = buildXmlSuite(execObb);
-		
+
 		String classPath = null;
-		
-		//get latest properties of project under test
+
+		// get latest properties of project under test
 		Properties prop = ProjectLoaderServlet.currentProperties;
-	
+
 		String suiteFolder = prop.getProperty("SUITES_DIR");
 		String generatedFile = suiteFolder + File.separator + suites.get(0).getName() + ".xml";
 		PrintWriter writer = new PrintWriter(generatedFile, "UTF-8");
 		writer.println(suites.get(0).toXml());
 		writer.close();
-		
+
 		// get the property value and print it out
 		classPath = prop.getProperty("TEST_CLASSPATH");
 		classPath = "D:\\TestNGProject\\TestNGWebApp\\target\\classes;" + classPath;
-		
+
 		testCommandLine(classPath, generatedFile);
-		
+
 	}
-	
+
 	private static List<XmlSuite> buildXmlSuite(JsonObject execObb) {
-	
+
 		List<XmlSuite> suitesList = new ArrayList<XmlSuite>();
-		
+
 		JsonArray rootArray = execObb.getAsJsonArray("children");
-		for(JsonElement child: rootArray) {
-			
-			JsonObject suitChild = (JsonObject)child;
+		for (JsonElement child : rootArray) {
+
+			JsonObject suitChild = (JsonObject) child;
 			XmlSuite xmlSuite = createXmlSuite(suitChild);
-			
+
 			suitesList.add(xmlSuite);
 		}
 		return suitesList;
 	}
-	
-	private  static void testCommandLine(String classpath, String xmlFile) throws Exception {
-	    Process p = Runtime.getRuntime().exec("cmd /c java -cp \""+ classpath  +"\"  org.testng.TestNG D:\\TestNGProject\\com.testng.tests\\src\\main\\resources\\suites\\ "+ xmlFile + " -listener org.testngwebrunner.app.SimpleTesListenerImpl;org.testngwebrunner.app.MyCodeTests");
-	    inheritIO(p.getInputStream(), System.out);
-	    inheritIO(p.getErrorStream(), System.err);
+
+	private void testCommandLine(String classpath, String xmlFile) throws Exception {
+		Process p = Runtime.getRuntime().exec(
+				"cmd /c java -cp \"" + classpath + "\"  org.testng.TestNG " + xmlFile + " -listener org.testngwebrunner.app.SimpleTesListenerImpl;org.testngwebrunner.app.MyCodeTests");
+		inheritIO(p.getInputStream(), System.out);
+		inheritIO(p.getErrorStream(), System.err);
 
 	}
 
-	private static void inheritIO(final InputStream src, final PrintStream dest) {
-	    new Thread(new Runnable() {
-	        public void run() {
-	            Scanner sc = new Scanner(src);
-	            while (sc.hasNextLine()) {
-	                dest.println(sc.nextLine());
-	            }
-	        }
-	    }).start();
+	private void inheritIO(final InputStream src, final PrintStream dest) {
+		new Thread(new Runnable() {
+			public void run() {
+				Scanner sc = new Scanner(src);
+				while (sc.hasNextLine()) {
+					String output = sc.nextLine();
+					dest.println(output);
+					pushMessage(output);
+					
+				}
+			}
+		}).start();
 	}
-	
-	//in case typ test_method_node
-	private static  XmlSuite createXmlSuite(JsonObject suiteJson) {
+
+	// in case typ test_method_node
+	private static XmlSuite createXmlSuite(JsonObject suiteJson) {
 		XmlSuite xmlSuite = new XmlSuite();
 		xmlSuite.setVerbose(2);
 		String suiteName = suiteJson.get("text").getAsString();
 		xmlSuite.setName(suiteName);
 		List<XmlTest> tests = new ArrayList<XmlTest>();
-		
+
 		JsonArray rootArray = suiteJson.getAsJsonArray("children");
-		for(JsonElement child: rootArray) {
-			JsonObject testChild = (JsonObject)child;
+		for (JsonElement child : rootArray) {
+			JsonObject testChild = (JsonObject) child;
 			XmlTest xmlTest = createXmlTest(testChild);
-			String xmlString = xmlTest.toXml(" ");// TODO Auto-generated method stub
-			System.out.println(xmlString);
-		
+													// stub
+
 			xmlSuite.addTest(xmlTest);
 		}
-		
-	
+		String xmlString = xmlSuite.toXml();// TODO Auto-generated method
+		System.out.println(ANSI_RED + xmlString + ANSI_RESET);
 		return xmlSuite;
-		
+
 	}
-	
+
 	private static XmlTest createXmlTest(JsonObject testJson) {
 		XmlTest xmlTest = new XmlTest();
 		xmlTest.setVerbose(2);
@@ -132,12 +148,15 @@ public class TestExecutor implements IExecutionListener, ITestListener, LiveRepo
 		XmlClass xmlClass = new XmlClass(className,false);
 		List<XmlInclude> includes = new ArrayList<XmlInclude>();
 		XmlInclude inc = new XmlInclude(methodName);
-		for (JsonElement jsonElement : paramArray) {
-			String paramString = jsonElement.getAsString();
-			String[] paramPair = paramString.split(":");
-			String param = paramPair[0];
-			String value = paramPair[1];
-			inc.addParameter(param, value);			
+		if(paramArray != null) {
+			for (JsonElement jsonElement : paramArray) {
+				
+				String paramString = jsonElement.getAsString();
+				String[] paramPair = paramString.split(":");
+				String param = paramPair[0];
+				String value = paramPair[1];
+				inc.addParameter(param, value);			
+			}
 		}
 		includes.add(inc);
 		//inc.setDescription("my desc");

@@ -10,20 +10,20 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 public class TestExecutorWebSocket {
 
 	private Session session;
-
+	
 	@OnWebSocketConnect
 	public void onSessionConnect(Session session) {
 		this.session = session;
+		
 	}
-
+	
 	@OnWebSocketMessage
 	public void onText(Session session, String message) throws Exception {
 		new TestExecutor().runTests(session, message);
-
 	}
-
+	
 	@OnWebSocketClose
 	public void onClose(Session session, int closeCode, String closeReason) {
-		// not in use
+		//not in use
 	}
 }
