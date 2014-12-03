@@ -5,7 +5,9 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Scanner;
 
@@ -108,19 +110,26 @@ public class TestExecutor implements IExecutionListener, ITestListener, LiveRepo
 		}).start();
 	}
 
-	// in case typ test_method_node
+	// in case type test_method_node
 	private static XmlSuite createXmlSuite(JsonObject suiteJson) {
 		XmlSuite xmlSuite = new XmlSuite();
 		xmlSuite.setVerbose(2);
 		String suiteName = suiteJson.get("text").getAsString();
 		xmlSuite.setName(suiteName);
-		List<XmlTest> tests = new ArrayList<XmlTest>();
 
 		JsonArray rootArray = suiteJson.getAsJsonArray("children");
+		Map<String, Integer> testCounter = new HashMap<String, Integer>(); 
 		for (JsonElement child : rootArray) {
 			JsonObject testChild = (JsonObject) child;
 			XmlTest xmlTest = createXmlTest(testChild);
-													// stub
+			String testName = xmlTest.getName();
+			if(testCounter.containsKey(testName)) {
+				int count = testCounter.get(testName);
+				xmlTest.setName(testName + "("+ ++count +")");
+				testCounter.put(testName, count);
+			} else {
+				testCounter.put(xmlTest.getName(), 0);
+			}
 
 			xmlSuite.addTest(xmlTest);
 		}

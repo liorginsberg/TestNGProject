@@ -3,30 +3,39 @@
 <suite verbose="2" name="suite1">
   <test verbose="2" name="test2 - InnerMoclTestTest1">
     <classes>
-      <class name="com.testng.tests.mock.inner.InnerMockTests">
+      <class name="com.testng.tests.mock.inner.copy.InnerMockTests">
         <methods>
           <include name="test2"/>
         </methods>
-      </class> <!-- com.testng.tests.mock.inner.InnerMockTests -->
+      </class> <!-- com.testng.tests.mock.inner.copy.InnerMockTests -->
     </classes>
   </test> <!-- test2 - InnerMoclTestTest1 -->
   <test verbose="2" name="testNewName - InnerMoclTestTestNewName">
     <classes>
-      <class name="com.testng.tests.mock.inner.InnerMockTests">
+      <class name="com.testng.tests.mock.inner.copy.InnerMockTests">
         <methods>
           <include name="testNewName"/>
         </methods>
-      </class> <!-- com.testng.tests.mock.inner.InnerMockTests -->
+      </class> <!-- com.testng.tests.mock.inner.copy.InnerMockTests -->
     </classes>
   </test> <!-- testNewName - InnerMoclTestTestNewName -->
-  <test verbose="2" name="test2 - InnerMoclTestTest1">
+  <test verbose="2" name="test2 - InnerMoclTestTest1(1)">
     <classes>
-      <class name="com.testng.tests.mock.inner.InnerMockTests">
+      <class name="com.testng.tests.mock.inner.copy.InnerMockTests">
         <methods>
           <include name="test2"/>
         </methods>
-      </class> <!-- com.testng.tests.mock.inner.InnerMockTests -->
+      </class> <!-- com.testng.tests.mock.inner.copy.InnerMockTests -->
     </classes>
-  </test> <!-- test2 - InnerMoclTestTest1 -->
+  </test> <!-- test2 - InnerMoclTestTest1(1) -->
+  <test verbose="2" name="testNewName - InnerMoclTestTestNewName(1)">
+    <classes>
+      <class name="com.testng.tests.mock.inner.copy.InnerMockTests">
+        <methods>
+          <include name="testNewName"/>
+        </methods>
+      </class> <!-- com.testng.tests.mock.inner.copy.InnerMockTests -->
+    </classes>
+  </test> <!-- testNewName - InnerMoclTestTestNewName(1) -->
 </suite> <!-- suite1 -->
 
