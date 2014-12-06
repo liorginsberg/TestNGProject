@@ -12,11 +12,6 @@ import java.util.Properties;
 import java.util.Scanner;
 
 import org.eclipse.jetty.websocket.api.Session;
-import org.testng.IExecutionListener;
-import org.testng.ITestContext;
-import org.testng.ITestListener;
-import org.testng.ITestNGMethod;
-import org.testng.ITestResult;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlSuite;
@@ -27,32 +22,27 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-public class TestExecutor implements IExecutionListener, ITestListener, LiveReporterListener {
+public class TestExecutor implements LiveReporterListener {
 
-	//colors for console
-	public static final String ANSI_RESET = "\u001B[0m";
-	public static final String ANSI_BLACK = "\u001B[30m";
-	public static final String ANSI_RED = "\u001B[31m";
-	public static final String ANSI_GREEN = "\u001B[32m";
-	public static final String ANSI_YELLOW = "\u001B[33m";
-	public static final String ANSI_BLUE = "\u001B[34m";
-	public static final String ANSI_PURPLE = "\u001B[35m";
-	public static final String ANSI_CYAN = "\u001B[36m";
-	public static final String ANSI_WHITE = "\u001B[37m";
-	
-	
-	
 	private Session session;
 	private String name;
 
 	public void runTests(Session session, String execJson) throws Exception {
-		LiveReporter.setListener(this);
+		LiveReporter reporter = LiveReporter.getInstance();
+		reporter.addListener(this);
+
 		this.session = session;
 
 		JsonParser parser = new JsonParser();
 		JsonObject execObb = (JsonObject) parser.parse(execJson);
 
-		List<XmlSuite> suites = buildXmlSuite(execObb);
+		List<XmlSuite> suites = null;
+		try {
+			suites = buildXmlSuite(execObb);
+		} catch (Exception e) {
+			session.close();
+			return;
+		}
 
 		String classPath = null;
 
@@ -73,7 +63,7 @@ public class TestExecutor implements IExecutionListener, ITestListener, LiveRepo
 
 	}
 
-	private static List<XmlSuite> buildXmlSuite(JsonObject execObb) {
+	private List<XmlSuite> buildXmlSuite(JsonObject execObb) {
 
 		List<XmlSuite> suitesList = new ArrayList<XmlSuite>();
 
@@ -90,7 +80,8 @@ public class TestExecutor implements IExecutionListener, ITestListener, LiveRepo
 
 	private void testCommandLine(String classpath, String xmlFile) throws Exception {
 		Process p = Runtime.getRuntime().exec(
-				"cmd /c java -cp \"" + classpath + "\"  org.testng.TestNG " + xmlFile + " -listener org.testngwebrunner.app.SimpleTesListenerImpl;org.testngwebrunner.app.MyCodeTests");
+				"cmd /c java -cp \"" + classpath + "\"  org.testng.TestNG " + xmlFile
+						+ " -listener org.testngwebrunner.app.LiveReporterListener -usedefaultlisteners false");
 		inheritIO(p.getInputStream(), System.out);
 		inheritIO(p.getErrorStream(), System.err);
 
@@ -103,29 +94,29 @@ public class TestExecutor implements IExecutionListener, ITestListener, LiveRepo
 				while (sc.hasNextLine()) {
 					String output = sc.nextLine();
 					dest.println(output);
-					pushMessage(output);
-					
+					// pushMessage(output);
+
 				}
 			}
 		}).start();
 	}
 
 	// in case type test_method_node
-	private static XmlSuite createXmlSuite(JsonObject suiteJson) {
+	private XmlSuite createXmlSuite(JsonObject suiteJson) {
 		XmlSuite xmlSuite = new XmlSuite();
-		xmlSuite.setVerbose(2);
+		xmlSuite.setVerbose(-1);
 		String suiteName = suiteJson.get("text").getAsString();
 		xmlSuite.setName(suiteName);
 
 		JsonArray rootArray = suiteJson.getAsJsonArray("children");
-		Map<String, Integer> testCounter = new HashMap<String, Integer>(); 
+		Map<String, Integer> testCounter = new HashMap<String, Integer>();
 		for (JsonElement child : rootArray) {
 			JsonObject testChild = (JsonObject) child;
 			XmlTest xmlTest = createXmlTest(testChild);
 			String testName = xmlTest.getName();
-			if(testCounter.containsKey(testName)) {
+			if (testCounter.containsKey(testName)) {
 				int count = testCounter.get(testName);
-				xmlTest.setName(testName + "("+ ++count +")");
+				xmlTest.setName(testName + "(" + ++count + ")");
 				testCounter.put(testName, count);
 			} else {
 				testCounter.put(xmlTest.getName(), 0);
@@ -134,116 +125,66 @@ public class TestExecutor implements IExecutionListener, ITestListener, LiveRepo
 			xmlSuite.addTest(xmlTest);
 		}
 		String xmlString = xmlSuite.toXml();// TODO Auto-generated method
-		System.out.println(ANSI_RED + xmlString + ANSI_RESET);
+		System.out.println(xmlString);
 		return xmlSuite;
 
 	}
 
-	private static XmlTest createXmlTest(JsonObject testJson) {
+	private XmlTest createXmlTest(JsonObject testJson) {
 		XmlTest xmlTest = new XmlTest();
 		xmlTest.setVerbose(2);
 		xmlTest.setPreserveOrder("true");
 		JsonObject li_attr_json = testJson.getAsJsonObject("li_attr");
 		String testName = li_attr_json.get("testName").getAsString();
-		if(!testName.isEmpty()) {
+		if (!testName.isEmpty()) {
 			xmlTest.setName(testName);
 		}
 		testName = testJson.get("text").getAsString();
 		xmlTest.setName(testName);
-		
+
 		String className = li_attr_json.get("className").getAsString();
 		String methodName = li_attr_json.get("methodName").getAsString();
 		JsonArray paramArray = li_attr_json.getAsJsonArray("params");
-		XmlClass xmlClass = new XmlClass(className,false);
+		XmlClass xmlClass = new XmlClass(className, false);
 		List<XmlInclude> includes = new ArrayList<XmlInclude>();
 		XmlInclude inc = new XmlInclude(methodName);
-		if(paramArray != null) {
+		if (paramArray != null) {
 			for (JsonElement jsonElement : paramArray) {
-				
+
 				String paramString = jsonElement.getAsString();
 				String[] paramPair = paramString.split(":");
 				String param = paramPair[0];
-				String value = paramPair[1];
-				inc.addParameter(param, value);			
+				String value = null;
+				try {
+					value = paramPair[1];
+				} catch (Exception e) {
+					onReport("missingParamValue", "param missing");
+				}
+				inc.addParameter(param, value);
 			}
 		}
 		includes.add(inc);
-		//inc.setDescription("my desc");
+		// inc.setDescription("my desc");
 		xmlClass.setIncludedMethods(includes);
 		List<XmlClass> classes = new ArrayList<XmlClass>();
 		classes.add(xmlClass);
 		xmlTest.setClasses(classes);
-		
+
 		return xmlTest;
 	}
 
 	@Override
-	public void onExecutionStart() {
-		pushMessage(name + ": Execution Start");
-	}
+	public void onReport(String type, String message) {
 
-	@Override
-	public void onExecutionFinish() {
-		pushMessage(name + ": Execution Finish");
-	}
+		JsonObject obj = new JsonObject();
+		obj.addProperty("type", type);
+		obj.addProperty("testName", message);
 
-	@Override
-	public void onTestStart(ITestResult result) {
-		pushMessage(name + ": " + result.getName() + " started");
-	}
-
-	@Override
-	public void onTestSuccess(ITestResult result) {
-		pushMessage(name + ": " + result.getName() + " passing?");
-
-	}
-
-	@Override
-	public void onTestFailure(ITestResult result) {
-		pushMessage(name + ": " + result.getName() + " fail");
-
-	}
-
-	@Override
-	public void onTestSkipped(ITestResult result) {
-		pushMessage(name + ": " + result.getName() + " skipped");
-
-	}
-
-	@Override
-	public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
-		// not implemented
-	}
-
-	@Override
-	public void onStart(ITestContext context) {
-		ITestNGMethod[] m = context.getAllTestMethods();
-		for (ITestNGMethod meth : m) {
-			System.out.println(m.length);
-		}
-		pushMessage(name + ": " + context.getName() + " started");
-
-	}
-
-	@Override
-	public void onFinish(ITestContext context) {
-		pushMessage(name + ": " + context.getName() + " finished");
-
-	}
-
-	@Override
-	public void onLogMessage(String message) {
-		pushMessage(name + ": " + message);
-
-	}
-
-	private void pushMessage(String message) {
 		try {
-			session.getRemote().sendString(message);
+			session.getRemote().sendString(obj.toString());
 		} catch (Exception e) {
 			// e.printStackTrace();
 		}
 
 	}
-
 }

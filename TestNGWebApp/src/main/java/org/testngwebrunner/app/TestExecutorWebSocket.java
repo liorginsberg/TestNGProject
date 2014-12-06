@@ -14,6 +14,7 @@ public class TestExecutorWebSocket {
 	@OnWebSocketConnect
 	public void onSessionConnect(Session session) {
 		this.session = session;
+		System.out.println("End point Connect");		
 		
 	}
 	
@@ -24,6 +25,6 @@ public class TestExecutorWebSocket {
 	
 	@OnWebSocketClose
 	public void onClose(Session session, int closeCode, String closeReason) {
-		//not in use
+		System.out.println("End point close");
 	}
 }

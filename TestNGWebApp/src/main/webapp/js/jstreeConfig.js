@@ -71,23 +71,79 @@ function customMenu(node) {
 var ws1;
 
 function execute() {
-	ws1.send(JSON.stringify($("#jstree_scenario_builder").jstree(true).get_json('#', { 'flat' : false })[0]));
-}
-
-$(function() {
+	
 	if (!ws1) {
 		ws1 = new WebSocket("ws://localhost:8080/WebSocketTestServlet");
 		ws1.onopen = function(event) {
-			console.log("ws1.onopen and wait for execute");
+			 console.log("connected: send execution...");
+		     ws1.send(JSON.stringify($("#jstree_scenario_builder").jstree(true).get_json('#', { 'flat' : false })[0])); 
 		}
 		ws1.onmessage = function(event) {
+			
 			console.log("ws1.onmessage:" + event.data);
+			var message = $.parseJSON(event.data);
+			switch (message.type) {
+			case "executionStart":
+				console.log("Execution Start");
+				break;
+			case "executionFinish":
+				ws1.close();
+				console.log("Execution Finish");
+				break;
+			default:
+				conle.log(message.type + " - " + message.message)
+				break;
+			}
+		}
+		ws1.onerror = function(event) {
+			console.log("ws1.onerror");
+			console.log(event);
 		}
 		ws1.onclose = function(event) {
 			console.log("ws1.onclose");
 			console.log(event);
 		}
 	}
+	
+	switch(ws1.readyState) {
+    case 0:
+        console.log("not connected yet...execution canceled");
+      
+        break;
+    case 1:
+        console.log("connected: send execution...");
+        ws1.send(JSON.stringify($("#jstree_scenario_builder").jstree(true).get_json('#', { 'flat' : false })[0]));        
+        break;
+    case 2:
+    	console.log("about to close connection...");
+    case 3:
+    	console.log("connection is close, establishing new connection for execution");
+    	ws1 = new WebSocket("ws://localhost:8080/WebSocketTestServlet");
+		ws1.onopen = function(event) {
+			console.log("ws1.onopen and wait for execute");
+			ws1.send(JSON.stringify($("#jstree_scenario_builder").jstree(true).get_json('#', { 'flat' : false })[0]));
+		}
+		ws1.onmessage = function(event) {
+			console.log("ws1.onmessage:" + event.data);
+		}
+		ws1.onerror = function(event) {
+			console.log("ws1.onerror");
+			console.log(event);
+		}
+		ws1.onclose = function(event) {
+			console.log("ws1.onclose");
+			console.log(event);
+		}
+    	break;
+    default:
+        console.log("cannot reach here");
+        break;
+	}
+}
+
+
+$(function() {
+	
 
 
     fr = new FileReader();
@@ -112,19 +168,19 @@ $(function() {
             var ch_uuid = guid();
             console.log("child " + index + ":");
             var child_node = $('#jstree_scenario_builder').jstree(true).get_node(childID);
-//            child_node.id = ch_uuid;
+// child_node.id = ch_uuid;
             child_node.li_attr.id = ch_uuid;
             child_node.a_attr.id = ch_uuid + "_anchor";
         });
 
         var uuid = guid();
-//        data.node.id = uuid;
+// data.node.id = uuid;
         data.node.li_attr.id = uuid;
         data.node.a_attr.id = uuid + "_anchor";
     });
 });
 
-//not in use maybe later we will have problems
+// not in use maybe later we will have problems
 function setUUIDNested(node, new_parent_id) {
 
     node.parent = new_parent_id;

@@ -1,33 +1,98 @@
 package org.testngwebrunner.app;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.LinkedList;
 
-//singletone implementation of LiveReporter
-public class LiveReporter {
+import org.testng.IExecutionListener;
+import org.testng.ITestContext;
+import org.testng.ITestListener;
+import org.testng.ITestResult;
+
+public class LiveReporter implements ITestListener, IExecutionListener {
 
 	private static LiveReporter reporter;
-	private static LiveReporterListener liveListenter;
-	
-	private LiveReporter() {		
+
+	private LinkedList<LiveReporterListener> liveReporterListeners = null;
+
+	private LiveReporter() {
 	}
-	
+
 	public static LiveReporter getInstance() {
-		if(reporter == null) {
+		if (reporter == null) {
 			reporter = new LiveReporter();
-		} 
+		}
 		return reporter;
+
+	}
+
+	public void addListener(LiveReporterListener listener) {
+		if (liveReporterListeners == null) {
+			liveReporterListeners = new LinkedList<LiveReporterListener>();
+		}
+		if (!liveReporterListeners.contains(listener)) {
+			liveReporterListeners.add(listener);
+		}
+	}
+
+	public void removeListener(LiveReporterListener listener) {
+		if (liveReporterListeners.contains(liveReporterListeners)) {
+			liveReporterListeners.remove(liveReporterListeners);
+		}
+	}
+
+	public void report(String type,String message) {
 		
+		for(LiveReporterListener listener: liveReporterListeners) {
+			listener.onReport(type, message);
+		}
 	}
 	
-	public static void setListener(LiveReporterListener listener) {
-		liveListenter = listener;
+	@Override
+	public void onTestStart(ITestResult result) {
+		report("testStart", result.getName());
 	}
-	
-	public void report(String message) {
-		String time = new SimpleDateFormat("HH:mm:ss").format(new Date());
-		System.out.println(time + ": " + message);
-		if(liveListenter!=null)
-			liveListenter.onLogMessage(time + ": " + message);
+
+	@Override
+	public void onTestSuccess(ITestResult result) {
+		report("testSuccess",result.getName());
+	}
+
+	@Override
+	public void onTestFailure(ITestResult result) {
+		report("testFail",result.getName());
+	}
+
+	@Override
+	public void onTestSkipped(ITestResult result) {
+		report("testSkip",result.getName());
+
+	}
+
+	@Override
+	public void onTestFailedButWithinSuccessPercentage(ITestResult result) {
+
+	}
+
+	@Override
+	public void onStart(ITestContext context) {
+		report("start",context.getName());
+
+	}
+
+	@Override
+	public void onFinish(ITestContext context) {
+		report("finish",context.getName());
+
+	}
+
+	@Override
+	public void onExecutionStart() {
+		report("startExecution","");
+
+	}
+
+	@Override
+	public void onExecutionFinish() {
+		report("finishExecution","");
+
 	}
 }

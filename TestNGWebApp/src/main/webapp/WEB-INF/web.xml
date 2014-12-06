@@ -4,15 +4,6 @@
   xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
   version="2.5">
   <servlet>
-    <servlet-name>HelloServlet</servlet-name>
-    <display-name>HelloServlet</display-name>
-    <servlet-class>org.testngwebrunner.app.HelloServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>HelloServlet</servlet-name>
-    <url-pattern>/HelloServlet</url-pattern>
-  </servlet-mapping>
-  <servlet>
     <servlet-name>ProjectLoaderServlet</servlet-name>
     <display-name>ProjectLoaderServlet</display-name>
     <servlet-class>org.testngwebrunner.app.ProjectLoaderServlet</servlet-class>
