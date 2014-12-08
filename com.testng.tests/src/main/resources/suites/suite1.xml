@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <suite verbose="-1" name="suite1">
-  <test verbose="2" name="test2 - InnerMoclTestTest1">
+  <test verbose="2" name="649b457d-1b6a-dc8a-ddee-56ab81acee56">
     <classes>
       <class name="com.testng.tests.mock.inner.copy.InnerMockTests">
         <methods>
@@ -9,6 +9,15 @@
         </methods>
       </class> <!-- com.testng.tests.mock.inner.copy.InnerMockTests -->
     </classes>
-  </test> <!-- test2 - InnerMoclTestTest1 -->
+  </test> <!-- 649b457d-1b6a-dc8a-ddee-56ab81acee56 -->
+  <test verbose="2" name="f3c7a219-9e71-8d03-6f50-84a1070a95c5">
+    <classes>
+      <class name="com.testng.tests.mock.inner.copy.InnerMockTests">
+        <methods>
+          <include name="test3"/>
+        </methods>
+      </class> <!-- com.testng.tests.mock.inner.copy.InnerMockTests -->
+    </classes>
+  </test> <!-- f3c7a219-9e71-8d03-6f50-84a1070a95c5 -->
 </suite> <!-- suite1 -->
 

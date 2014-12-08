@@ -25,11 +25,11 @@ import com.google.gson.JsonParser;
 public class TestExecutor implements LiveReporterListener {
 
 	private Session session;
-	private String name;
-
+	private LiveReporter liveReporter;
+	
 	public void runTests(Session session, String execJson) throws Exception {
-		LiveReporter reporter = LiveReporter.getInstance();
-		reporter.addListener(this);
+		liveReporter = LiveReporter.getInstance();
+		liveReporter.addListener(this);
 
 		this.session = session;
 
@@ -81,7 +81,7 @@ public class TestExecutor implements LiveReporterListener {
 	private void testCommandLine(String classpath, String xmlFile) throws Exception {
 		Process p = Runtime.getRuntime().exec(
 				"cmd /c java -cp \"" + classpath + "\"  org.testng.TestNG " + xmlFile
-						+ " -listener org.testngwebrunner.app.LiveReporterListener -usedefaultlisteners false");
+						+ " -listener org.testngwebrunner.app.ExecutionListener -usedefaultlisteners false");
 		inheritIO(p.getInputStream(), System.out);
 		inheritIO(p.getErrorStream(), System.err);
 
@@ -90,12 +90,12 @@ public class TestExecutor implements LiveReporterListener {
 	private void inheritIO(final InputStream src, final PrintStream dest) {
 		new Thread(new Runnable() {
 			public void run() {
+				LiveReporter liveReporter = LiveReporter.getInstance();
 				Scanner sc = new Scanner(src);
 				while (sc.hasNextLine()) {
 					String output = sc.nextLine();
 					dest.println(output);
-					// pushMessage(output);
-
+					liveReporter.report(output);
 				}
 			}
 		}).start();
@@ -109,18 +109,18 @@ public class TestExecutor implements LiveReporterListener {
 		xmlSuite.setName(suiteName);
 
 		JsonArray rootArray = suiteJson.getAsJsonArray("children");
-		Map<String, Integer> testCounter = new HashMap<String, Integer>();
+		//Map<String, Integer> testCounter = new HashMap<String, Integer>();
 		for (JsonElement child : rootArray) {
 			JsonObject testChild = (JsonObject) child;
 			XmlTest xmlTest = createXmlTest(testChild);
-			String testName = xmlTest.getName();
-			if (testCounter.containsKey(testName)) {
-				int count = testCounter.get(testName);
-				xmlTest.setName(testName + "(" + ++count + ")");
-				testCounter.put(testName, count);
-			} else {
-				testCounter.put(xmlTest.getName(), 0);
-			}
+//			String testName = xmlTest.getName();
+//			if (testCounter.containsKey(testName)) {
+//				int count = testCounter.get(testName);
+//				xmlTest.setName(testName + "(" + ++count + ")");
+//				testCounter.put(testName, count);
+//			} else {
+//				testCounter.put(xmlTest.getName(), 0);
+//			}
 
 			xmlSuite.addTest(xmlTest);
 		}
@@ -136,11 +136,12 @@ public class TestExecutor implements LiveReporterListener {
 		xmlTest.setPreserveOrder("true");
 		JsonObject li_attr_json = testJson.getAsJsonObject("li_attr");
 		String testName = li_attr_json.get("testName").getAsString();
-		if (!testName.isEmpty()) {
-			xmlTest.setName(testName);
-		}
-		testName = testJson.get("text").getAsString();
-		xmlTest.setName(testName);
+		String id = testJson.get("id").getAsString();
+//		if (!testName.isEmpty()) {
+//			xmlTest.setName(testName);
+//		}
+//		testName = testJson.get("text").getAsString();
+		xmlTest.setName(id);
 
 		String className = li_attr_json.get("className").getAsString();
 		String methodName = li_attr_json.get("methodName").getAsString();
@@ -158,7 +159,7 @@ public class TestExecutor implements LiveReporterListener {
 				try {
 					value = paramPair[1];
 				} catch (Exception e) {
-					onReport("missingParamValue", "param missing");
+					liveReporter.report("{\"type\":\"missingParamValue\",\"message\":\"param missing\"}");
 				}
 				inc.addParameter(param, value);
 			}
@@ -174,17 +175,21 @@ public class TestExecutor implements LiveReporterListener {
 	}
 
 	@Override
-	public void onReport(String type, String message) {
+	public void onReport(String report) {
 
-		JsonObject obj = new JsonObject();
-		obj.addProperty("type", type);
-		obj.addProperty("testName", message);
-
+		JsonObject obj = null;
+		try {
+			obj = (JsonObject) new JsonParser().parse(report);
+		} catch (Exception e) {
+			System.out.println("Could not parse message");
+		}
+		
 		try {
 			session.getRemote().sendString(obj.toString());
 		} catch (Exception e) {
-			// e.printStackTrace();
+			System.out.println(e.getCause());
 		}
 
 	}
+
 }

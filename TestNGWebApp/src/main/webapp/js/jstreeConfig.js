@@ -80,7 +80,6 @@ function execute() {
 		}
 		ws1.onmessage = function(event) {
 			
-			console.log("ws1.onmessage:" + event.data);
 			var message = $.parseJSON(event.data);
 			switch (message.type) {
 			case "executionStart":
@@ -90,8 +89,14 @@ function execute() {
 				ws1.close();
 				console.log("Execution Finish");
 				break;
+			case "start":
+				$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testrun.gif");
+				break;
+			case "finish":
+				$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/test.gif");
+				break;
 			default:
-				conle.log(message.type + " - " + message.message)
+				console.log(message.type + " - " + message.message)
 				break;
 			}
 		}
@@ -105,40 +110,40 @@ function execute() {
 		}
 	}
 	
-	switch(ws1.readyState) {
-    case 0:
-        console.log("not connected yet...execution canceled");
-      
-        break;
-    case 1:
-        console.log("connected: send execution...");
-        ws1.send(JSON.stringify($("#jstree_scenario_builder").jstree(true).get_json('#', { 'flat' : false })[0]));        
-        break;
-    case 2:
-    	console.log("about to close connection...");
-    case 3:
-    	console.log("connection is close, establishing new connection for execution");
-    	ws1 = new WebSocket("ws://localhost:8080/WebSocketTestServlet");
-		ws1.onopen = function(event) {
-			console.log("ws1.onopen and wait for execute");
-			ws1.send(JSON.stringify($("#jstree_scenario_builder").jstree(true).get_json('#', { 'flat' : false })[0]));
-		}
-		ws1.onmessage = function(event) {
-			console.log("ws1.onmessage:" + event.data);
-		}
-		ws1.onerror = function(event) {
-			console.log("ws1.onerror");
-			console.log(event);
-		}
-		ws1.onclose = function(event) {
-			console.log("ws1.onclose");
-			console.log(event);
-		}
-    	break;
-    default:
-        console.log("cannot reach here");
-        break;
-	}
+//	switch(ws1.readyState) {
+//    case 0:
+//        console.log("not connected yet...execution canceled");
+//      
+//        break;
+//    case 1:
+//        console.log("connected: send execution...");
+//        ws1.send(JSON.stringify($("#jstree_scenario_builder").jstree(true).get_json('#', { 'flat' : false })[0]));        
+//        break;
+//    case 2:
+//    	console.log("about to close connection...");
+//    case 3:
+//    	console.log("connection is close, establishing new connection for execution");
+//    	ws1 = new WebSocket("ws://localhost:8080/WebSocketTestServlet");
+//		ws1.onopen = function(event) {
+//			console.log("ws1.onopen and wait for execute");
+//			ws1.send(JSON.stringify($("#jstree_scenario_builder").jstree(true).get_json('#', { 'flat' : false })[0]));
+//		}
+//		ws1.onmessage = function(event) {
+//			console.log("ws1.onmessage:" + event.data);
+//		}
+//		ws1.onerror = function(event) {
+//			console.log("ws1.onerror");
+//			console.log(event);
+//		}
+//		ws1.onclose = function(event) {
+//			console.log("ws1.onclose");
+//			console.log(event);
+//		}
+//    	break;
+//    default:
+//        console.log("cannot reach here");
+//        break;
+//	}
 }
 
 
@@ -168,15 +173,15 @@ $(function() {
             var ch_uuid = guid();
             console.log("child " + index + ":");
             var child_node = $('#jstree_scenario_builder').jstree(true).get_node(childID);
-// child_node.id = ch_uuid;
-            child_node.li_attr.id = ch_uuid;
+//            child_node.li_attr.id = ch_uuid;
             child_node.a_attr.id = ch_uuid + "_anchor";
+            $('#jstree_scenario_builder').jstree(true).set_id(childID, ch_uuid);
         });
 
         var uuid = guid();
-// data.node.id = uuid;
-        data.node.li_attr.id = uuid;
+//        data.node.li_attr.id = uuid;
         data.node.a_attr.id = uuid + "_anchor";
+        $('#jstree_scenario_builder').jstree(true).set_id(data.node.id, uuid);
     });
 });
 
