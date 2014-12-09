@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <suite verbose="-1" name="suite1">
-  <test verbose="2" name="649b457d-1b6a-dc8a-ddee-56ab81acee56">
+  <test verbose="2" name="2f3f703d-7f49-98f4-c3f1-3ff6acd877ad">
     <classes>
       <class name="com.testng.tests.mock.inner.copy.InnerMockTests">
         <methods>
@@ -9,8 +9,26 @@
         </methods>
       </class> <!-- com.testng.tests.mock.inner.copy.InnerMockTests -->
     </classes>
-  </test> <!-- 649b457d-1b6a-dc8a-ddee-56ab81acee56 -->
-  <test verbose="2" name="f3c7a219-9e71-8d03-6f50-84a1070a95c5">
+  </test> <!-- 2f3f703d-7f49-98f4-c3f1-3ff6acd877ad -->
+  <test verbose="2" name="83bebe5c-c997-784a-523f-c469a1b73e1a">
+    <classes>
+      <class name="com.testng.tests.mock.inner.copy.InnerMockTests">
+        <methods>
+          <include name="test2"/>
+        </methods>
+      </class> <!-- com.testng.tests.mock.inner.copy.InnerMockTests -->
+    </classes>
+  </test> <!-- 83bebe5c-c997-784a-523f-c469a1b73e1a -->
+  <test verbose="2" name="eaf1eda1-f282-3383-1d41-2afec466c0a2">
+    <classes>
+      <class name="com.testng.tests.mock.inner.copy.InnerMockTests">
+        <methods>
+          <include name="test2"/>
+        </methods>
+      </class> <!-- com.testng.tests.mock.inner.copy.InnerMockTests -->
+    </classes>
+  </test> <!-- eaf1eda1-f282-3383-1d41-2afec466c0a2 -->
+  <test verbose="2" name="7fed5c34-7f5f-b5b4-e8b7-2100c1e37536">
     <classes>
       <class name="com.testng.tests.mock.inner.copy.InnerMockTests">
         <methods>
@@ -18,6 +36,24 @@
         </methods>
       </class> <!-- com.testng.tests.mock.inner.copy.InnerMockTests -->
     </classes>
-  </test> <!-- f3c7a219-9e71-8d03-6f50-84a1070a95c5 -->
+  </test> <!-- 7fed5c34-7f5f-b5b4-e8b7-2100c1e37536 -->
+  <test verbose="2" name="2224215a-a29f-c08b-af02-1371e59d90e8">
+    <classes>
+      <class name="com.testng.tests.mock.inner.copy.InnerMockTests">
+        <methods>
+          <include name="test2"/>
+        </methods>
+      </class> <!-- com.testng.tests.mock.inner.copy.InnerMockTests -->
+    </classes>
+  </test> <!-- 2224215a-a29f-c08b-af02-1371e59d90e8 -->
+  <test verbose="2" name="dbd2b1aa-b4b4-95bd-59ff-fc5f12163ab4">
+    <classes>
+      <class name="com.testng.tests.mock.inner.copy.InnerMockTests">
+        <methods>
+          <include name="test3"/>
+        </methods>
+      </class> <!-- com.testng.tests.mock.inner.copy.InnerMockTests -->
+    </classes>
+  </test> <!-- dbd2b1aa-b4b4-95bd-59ff-fc5f12163ab4 -->
 </suite> <!-- suite1 -->
 

@@ -57,7 +57,7 @@ public class TestExecutor implements LiveReporterListener {
 
 		// get the property value and print it out
 		classPath = prop.getProperty("TEST_CLASSPATH");
-		classPath = "D:\\TestNGProject\\TestNGWebApp\\target\\classes;" + classPath;
+		classPath = "C:\\TestNGProject\\TestNGWebApp\\target\\classes;" + classPath;
 
 		testCommandLine(classPath, generatedFile);
 

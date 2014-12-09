@@ -10,22 +10,22 @@ public class ExecutionListener implements ITestListener, IExecutionListener {
 
 	@Override
 	public void onTestStart(ITestResult result) {
-		System.out.println("{\"type\":\"testStart\", \"message\":\"" + result.getName() + "\"}");
+		System.out.println("{\"type\":\"testStart\", \"message\":\"" + result.getTestContext().getName() + "\"}");
 	}
 
 	@Override
 	public void onTestSuccess(ITestResult result) {
-		System.out.println("{\"type\":\"testSuccess\", \"message\":\"" + result.getName() + "\"}");
+		System.out.println("{\"type\":\"testSuccess\", \"message\":\"" + result.getTestContext().getName() + "\"}");
 	}
 
 	@Override
 	public void onTestFailure(ITestResult result) {
-		System.out.println("{\"type\":\"testFail\", \"message\":\"" + result.getName() + "\"}");
+		System.out.println("{\"type\":\"testFail\", \"message\":\"" + result.getTestContext().getName() + "\"}");
 	}
 
 	@Override
 	public void onTestSkipped(ITestResult result) {
-		System.out.println("{\"type\":\"testSkip\", \"message\":\"" + result.getName() + "\"}");
+		System.out.println("{\"type\":\"testSkip\", \"message\":\"" + result.getTestContext().getName() + "\"}");
 
 	}
 
