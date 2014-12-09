@@ -2225,6 +2225,17 @@ testInventoryData = {
     ]
 };
 
+function saveParamsForTest() {
+	id = $(".btn-save-params").attr("id");
+	inputArr = $("#params-form").find("input");
+	var paramsWithValues = [];
+	$.each(inputArr, function(index, value){
+		paramsWithValues.push(value.name + ":" + value.value);
+	});
+	$("#"+id).attr("params",paramsWithValues);
+	
+}
+
 function createTestContainer() {
     var ref = $('#jstree_scenario_builder').jstree(true);
     sel = ref.get_selected();
