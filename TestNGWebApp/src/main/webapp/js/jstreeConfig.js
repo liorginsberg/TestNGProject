@@ -68,11 +68,11 @@ function customMenu(node) {
 }
 
 
-var ws1;
+var ws1 = undefined; 
 
 function execute() {
 	
-	if (!ws1) {
+	if (typeof ws1 === 'undefined') {
 		ws1 = new WebSocket("ws://localhost:8080/WebSocketTestServlet");
 		ws1.onopen = function(event) {
 			 console.log("connected: send execution...");
@@ -82,11 +82,12 @@ function execute() {
 			
 			var message = $.parseJSON(event.data);
 			switch (message.type) {
-			case "executionStart":
+			case "startExecution":
 				console.log("Execution Start");
 				break;
-			case "executionFinish":
+			case "finishExecution":
 				ws1.close();
+				ws1 = undefined; 
 				console.log("Execution Finish");
 				break;
 			case "start":
@@ -116,6 +117,7 @@ function execute() {
 		ws1.onclose = function(event) {
 			console.log("ws1.onclose");
 			console.log(event);
+			ws1 = undefined; 
 		}
 	}
 }

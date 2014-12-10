@@ -43,7 +43,7 @@
             <button onclick="expandAllTree('jstree_test_inventory')">expend all</button>
             <button onclick="collapseAllTree('jstree_test_inventory')">collapse all</button>
             <input type="text" id="search_test" value="" class="input"
-                   style="margin:0em auto 1em auto; display:block; padding:4px; border-radius:4px; border:1px solid silver;">
+                   style="border-radius:4px; border:1px solid silver;">
 
             <div id="jstree_test_inventory" class="inventory" style="margin-top: 1em; min-height: 200px;"></div>
         </div>
@@ -158,17 +158,23 @@
                             "search", "state", "types", "checkbox" ]
 
                     }).bind("select_node.jstree", function(event, data) {
-                    	console.log(data.node.id);
-                    	console.log(data.node.li_attr.params[0]);
-                    	console.log(data.node.li_attr.params[1]);
+                    	console.log("selected: " + data.node.id);
+                 
                     	$("#params-form").empty();
                     	$("#params-form").append("<fieldset><legend>Parameters</legend>");
                     	
                     	$.each(data.node.li_attr.params, function( index, value ) {
+                    		paramPair = value;
+                    		paramPair = paramPair.split(":");
+                    		var pName = paramPair[0];
+                    		var pVal = ""; 
+                    		if(paramPair.length > 1) {
+                    			pVal = paramPair[1]; 
+                    		}
   							$("#params-form").append('<div class="control-group">' 
-  								+ '<label class="control-label"' + ' for="' + value + '">' + value + '</label>'
+  								+ '<label class="control-label"' + ' for="' + pName + '">' + pName + '</label>'
   									+ '<div class="controls">'
-  										+ '<input id="' + value + '"' + ' name="' + value + '"' + ' placeholder="e.g ..."' + ' class="input-xlarge">'
+  										+ '<input id="' + pName + '"' + ' name="' + pName + '"' + ' value="' + pVal +'"' +' placeholder="e.g ..."' + ' class="input-xlarge">'
   												+ ' <p class="help-block">prameter desk here</p></div></div></fieldset>'); 
 						});
                     	$("#params-form").append('<div class="control-group">'
