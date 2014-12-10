@@ -98,7 +98,7 @@ function execute() {
 			case "testSuccess":
 				$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testok.gif");
 				break;
-			case "testFali":
+			case "testFail":
 				$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testfail.gif");
 				break;
 			case "testSkip":
@@ -2232,7 +2232,7 @@ function saveParamsForTest() {
 	$.each(inputArr, function(index, value){
 		paramsWithValues.push(value.name + ":" + value.value);
 	});
-	$("#"+id).attr("params",paramsWithValues);
+	$("#jstree_scenario_builder").jstree(true).get_node(id).li_attr.params = paramsWithValues;
 	
 }
 

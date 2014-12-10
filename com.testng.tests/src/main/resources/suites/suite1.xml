@@ -1,23 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <suite verbose="-1" name="suite1">
-  <test verbose="2" name="fd03d1fd-0268-fbf5-6b80-81c087b9e046">
+  <test verbose="2" name="1f81fd3c-a084-b49f-b600-285c019ba3fc">
     <classes>
-      <class name="com.testng.tests.mock.inner.copy.InnerMockTests">
+      <class name="com.testng.tests.MyCodeTests">
         <methods>
-          <include name="test3"/>
+          <include name="testAdd">
+            <parameter name="num2" value="1"/>
+            <parameter name="num1" value="21"/>
+          </include> <!-- testAdd -->
         </methods>
-      </class> <!-- com.testng.tests.mock.inner.copy.InnerMockTests -->
+      </class> <!-- com.testng.tests.MyCodeTests -->
     </classes>
-  </test> <!-- fd03d1fd-0268-fbf5-6b80-81c087b9e046 -->
-  <test verbose="2" name="1c278fc2-4e5b-1590-3169-ddccac126ea9">
+  </test> <!-- 1f81fd3c-a084-b49f-b600-285c019ba3fc -->
+  <test verbose="2" name="6eb970b3-77b2-d7de-7e7d-d48dc7b1fc54">
     <classes>
-      <class name="com.testng.tests.mock.inner.copy.InnerMockTests">
+      <class name="com.testng.tests.MyCodeTests">
         <methods>
-          <include name="test2"/>
+          <include name="testAdd">
+            <parameter name="num2" value="0"/>
+            <parameter name="num1" value="0"/>
+          </include> <!-- testAdd -->
         </methods>
-      </class> <!-- com.testng.tests.mock.inner.copy.InnerMockTests -->
+      </class> <!-- com.testng.tests.MyCodeTests -->
     </classes>
-  </test> <!-- 1c278fc2-4e5b-1590-3169-ddccac126ea9 -->
+  </test> <!-- 6eb970b3-77b2-d7de-7e7d-d48dc7b1fc54 -->
+  <test verbose="2" name="06eecfe7-d975-124c-3f6e-8fc80477da2e">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num2" value="27"/>
+            <parameter name="num1" value="-18"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- 06eecfe7-d975-124c-3f6e-8fc80477da2e -->
+  <test verbose="2" name="6eace001-463c-7f31-dc26-17dc4bbe6ba5">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num2" value="6"/>
+            <parameter name="num1" value="3"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- 6eace001-463c-7f31-dc26-17dc4bbe6ba5 -->
+  <test verbose="2" name="a1a391c6-5317-055c-a307-b82536796631">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num2" value="10"/>
+            <parameter name="num1" value="-1"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- a1a391c6-5317-055c-a307-b82536796631 -->
+  <test verbose="2" name="5ec18a9f-b9aa-a610-8fd4-79a1e51b6e24">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num2" value="1"/>
+            <parameter name="num1" value="3"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- 5ec18a9f-b9aa-a610-8fd4-79a1e51b6e24 -->
 </suite> <!-- suite1 -->
 
