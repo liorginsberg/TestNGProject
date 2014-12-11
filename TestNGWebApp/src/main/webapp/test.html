@@ -23,12 +23,14 @@
     </script>
 </head>
 <body>
-<div class="container">
+<div class="container-fluid">
     <div class="row">
+     <div class="demo col-lg-3 col-lg-offset-1">
         <input type="file"/>
+        </div>
     </div>
     <div class="row">
-        <div class="demo col-lg-3">
+        <div class="demo col-lg-2 col-lg-offset-1">
             <h3>Scenario</h3>
 
             <button onclick="execute()">run</button>
@@ -37,7 +39,7 @@
 
             </div>
         </div>
-        <div class="demo col-lg-offset-2 col-lg-4">
+        <div class="demo col-lg-offset-1 col-lg-3">
             <h3>Test Inventory</h3>
             <button onclick="refreshTestProject()">refresh</button>
             <button onclick="expandAllTree('jstree_test_inventory')">expend all</button>
@@ -47,24 +49,19 @@
 
             <div id="jstree_test_inventory" class="inventory" style="margin-top: 1em; min-height: 200px;"></div>
         </div>
+        <div class="demo col-lg-offset-1 col-lg-3">
+         <h3>Report</h3>
+         <button onclick="clearReport()">clear</button>
+         <div id="reporter"></div>
+        </div>
     </div>
     <div class="row" id="params">
+    <div class="demo col-lg-offset-1">
      <form class="form-horizontal" id="params-form">
-<!--<fieldset>
+    
 
-
-<legend>Parameters</legend>
-
-<div class="control-group">
-  <label class="control-label" for="textinput2">p1</label>
-  <div class="controls">
-    <input id="textinput2" name="textinput2" type="text" placeholder="p2 e.g" class="input-xlarge">
-    <p class="help-block">prameter desk here</p>
-  </div>
-</div>
-
-</fieldset>-->
 </form>
+ </div>
     </div>
     <script>
 
@@ -95,17 +92,7 @@
                             "data": {
                                 "text": "root",
                                 "type": "root",
-                                "children": [
-                                    {
-                                        "text": "suite1",
-                                        "type": "suite_node",
-                                        "children": [
-                                            {
-                                                "text": "test_container",
-                                                "type": "test_node"
-                                            }
-                                        ]}
-                                ]
+                                "children": []
                             }
                         },
                         "dnd": {
@@ -134,17 +121,17 @@
                             },
                             "root": {
                                 "max_children": 1,
-                                "valid_children": [ "suite" ],
+                                "valid_children": [ "suite_node" ],
                                 "icon": "img/stkfrm_obj.gif"
                             },
                             "suite_node": {
 
                                 "icon": "img/suite.gif",
-                                "valid_children": [ "suite", "test_node", "test_method_node" ]
+                                "valid_children": [ "suite_node", "test_node", "test_method_node" ]
                             },
                             "test_node": {
                                 "icon": "img/test.gif",
-                                "valid_children": [ "suite", "test_node", "test_method_node" ]
+                                "valid_children": [ "suite_node", "test_node", "test_method_node" ]
                             },
                             "test_method_node": {
                                 "icon": "img/test.gif",
@@ -271,6 +258,7 @@
 <script
         src="js/jquery-1.11.1.min.js"></script>
 <script src="jstree/jstree.min.js"></script>
+<script src="js/jquery.nicescroll.js"></script>
 
 <script src="js/jstreeConfig.js"></script>
 <script>

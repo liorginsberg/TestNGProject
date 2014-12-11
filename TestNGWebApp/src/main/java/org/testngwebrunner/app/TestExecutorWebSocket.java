@@ -20,6 +20,7 @@ public class TestExecutorWebSocket {
 	
 	@OnWebSocketMessage
 	public void onText(Session session, String message) throws Exception {
+		System.out.println(message);
 		new TestExecutor().runTests(session, message);
 	}
 	

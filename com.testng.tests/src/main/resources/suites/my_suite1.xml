@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite verbose="-1" name="my_suite1">
+  <test verbose="2" name="f1976fd7-44d3-b822-4612-be298012b9d7">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num2" value="-3"/>
+            <parameter name="num1" value="2"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- f1976fd7-44d3-b822-4612-be298012b9d7 -->
+  <test verbose="2" name="e71b1070-8ae0-c375-a90d-df6ccb0e1099">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num2" value="8"/>
+            <parameter name="num1" value="1"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- e71b1070-8ae0-c375-a90d-df6ccb0e1099 -->
+</suite> <!-- my_suite1 -->
+

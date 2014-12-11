@@ -4,10 +4,10 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Scanner;
 
@@ -28,6 +28,7 @@ public class TestExecutor implements LiveReporterListener {
 	private LiveReporter liveReporter;
 
 	public void runTests(Session session, String execJson) throws Exception {
+		System.out.println("runTest...");
 		liveReporter = LiveReporter.getInstance();
 		liveReporter.addListener(this);
 
@@ -35,11 +36,11 @@ public class TestExecutor implements LiveReporterListener {
 
 		JsonParser parser = new JsonParser();
 		JsonObject execObb = (JsonObject) parser.parse(execJson);
-
 		List<XmlSuite> suites = null;
 		try {
 			suites = buildXmlSuite(execObb);
 		} catch (Exception e) {
+			e.printStackTrace();
 			session.close();
 			return;
 		}
@@ -136,7 +137,7 @@ public class TestExecutor implements LiveReporterListener {
 		xmlTest.setPreserveOrder("true");
 		JsonObject li_attr_json = testJson.getAsJsonObject("li_attr");
 		// TODO HAndle
-		boolean checked = testJson.getAsJsonObject("state").get("checked").getAsBoolean();
+		//boolean checked = testJson.getAsJsonObject("state").get("checked").getAsBoolean();
 		String testName = li_attr_json.get("testName").getAsString();
 		String id = testJson.get("id").getAsString();
 		// if (!testName.isEmpty()) {
@@ -182,14 +183,17 @@ public class TestExecutor implements LiveReporterListener {
 	public void onReport(String report) {
 
 		JsonObject obj = null;
+		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
+		Date now = new Date();
 		try {
 			obj = (JsonObject) new JsonParser().parse(report);
+			
 		} catch (Exception e) {
-			System.out.println("Could not parse message");
 			obj = new JsonObject();
 			obj.addProperty("type", "not_set");
 			obj.addProperty("message", report);
 		}
+		obj.addProperty("date", sdf.format(now));
 
 		try {
 			session.getRemote().sendString(obj.toString());

@@ -29,7 +29,10 @@ public class MyCodeTests extends TestListenerAdapter {
 
 	@Test(testName = "test add")
 	@Parameters({"num1","num2"})
-	public void testAdd(int num1, int num2) {
+	public void testAdd(int num1, int num2) throws InterruptedException {
+		System.out.println("sleeping 3 sec...");
+		Thread.sleep(3000);
+		System.out.println("done sleeping");
 		Reporter.log("running testAdd("+ num1 +", " + num2 + ")", 0);
 		Reporter.log("running int res = myCode.add(a, b);", 1);
 		int res = myCode.add(num1, num2);
