@@ -26,7 +26,7 @@ public class TestExecutor implements LiveReporterListener {
 
 	private Session session;
 	private LiveReporter liveReporter;
-	
+
 	public void runTests(Session session, String execJson) throws Exception {
 		liveReporter = LiveReporter.getInstance();
 		liveReporter.addListener(this);
@@ -109,18 +109,18 @@ public class TestExecutor implements LiveReporterListener {
 		xmlSuite.setName(suiteName);
 
 		JsonArray rootArray = suiteJson.getAsJsonArray("children");
-		//Map<String, Integer> testCounter = new HashMap<String, Integer>();
+		// Map<String, Integer> testCounter = new HashMap<String, Integer>();
 		for (JsonElement child : rootArray) {
 			JsonObject testChild = (JsonObject) child;
 			XmlTest xmlTest = createXmlTest(testChild);
-//			String testName = xmlTest.getName();
-//			if (testCounter.containsKey(testName)) {
-//				int count = testCounter.get(testName);
-//				xmlTest.setName(testName + "(" + ++count + ")");
-//				testCounter.put(testName, count);
-//			} else {
-//				testCounter.put(xmlTest.getName(), 0);
-//			}
+			// String testName = xmlTest.getName();
+			// if (testCounter.containsKey(testName)) {
+			// int count = testCounter.get(testName);
+			// xmlTest.setName(testName + "(" + ++count + ")");
+			// testCounter.put(testName, count);
+			// } else {
+			// testCounter.put(xmlTest.getName(), 0);
+			// }
 
 			xmlSuite.addTest(xmlTest);
 		}
@@ -135,19 +135,23 @@ public class TestExecutor implements LiveReporterListener {
 		xmlTest.setVerbose(2);
 		xmlTest.setPreserveOrder("true");
 		JsonObject li_attr_json = testJson.getAsJsonObject("li_attr");
+		// TODO HAndle
+		boolean checked = testJson.getAsJsonObject("state").get("checked").getAsBoolean();
 		String testName = li_attr_json.get("testName").getAsString();
 		String id = testJson.get("id").getAsString();
-//		if (!testName.isEmpty()) {
-//			xmlTest.setName(testName);
-//		}
-//		testName = testJson.get("text").getAsString();
+		// if (!testName.isEmpty()) {
+		// xmlTest.setName(testName);
+		// }
+		// testName = testJson.get("text").getAsString();
 		xmlTest.setName(id);
 
 		String className = li_attr_json.get("className").getAsString();
 		String methodName = li_attr_json.get("methodName").getAsString();
 		JsonArray paramArray = li_attr_json.getAsJsonArray("params");
 		XmlClass xmlClass = new XmlClass(className, false);
+
 		List<XmlInclude> includes = new ArrayList<XmlInclude>();
+
 		XmlInclude inc = new XmlInclude(methodName);
 		if (paramArray != null) {
 			for (JsonElement jsonElement : paramArray) {
@@ -182,8 +186,11 @@ public class TestExecutor implements LiveReporterListener {
 			obj = (JsonObject) new JsonParser().parse(report);
 		} catch (Exception e) {
 			System.out.println("Could not parse message");
+			obj = new JsonObject();
+			obj.addProperty("type", "not_set");
+			obj.addProperty("message", report);
 		}
-		
+
 		try {
 			session.getRemote().sendString(obj.toString());
 		} catch (Exception e) {

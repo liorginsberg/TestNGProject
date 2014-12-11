@@ -10,7 +10,7 @@
 		<classes>
 			<class name="com.testng.tests.MyCodeTests">
 				<methods>
-					<include name="testAdd" description="adding some value" />
+					<include name="testAdd" description="adding some value" />					
 				</methods>
 			</class>
 		</classes>

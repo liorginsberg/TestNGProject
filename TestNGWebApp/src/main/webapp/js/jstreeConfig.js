@@ -92,21 +92,29 @@ function execute() {
 				break;
 			case "start":
 				$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testrun.gif");
+				console.log(message.type + " - " + message.message);
 				break;
-		/*	case "finish":
-				$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/test.gif");
-				break;*/
+			case "testStart":
+				$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testrun.gif");
+				console.log(message.type + " - " + message.message);
+				break;
+			case "finish":
+				console.log(message.type + " - " + message.message);
+				break;
 			case "testSuccess":
 				$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testok.gif");
+				console.log(message.type + " - " + message.message);
 				break;
 			case "testFail":
 				$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testfail.gif");
+				console.log(message.type + " - " + message.message);
 				break;
 			case "testSkip":
 				$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testskip.gif");
+				console.log(message.type + " - " + message.message);
 				break;
 			default:
-				console.log(message.type + " - " + message.message)
+				console.log(message.type + " - " + message.message);
 				break;
 			}
 		}
