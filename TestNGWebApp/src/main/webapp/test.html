@@ -8,7 +8,7 @@
           <!--href="jstree/themes/default/style.min.css"/>-->
     <link rel="stylesheet" href="./assets/bootstrap/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="./assets/dist/themes/proton/style.css"/>
-
+    <link rel="stylesheet" href="css/mystyle.css"/>
 
     <script>
         window.$q = [];
@@ -23,6 +23,13 @@
     </script>
 </head>
 <body>
+<div id="testInfo" class="" >
+    <div class="demo col-lg-offset-1">
+        <form class="form-horizontal" id="params-form">
+
+        </form>
+    </div>
+</div>
 <div class="container-fluid">
     <div class="row">
      <div class="demo col-lg-3 col-lg-offset-1">
@@ -55,18 +62,23 @@
          <div id="reporter"></div>
         </div>
     </div>
-    <div class="row" id="params">
-    <div class="demo col-lg-offset-1">
-     <form class="form-horizontal" id="params-form">
-    
 
-</form>
- </div>
-    </div>
+
+
     <script>
 
         var node;
+        function toggleTestInfo() {
+            if($("#testInfo").hasClass("open")) {
+                $("#testInfo").animate({bottom: '-=250'},300);
+                $("#testInfo").removeClass("open")
+            } else {
+                $("#testInfo").animate({bottom: '+=250'},300);
+                $("#testInfo").addClass("open")
+            }
+        }
         $(function () {
+
 
             $('#jstree_scenario_builder')
                     .jstree(
@@ -168,7 +180,7 @@
                     	$("#params-form").append('<div class="control-group">'
                     		+ '<div class="controls">' + '<button type="button"' + ' onclick="saveParamsForTest()"' + ' id="' + data.node.id + '"' + ' class="btn btn-primary btn-save-params">Save</button></div></div>');
                     });
-
+            $('#jstree_scenario_builder').niceScroll({cursorcolor:"#888888",cursorwidth: "8px"});
             $('#jstree_test_inventory')
                     .jstree(
                     {
@@ -194,7 +206,11 @@
                                 return more.is_multi;
 
                             },
-                            'data': testInventoryData
+                            'data': {
+                                "text": "root",
+                                "type": "root",
+                                "children": []
+                            }
                         },
                         "types": {
                             "#": {
@@ -241,6 +257,7 @@
 
 
                     });
+            $('#jstree_test_inventory').niceScroll({cursorcolor:"#888888",cursorwidth: "8px"});
             var to = false;
             $('#search_test').keyup(function () {
                 if (to) {

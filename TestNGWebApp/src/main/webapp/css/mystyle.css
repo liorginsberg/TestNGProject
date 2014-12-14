@@ -1,3 +1,44 @@
+body, html {
+    margin: 0;
+    overflow: hidden;
+    height: 100%;
+}
+
+.open {
+}
+
+#testInfo {
+    width: 100%;
+    position: absolute;
+    z-index: 1000;
+    background: #ffffff;
+    height: 250px;
+    bottom: -250px;
+    -webkit-box-shadow: 0px -8px 9px -1px rgba(0,0,0,0.28);
+    -moz-box-shadow: 0px -8px 9px -1px rgba(0,0,0,0.28);
+    box-shadow: 0px -8px 9px -1px rgba(0,0,0,0.28);
+}
+
+@media (min-width: 768px) {
+
+    #jstree_test_inventory,#jstree_scenario_builder {
+        height: 90%;
+        overflow-x: scroll;
+        overflow-y: scroll;
+    }
+}
+
+/*#left {*/
+/*background-color: #FC6E51;*/
+/*text-align: center;*/
+/*height:100%;*/
+/*}*/
+
+#jstree_test_inventory,#jstree_scenario_builder {
+    height: 90%;
+    /*text-align: center;*/
+}
+
 .test_bold {
-	font-weight: 600
+    font-weight: 600
 }
