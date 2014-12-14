@@ -1,17 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite verbose="5" name="my suite">
-  <test name="t1">
-    <classes>
-      <class name="com.testng.tests.MyCodeTests">
-        <methods>
-            
-          <include name="testAdd">
-            <parameter name="num2" value="2"/>
-            <parameter name="num1" value="3"/>          
-          </include> <!-- testAdd -->
-        </methods>
-      </class> <!-- com.testng.tests.MyCodeTests -->
-    </classes>
-  </test> <!-- t1 -->
+<suite verbose="-1" name="my suite">
+	<listeners>
+		<listener class-name="com.testng.tests.listeners.ExecutionListener"/>
+	</listeners>
+	<test name="container1 - start" enabled="true"/>
+		<test name="t1" enabled="true" >
+			<classes>
+				<class name="com.testng.tests.MyCodeTests">
+					<methods>
+	
+						<include name="testAdd">
+							<parameter name="num2" value="2" />
+							<parameter name="num1" value="3" />
+						</include> <!-- testAdd -->
+					</methods>
+				</class> <!-- com.testng.tests.MyCodeTests -->
+			</classes>
+		</test> <!-- t1 -->
+	<test name="container1 - end"/>
+	<test name="t2">
+		<classes>
+			<class name="com.testng.tests.MyCodeTests">
+				<methods>
+
+					<include name="testAdd">
+						<parameter name="num2" value="2" />
+						<parameter name="num1" value="3" />
+					</include> <!-- testAdd -->
+				</methods>
+			</class> <!-- com.testng.tests.MyCodeTests -->
+		</classes>
+	</test> <!-- t1 -->
 </suite> <!-- my suite -->

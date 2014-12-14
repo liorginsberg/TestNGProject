@@ -11,39 +11,26 @@ import org.testng.reporters.XMLStringBuffer;
 
 import com.testng.infra.MyCode;
 
-public class MyCodeTests extends TestListenerAdapter {
+public class MyCodeTests {
 
 	private MyCode myCode;
-	
+
 	private int num1 = 6;
 	private int num2 = 3;
-	
-	
-	
+
 	@BeforeClass
 	public void beforeClass() {
 		System.out.println("before class called ...");
 		myCode = new MyCode();
-		
+
 	}
 
 	@Test(testName = "test add")
-	@Parameters({"num1","num2"})
+	@Parameters({ "num1", "num2" })
 	public void testAdd(int num1, int num2) throws InterruptedException {
-		System.out.println("sleeping 3 sec...");
-		Thread.sleep(3000);
-		System.out.println("done sleeping");
-		Reporter.log("running testAdd("+ num1 +", " + num2 + ")", 0);
-		Reporter.log("running int res = myCode.add(a, b);", 1);
+		Thread.sleep(2000);
 		int res = myCode.add(num1, num2);
-		Reporter.log("after running int res = myCode.add(a, b);", 1);
 		Assert.assertEquals(res, 9);
-		Reporter.log("after running Assert.assertEquals(res, 9);", 0);	
-	}
-
-	@Override
-	public void onStart(ITestContext testContext) {
-		System.out.println("test context.getName() returns: " + testContext.getName());
 	}
 
 	public int getNum1() {
@@ -61,8 +48,5 @@ public class MyCodeTests extends TestListenerAdapter {
 	public void setNum2(int num2) {
 		this.num2 = num2;
 	}
-	
-	
-	
-	
+
 }

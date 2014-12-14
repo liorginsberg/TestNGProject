@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="suiteFromBuffer">
+  <test " name="0ca9e1eb-ca92-7e4f-fd6a-8e6120698e7c" enable="false>
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num1" value="2"/>
+            <parameter name="num2" value="5"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- 0ca9e1eb-ca92-7e4f-fd6a-8e6120698e7c -->
+  <test name="j1_4:start"/>
+  <test enable="false" name="15a95529-a993-1d71-ae19-eeaee2785a04">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num1" value="2"/>
+            <parameter name="num2" value="5"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- 15a95529-a993-1d71-ae19-eeaee2785a04 -->
+  <test name="j1_4:end"/>
+  <test enable="false" name="2cc73c22-435e-a962-6eea-1be4ec510977">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num1" value="0"/>
+            <parameter name="num2" value="9"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- 2cc73c22-435e-a962-6eea-1be4ec510977 -->
+  <test name="d8fbd6be-4c7d-e23d-b970-928453b8e992:start"/>
+  <test enable="false" name="c80f165b-ed43-819e-3105-1a096a14c4d6">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num1" value="2"/>
+            <parameter name="num2" value="7"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- c80f165b-ed43-819e-3105-1a096a14c4d6 -->
+  <test enable="false" name="76a9ee22-c9f7-49fc-24cc-99ed180f719a">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num1" value="2"/>
+            <parameter name="num2" value="5"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- 76a9ee22-c9f7-49fc-24cc-99ed180f719a -->
+  <test name="d8fbd6be-4c7d-e23d-b970-928453b8e992:end"/>
+  <test enable="false" name="6a05b69f-68ce-0af9-5492-8c612f55a959">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num1" value="0"/>
+            <parameter name="num2" value="9"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- 6a05b69f-68ce-0af9-5492-8c612f55a959 -->
+</suite> <!-- suiteFromBuffer -->
+

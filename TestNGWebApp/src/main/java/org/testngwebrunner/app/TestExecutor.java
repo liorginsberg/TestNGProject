@@ -12,6 +12,8 @@ import java.util.Properties;
 import java.util.Scanner;
 
 import org.eclipse.jetty.websocket.api.Session;
+import org.testng.reporters.XMLStringBuffer;
+import org.testng.xml.Parser;
 import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlSuite;
@@ -36,14 +38,33 @@ public class TestExecutor implements LiveReporterListener {
 
 		JsonParser parser = new JsonParser();
 		JsonObject execObb = (JsonObject) parser.parse(execJson);
-		List<XmlSuite> suites = null;
-		try {
-			suites = buildXmlSuite(execObb);
-		} catch (Exception e) {
-			e.printStackTrace();
-			session.close();
-			return;
+
+		// NEW IMPLEMENTATION - WRITE XML YOUR SELF
+		XMLStringBuffer suiteBuffer = new XMLStringBuffer();
+		suiteBuffer.setDocType("suite SYSTEM \"" + Parser.TESTNG_DTD_URL + '\"');
+		JsonObject suiteJson = execObb.getAsJsonArray("children").get(0).getAsJsonObject();
+
+		String suiteName = suiteJson.get("text").getAsString();
+		
+		Properties attr = new Properties();
+		attr.setProperty("name", suiteName);
+		suiteBuffer.push("suite", attr);
+		for (JsonElement testJson : suiteJson.getAsJsonArray("children")) {
+			JsonObject testJsonObj = (JsonObject)testJson;
+			handleTestJson(suiteBuffer, testJsonObj);
 		}
+		suiteBuffer.pop("suite");
+		
+		String xmlToWrite = suiteBuffer.toXML();
+		// END NEW IMPLEMENTATION
+//		List<XmlSuite> suites = null;
+//		try {
+//			suites = buildXmlSuite(execObb);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			session.close();
+//			return;
+//		}
 
 		String classPath = null;
 
@@ -51,9 +72,10 @@ public class TestExecutor implements LiveReporterListener {
 		Properties prop = ProjectLoaderServlet.currentProperties;
 
 		String suiteFolder = prop.getProperty("SUITES_DIR");
-		String generatedFile = suiteFolder + File.separator + suites.get(0).getName() + ".xml";
+//		String generatedFile = suiteFolder + File.separator + suites.get(0).getName() + ".xml";
+		String generatedFile = suiteFolder + File.separator + suiteName + ".xml"; //new imple
 		PrintWriter writer = new PrintWriter(generatedFile, "UTF-8");
-		writer.println(suites.get(0).toXml());
+		writer.println(xmlToWrite);
 		writer.close();
 
 		// get the property value and print it out
@@ -61,6 +83,84 @@ public class TestExecutor implements LiveReporterListener {
 		classPath = System.getProperty("java.class.path") + classPath;
 
 		testCommandLine(classPath, generatedFile);
+
+	}
+
+	private void handleTestJson(XMLStringBuffer suiteBuffer, JsonObject testJson) throws Exception {
+		if (testJson.get("type").getAsString().equals("test_method_node")) {
+			JsonObject li_attr_json = testJson.getAsJsonObject("li_attr");
+			String testName = li_attr_json.get("testName").getAsString();
+			String id = testJson.get("id").getAsString();
+			boolean checked = false;
+			if(testJson.get("state").getAsJsonObject().has("checked")) {
+				checked = testJson.get("state").getAsJsonObject().get("checked").getAsBoolean();
+			}
+			
+			Properties attr = new Properties();
+			attr.setProperty("enabled", String.valueOf(checked));
+			attr.setProperty("name", id);
+			suiteBuffer.push("test", attr);
+			
+			suiteBuffer.push("classes");
+			String className = li_attr_json.get("className").getAsString();
+			attr = new Properties();
+			attr.setProperty("name", className);
+			suiteBuffer.push("class", attr);
+			suiteBuffer.push("methods");
+			
+			String methodName = li_attr_json.get("methodName").getAsString();
+			attr = new Properties();
+			attr.setProperty("name", methodName);
+			suiteBuffer.push("include", attr);
+			
+			JsonArray paramArray = li_attr_json.getAsJsonArray("params");
+			if (paramArray != null) {
+				for (JsonElement jsonElement : paramArray) {
+
+					String paramString = jsonElement.getAsString();
+					String[] paramPair = paramString.split(":");
+					String param = paramPair[0];
+					String value = null;
+					try {
+						value = paramPair[1];
+					} catch (Exception e) {
+						liveReporter.report("{\"type\":\"missingParamValue\",\"message\":\"param missing\"}");
+					}
+					attr = new Properties();
+					attr.setProperty("name", param);
+					attr.setProperty("value", value);
+					suiteBuffer.addEmptyElement("parameter", attr);
+				}
+			}
+			
+			suiteBuffer.pop("include");
+			suiteBuffer.pop("methods");
+			suiteBuffer.pop("class");
+			suiteBuffer.pop("classes");
+			suiteBuffer.pop("test");
+			
+		} else if (testJson.get("type").getAsString().equals("test_node")) {
+			Properties attr = new Properties();
+			boolean checked = false;
+			if(testJson.get("state").getAsJsonObject().has("checked")) {
+				checked = testJson.get("state").getAsJsonObject().get("checked").getAsBoolean();
+			}
+			attr.setProperty("enable", String.valueOf(checked));
+			attr.setProperty("name", testJson.get("id").getAsString() + ":startContainer");
+			suiteBuffer.addEmptyElement("test", attr);
+			
+			JsonArray childrenTests = testJson.getAsJsonArray("children");
+			if(childrenTests != null) {
+				for(JsonElement testElement: childrenTests) {
+					JsonObject testJsonChild = (JsonObject)testElement;
+					handleTestJson(suiteBuffer, testJsonChild);
+				}
+			}	
+			attr.setProperty("name", testJson.get("id").getAsString() + ":endContainer");
+			suiteBuffer.addEmptyElement("test", attr);
+		} else {
+			throw new Exception("Should not get here, type: " + testJson.get("type").getAsString());
+		}
 
 	}
 
@@ -137,7 +237,8 @@ public class TestExecutor implements LiveReporterListener {
 		xmlTest.setPreserveOrder("true");
 		JsonObject li_attr_json = testJson.getAsJsonObject("li_attr");
 		// TODO HAndle
-		//boolean checked = testJson.getAsJsonObject("state").get("checked").getAsBoolean();
+		// boolean checked =
+		// testJson.getAsJsonObject("state").get("checked").getAsBoolean();
 		String testName = li_attr_json.get("testName").getAsString();
 		String id = testJson.get("id").getAsString();
 		// if (!testName.isEmpty()) {
@@ -187,7 +288,7 @@ public class TestExecutor implements LiveReporterListener {
 		Date now = new Date();
 		try {
 			obj = (JsonObject) new JsonParser().parse(report);
-			
+
 		} catch (Exception e) {
 			obj = new JsonObject();
 			obj.addProperty("type", "not_set");

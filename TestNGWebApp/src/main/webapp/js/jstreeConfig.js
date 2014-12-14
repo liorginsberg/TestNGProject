@@ -76,13 +76,34 @@ function customMenu(node) {
 }
 
 
-var ws1 = undefined; 
 
+ function recursiveIteration(object) {
+    for (var property in object) {
+        if (object.hasOwnProperty(property)) {
+            if (typeof object[property] == "object"){
+                recursiveIteration(object[property]);
+            }else{
+                if(property == "type") {
+                	if(object["type"] == "test_method_node" || object["type"] == "test_node") {
+                		$("#jstree_scenario_builder").jstree(true).set_icon(object["id"],"img/test.gif");
+                	}
+                	
+                }
+            }
+        }
+    }
+}
+
+var ws1 = undefined; 
 function execute() {
 	
 	if (typeof ws1 === 'undefined') {
 		ws1 = new WebSocket("ws://localhost:8080/WebSocketTestServlet");
 		ws1.onopen = function(event) {
+			 console.log("clear last run");
+			 
+			recursiveIteration($("#jstree_scenario_builder").jstree(true).get_json('#', { 'flat' : false })[0]);
+			 
 			 console.log("connected: send execution...");
 		     ws1.send(JSON.stringify($("#jstree_scenario_builder").jstree(true).get_json('#', { 'flat' : false })[0])); 
 		}
@@ -97,6 +118,17 @@ function execute() {
 				ws1.close();
 				ws1 = undefined; 
 				finalReport += "Execution Finish";
+				break;
+			case "startContainer":
+				
+				$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testrun.gif");
+				
+				finalReport += message.type + " - " + message.message;
+				break;
+			case "endContainer":
+				// need to check all nodes under the container with id ("message.message") and based on result of children set the icon
+				//$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testrun.gif");
+				finalReport += message.type + " - " + message.message;
 				break;
 			case "start":
 				$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testrun.gif");
@@ -154,12 +186,44 @@ function clearReport() {
 }
 
 
+var handleParents = [];
+var handleChildren = [];
+var handleChildren = false;
+
+
 $(function() {
 	
 
 	$("html").niceScroll();
-	$("#jstree_test_inventory").niceScroll();
-	$("#jstree_scenario_builder").niceScroll();
+	//$("#jstree_test_inventory").niceScroll();
+	//$("#jstree_scenario_builder").niceScroll();
+	$("#jstree_scenario_builder").on('check_node.jstree', function(e, data) {
+	    /*var nodeId = data.node.id;
+	    var parentNodeId = data.node.parent;
+	   
+	   	if(triggerCheck = "") {
+	   		triggerCheck = nodeId;
+	   	}
+	   
+	    $.each(data.node.parents, function (index, parentNodeId) {
+	    	if($.inArray(parentNodeId, handleParents)) {
+	    		console.log("skip parent check");
+	    	} else {
+	    		handleParents.push(parentNodeId);
+	    		$("#jstree_scenario_builder").jstree(true).check_node(parentNodeId);
+	    	}
+	    });
+	    if($.inArray(parentNodeId, handleParents)) {
+	    	console.log("skip children check");
+	    } else {
+		    $.each(data.node.children_d, function (index, childID) {
+		    	$("#jstree_scenario_builder").jstree(true).check_node(childID);
+		    });
+	    }
+	     console.log("round finished")
+	    handleParents = [];
+	    return false;*/
+	});
 	
     fr = new FileReader();
     fr.onload = receivedText;
@@ -293,7 +357,11 @@ function createTestContainer() {
         "type": "test_node"
     });
     if (sel) {
-        ref.edit(sel);
+        var newId = guid();
+    	var container_node = ref.get_node(sel);
+    	container_node.a_attr.id = newId + "_anchor";
+    	ref.set_id(sel,newId);
+        ref.edit(newId);
     }
 }
 
@@ -309,6 +377,10 @@ function createSuite() {
         "type": "suite_node"
     });
     if (sel) {
-        ref.edit(sel);
+    	var newId = guid();
+    	var suite_node = ref.get_node(sel);
+    	suite_node.a_attr.id = newId + "_anchor";
+    	ref.set_id(sel,newId);
+        ref.edit(newId);
     }
 }
