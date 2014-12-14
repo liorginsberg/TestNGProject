@@ -94,6 +94,18 @@ function customMenu(node) {
     }
 }
 
+function hasFailures(node) {
+	$.each(node.children_d,function(index, value) {
+     	childNode = $("#jstree_scenario_builder").jstree(true).get_node(value);
+		if(childNode.icon == "img/testfail.gif") {		
+			$("#jstree_scenario_builder").jstree(true).set_icon(node.id,"img/testfail.gif");
+			return;
+		}
+    });
+    $("#jstree_scenario_builder").jstree(true).set_icon(node.id,"img/testok.gif");
+    return;
+}
+
 var ws1 = undefined; 
 function execute() {
 	
@@ -126,8 +138,11 @@ function execute() {
 				finalReport += message.type + " - " + message.message;
 				break;
 			case "endContainer":
-				// need to check all nodes under the container with id ("message.message") and based on result of children set the icon
-				//$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testrun.gif");
+				if(hasFailures($("#jstree_scenario_builder").jstree(true).get_node(message.message))){
+					$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testfail.gif");
+				} else {
+					$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testok.gif");
+				}
 				finalReport += message.type + " - " + message.message;
 				break;
 			case "start":
