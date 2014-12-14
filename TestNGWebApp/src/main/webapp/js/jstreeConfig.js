@@ -95,15 +95,15 @@ function customMenu(node) {
 }
 
 function hasFailures(node) {
+	var hasFailure = false;
 	$.each(node.children_d,function(index, value) {
      	childNode = $("#jstree_scenario_builder").jstree(true).get_node(value);
 		if(childNode.icon == "img/testfail.gif") {		
-			$("#jstree_scenario_builder").jstree(true).set_icon(node.id,"img/testfail.gif");
-			return;
+			hasFailure = true;
+			return false;
 		}
     });
-    $("#jstree_scenario_builder").jstree(true).set_icon(node.id,"img/testok.gif");
-    return;
+    return hasFailure;
 }
 
 var ws1 = undefined; 
@@ -147,6 +147,7 @@ function execute() {
 				break;
 			case "start":
 				$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testrun.gif");
+				$("#" + message.message + "_anchor").addClass("test_bold");
 				finalReport += message.type + " - " + message.message;
 				break;
 			case "testStart":
@@ -159,14 +160,19 @@ function execute() {
 			case "testSuccess":
 				$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testok.gif");
 				finalReport += message.type + " - " + message.message;
+				$("#" + message.message + "_anchor").removeClass("test_bold");
 				break;
 			case "testFail":
 				$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testfail.gif");
 				finalReport += message.type + " - " + message.message;
+				$("#" + message.message + "_anchor").removeClass("test_bold");
+
 				break;
 			case "testSkip":
 				$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testskip.gif");
 				finalReport += message.type + " - " + message.message;
+				$("#" + message.message + "_anchor").removeClass("test_bold");
+
 				break;
 			default:
 				finalReport += message.type + " - " + message.message;
@@ -209,7 +215,7 @@ var handleChildren = false;
 $(function() {
 	
 
-	$("html").niceScroll();
+	//$("html").niceScroll();
 	//$("#jstree_test_inventory").niceScroll();
 	//$("#jstree_scenario_builder").niceScroll();
 	$("#jstree_scenario_builder").on('check_node.jstree', function(e, data) {

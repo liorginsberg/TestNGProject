@@ -6,6 +6,7 @@
 </head>
 <body>
 <script type="text/javascript">
+var selectedFile;
 $(function(){
     fr = new FileReader();
     fr.onload = receivedText;
@@ -15,10 +16,11 @@ $(function(){
         alert('The File APIs are not fully supported in this browser.');
     }
     $("input").change(function(){
+    	
         file = this.files[0];
+    	selectedFile = file;
         console.log(file);
-        var projectLoc = fr.readAsText(file);
-        console.log("loc returned: " + projectLoc);
+        fr.readAsText(file);
     });
 });
 
@@ -31,14 +33,15 @@ function receivedText() {
         if(property[0] == "BASE_DIR") {
             console.log("project location on file system: " + property[1]);
             console.log("Now send this to the server for further processing");
+        	console.log( $("input").val());
+        	var propFileLoc = property[1].replace(/(\r\n|\n|\r)/gm,"");
+        	propFileLoc = propFileLoc + "\\"+ $('input').val().split(/(\\|\/)/g).pop()
             $.ajax({
-                url: "jsonservlet",
+                url: "ProjectLoaderServlet",
                 type: 'POST',
-                dataType: 'json',
-                data: {projLoc : property[1]},
-                contentType: 'application/json',
-                mimeType: 'application/json',
-
+                dataType: 'text',
+                data: "projLoc=" + propFileLoc,
+             
                 success: function (data) {
                     console.log(data)
                 },

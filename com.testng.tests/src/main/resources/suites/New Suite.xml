@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="New Suite">
+  <test name="e6e6794b-02cc-c51e-0325-aafb66fbd1c7" enabled="true">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num1" value="3"/>
+            <parameter name="num2" value="6"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- e6e6794b-02cc-c51e-0325-aafb66fbd1c7 -->
+</suite> <!-- New Suite -->
+

@@ -29,6 +29,10 @@ function customMenu(node) {
             }
         },
 
+        addSuite: {
+            label: "Add Suite",
+            action: createSuite
+        },
         addTestContainer: {
             label: "Add Test Container",
             action: createTestContainer
@@ -63,10 +67,185 @@ function customMenu(node) {
         console.log("The item will not have addTestContainer");
         delete items.addTestContainer;
     }
+    if (node.type != "root") {
+        console.log("The item will not have addSuite");
+        delete items.addSuite;
+    }
 
     return items;
 }
-$(function () {
+
+
+
+ function recursiveIteration(object) {
+    for (var property in object) {
+        if (object.hasOwnProperty(property)) {
+            if (typeof object[property] == "object"){
+                recursiveIteration(object[property]);
+            }else{
+                if(property == "type") {
+                	if(object["type"] == "test_method_node" || object["type"] == "test_node") {
+                		$("#jstree_scenario_builder").jstree(true).set_icon(object["id"],"img/test.gif");
+                	}
+                	
+                }
+            }
+        }
+    }
+}
+
+function hasFailures(node) {
+	var hasFailure = false;
+	$.each(node.children_d,function(index, value) {
+     	childNode = $("#jstree_scenario_builder").jstree(true).get_node(value);
+		if(childNode.icon == "img/testfail.gif") {		
+			hasFailure = true;
+			return false;
+		}
+    });
+    return hasFailure;
+}
+
+var ws1 = undefined; 
+function execute() {
+	
+	if (typeof ws1 === 'undefined') {
+		ws1 = new WebSocket("ws://localhost:8080/WebSocketTestServlet");
+		ws1.onopen = function(event) {
+			 console.log("clear last run");
+			 
+			recursiveIteration($("#jstree_scenario_builder").jstree(true).get_json('#', { 'flat' : false })[0]);
+			 
+			 console.log("connected: send execution...");
+		     ws1.send(JSON.stringify($("#jstree_scenario_builder").jstree(true).get_json('#', { 'flat' : false })[0])); 
+		}
+		ws1.onmessage = function(event) {
+			var message = $.parseJSON(event.data);
+			var finalReport = message.date + ": ";
+			switch (message.type) {
+			case "startExecution":
+				finalReport += "Execution Start";
+				break;
+			case "finishExecution":
+				ws1.close();
+				ws1 = undefined; 
+				finalReport += "Execution Finish";
+				break;
+			case "startContainer":
+				
+				$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testrun.gif");
+				
+				finalReport += message.type + " - " + message.message;
+				break;
+			case "endContainer":
+				if(hasFailures($("#jstree_scenario_builder").jstree(true).get_node(message.message))){
+					$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testfail.gif");
+				} else {
+					$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testok.gif");
+				}
+				finalReport += message.type + " - " + message.message;
+				break;
+			case "start":
+				$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testrun.gif");
+				$("#" + message.message + "_anchor").addClass("test_bold");
+				finalReport += message.type + " - " + message.message;
+				break;
+			case "testStart":
+				$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testrun.gif");
+				finalReport += message.type + " - " + message.message;
+				break;
+			case "finish":
+				finalReport += message.type + " - " + message.message;
+				break;
+			case "testSuccess":
+				$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testok.gif");
+				finalReport += message.type + " - " + message.message;
+				$("#" + message.message + "_anchor").removeClass("test_bold");
+				break;
+			case "testFail":
+				$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testfail.gif");
+				finalReport += message.type + " - " + message.message;
+				$("#" + message.message + "_anchor").removeClass("test_bold");
+
+				break;
+			case "testSkip":
+				$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testskip.gif");
+				finalReport += message.type + " - " + message.message;
+				$("#" + message.message + "_anchor").removeClass("test_bold");
+
+				break;
+			default:
+				finalReport += message.type + " - " + message.message;
+				break;
+			}
+			console.log(finalReport);
+			$("#reporter").append("<p>" + finalReport + "</p>");
+		}
+		ws1.onerror = function(event) {
+			console.log("ws1.onerror");
+			console.log(event);
+		}
+		ws1.onclose = function(event) {
+			console.log("ws1.onclose");
+			console.log(event);
+			ws1 = undefined; 
+		}
+	}
+}
+
+
+function expandAllTree(jstreeId) {
+	var jstreeId = "#" + jstreeId; 
+	$(jstreeId).jstree(true).open_all();
+}
+function collapseAllTree(jstreeId) {
+	var jstreeId = "#" + jstreeId; 
+	$(jstreeId).jstree(true).close_all();
+}
+function clearReport() {
+	$("#reporter").empty();
+}
+
+
+var handleParents = [];
+var handleChildren = [];
+var handleChildren = false;
+
+
+$(function() {
+	
+
+	//$("html").niceScroll();
+	//$("#jstree_test_inventory").niceScroll();
+	//$("#jstree_scenario_builder").niceScroll();
+	$("#jstree_scenario_builder").on('check_node.jstree', function(e, data) {
+	    /*var nodeId = data.node.id;
+	    var parentNodeId = data.node.parent;
+	   
+	   	if(triggerCheck = "") {
+	   		triggerCheck = nodeId;
+	   	}
+	   
+	    $.each(data.node.parents, function (index, parentNodeId) {
+	    	if($.inArray(parentNodeId, handleParents)) {
+	    		console.log("skip parent check");
+	    	} else {
+	    		handleParents.push(parentNodeId);
+	    		$("#jstree_scenario_builder").jstree(true).check_node(parentNodeId);
+	    	}
+	    });
+	    if($.inArray(parentNodeId, handleParents)) {
+	    	console.log("skip children check");
+	    } else {
+		    $.each(data.node.children_d, function (index, childID) {
+		    	$("#jstree_scenario_builder").jstree(true).check_node(childID);
+		    });
+	    }
+	     console.log("round finished")
+	    handleParents = [];
+	    return false;*/
+	});
+	
     fr = new FileReader();
     fr.onload = receivedText;
     if (window.File && window.FileReader && window.FileList && window.Blob) {
@@ -89,19 +268,19 @@ $(function () {
             var ch_uuid = guid();
             console.log("child " + index + ":");
             var child_node = $('#jstree_scenario_builder').jstree(true).get_node(childID);
-//            child_node.id = ch_uuid;
-            child_node.li_attr.id = ch_uuid;
+//            child_node.li_attr.id = ch_uuid;
             child_node.a_attr.id = ch_uuid + "_anchor";
+            $('#jstree_scenario_builder').jstree(true).set_id(childID, ch_uuid);
         });
 
         var uuid = guid();
-//        data.node.id = uuid;
-        data.node.li_attr.id = uuid;
+//        data.node.li_attr.id = uuid;
         data.node.a_attr.id = uuid + "_anchor";
+        $('#jstree_scenario_builder').jstree(true).set_id(data.node.id, uuid);
     });
 });
 
-//not in use maybe later we will have problems
+// not in use maybe later we will have problems
 function setUUIDNested(node, new_parent_id) {
 
     node.parent = new_parent_id;
@@ -171,1991 +350,23 @@ function refreshTestProject() {
 
 
 testInventoryData = {
-    "text": "com.testng.tests",
+    "text": "default",
     "type": "root",
-    "children": [
-        {
-            "text": "com",
-            "type": "package_node",
-            "children": [
-                {
-                    "text": "testng",
-                    "type": "package_node",
-                    "children": [
-                        {
-                            "text": "tests",
-                            "type": "package_node",
-                            "children": [
-                                {
-                                    "text": "mock",
-                                    "type": "package_node",
-                                    "children": [
-                                        {
-                                            "text": "inner",
-                                            "type": "package_node",
-                                            "children": [
-                                                {
-                                                    "text": "copy",
-                                                    "type": "package_node",
-                                                    "children": [
-                                                        {
-                                                            "text": "InnerMockTests",
-                                                            "type": "class_node",
-                                                            "children": [
-                                                                {
-                                                                    "type": "test_method_node",
-                                                                    "text": "test3 - InnerMoclTestTest1",
-                                                                    "li_attr": {
-                                                                        "className": "com.testng.tests.mock.inner.copy.InnerMockTests",
-                                                                        "methodName": "test3",
-                                                                        "testName": "InnerMoclTestTest1"
-                                                                    }
-                                                                },
-                                                                {
-                                                                    "type": "test_method_node",
-                                                                    "text": "test2 - InnerMoclTestTest1",
-                                                                    "li_attr": {
-                                                                        "className": "com.testng.tests.mock.inner.copy.InnerMockTests",
-                                                                        "methodName": "test2",
-                                                                        "testName": "InnerMoclTestTest1"
-                                                                    }
-                                                                },
-                                                                {
-                                                                    "type": "test_method_node",
-                                                                    "text": "testNewName - InnerMoclTestTestNewName",
-                                                                    "li_attr": {
-                                                                        "className": "com.testng.tests.mock.inner.copy.InnerMockTests",
-                                                                        "methodName": "testNewName",
-                                                                        "testName": "InnerMoclTestTestNewName"
-                                                                    }
-                                                                }
-                                                            ]
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "text": "InnerMockTests",
-                                                    "type": "class_node",
-                                                    "children": [
-                                                        {
-                                                            "type": "test_method_node",
-                                                            "text": "test3 - InnerMoclTestTest1",
-                                                            "li_attr": {
-                                                                "className": "com.testng.tests.mock.inner.InnerMockTests",
-                                                                "methodName": "test3",
-                                                                "testName": "InnerMoclTestTest1"
-                                                            }
-                                                        },
-                                                        {
-                                                            "type": "test_method_node",
-                                                            "text": "test2 - InnerMoclTestTest1",
-                                                            "li_attr": {
-                                                                "className": "com.testng.tests.mock.inner.InnerMockTests",
-                                                                "methodName": "test2",
-                                                                "testName": "InnerMoclTestTest1"
-                                                            }
-                                                        },
-                                                        {
-                                                            "type": "test_method_node",
-                                                            "text": "testNewName - InnerMoclTestTestNewName",
-                                                            "li_attr": {
-                                                                "className": "com.testng.tests.mock.inner.InnerMockTests",
-                                                                "methodName": "testNewName",
-                                                                "testName": "InnerMoclTestTestNewName"
-                                                            }
-                                                        }
-                                                    ]
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "text": "CopyOfCopyOfMockTests",
-                                            "type": "class_node",
-                                            "children": [
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test12",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.CopyOfCopyOfMockTests",
-                                                        "methodName": "test12",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test13",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.CopyOfCopyOfMockTests",
-                                                        "methodName": "test13",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test14",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.CopyOfCopyOfMockTests",
-                                                        "methodName": "test14",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test11",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.CopyOfCopyOfMockTests",
-                                                        "methodName": "test11",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test10",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.CopyOfCopyOfMockTests",
-                                                        "methodName": "test10",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test9",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.CopyOfCopyOfMockTests",
-                                                        "methodName": "test9",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test8",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.CopyOfCopyOfMockTests",
-                                                        "methodName": "test8",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test7",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.CopyOfCopyOfMockTests",
-                                                        "methodName": "test7",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test6",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.CopyOfCopyOfMockTests",
-                                                        "methodName": "test6",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test4",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.CopyOfCopyOfMockTests",
-                                                        "methodName": "test4",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test5",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.CopyOfCopyOfMockTests",
-                                                        "methodName": "test5",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test3",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.CopyOfCopyOfMockTests",
-                                                        "methodName": "test3",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test2",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.CopyOfCopyOfMockTests",
-                                                        "methodName": "test2",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test1",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.CopyOfCopyOfMockTests",
-                                                        "methodName": "test1",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test51",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.CopyOfCopyOfMockTests",
-                                                        "methodName": "test51",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test16",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.CopyOfCopyOfMockTests",
-                                                        "methodName": "test16",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test17",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.CopyOfCopyOfMockTests",
-                                                        "methodName": "test17",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test18",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.CopyOfCopyOfMockTests",
-                                                        "methodName": "test18",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test19",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.CopyOfCopyOfMockTests",
-                                                        "methodName": "test19",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test20",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.CopyOfCopyOfMockTests",
-                                                        "methodName": "test20",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test21",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.CopyOfCopyOfMockTests",
-                                                        "methodName": "test21",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test23",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.CopyOfCopyOfMockTests",
-                                                        "methodName": "test23",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test24",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.CopyOfCopyOfMockTests",
-                                                        "methodName": "test24",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test25",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.CopyOfCopyOfMockTests",
-                                                        "methodName": "test25",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test126",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.CopyOfCopyOfMockTests",
-                                                        "methodName": "test126",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "text": "CopyOfMockTests",
-                                            "type": "class_node",
-                                            "children": [
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test3",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.CopyOfMockTests",
-                                                        "methodName": "test3",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test2",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.CopyOfMockTests",
-                                                        "methodName": "test2",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test1",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.CopyOfMockTests",
-                                                        "methodName": "test1",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "text": "MockTests",
-                                            "type": "class_node",
-                                            "children": [
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test3",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.MockTests",
-                                                        "methodName": "test3",
-                                                        "testName": ""
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test2",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.MockTests",
-                                                        "methodName": "test2",
-                                                        "testName": ""
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test1",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.MockTests",
-                                                        "methodName": "test1",
-                                                        "testName": ""
-                                                    }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "text": "MockTests2",
-                                            "type": "class_node",
-                                            "children": [
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test3",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.MockTests2",
-                                                        "methodName": "test3",
-                                                        "testName": ""
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test2",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.MockTests2",
-                                                        "methodName": "test2",
-                                                        "testName": ""
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test1",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.MockTests2",
-                                                        "methodName": "test1",
-                                                        "testName": ""
-                                                    }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "text": "MockTests3",
-                                            "type": "class_node",
-                                            "children": [
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test1",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.MockTests3",
-                                                        "methodName": "test1",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "text": "MockTests4",
-                                            "type": "class_node",
-                                            "children": [
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test1",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.MockTests4",
-                                                        "methodName": "test1",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "text": "MockTests5",
-                                            "type": "class_node",
-                                            "children": [
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test1",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mock.MockTests5",
-                                                        "methodName": "test1",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                {
-                                    "text": "mockitagain",
-                                    "type": "package_node",
-                                    "children": [
-                                        {
-                                            "text": "CopyOfCopyOfMockTests",
-                                            "type": "class_node",
-                                            "children": [
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test12",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfCopyOfMockTests",
-                                                        "methodName": "test12",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test13",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfCopyOfMockTests",
-                                                        "methodName": "test13",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test14",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfCopyOfMockTests",
-                                                        "methodName": "test14",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test11",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfCopyOfMockTests",
-                                                        "methodName": "test11",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test10",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfCopyOfMockTests",
-                                                        "methodName": "test10",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test9",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfCopyOfMockTests",
-                                                        "methodName": "test9",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test8",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfCopyOfMockTests",
-                                                        "methodName": "test8",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test7",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfCopyOfMockTests",
-                                                        "methodName": "test7",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test6",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfCopyOfMockTests",
-                                                        "methodName": "test6",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test4",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfCopyOfMockTests",
-                                                        "methodName": "test4",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test5",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfCopyOfMockTests",
-                                                        "methodName": "test5",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test3",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfCopyOfMockTests",
-                                                        "methodName": "test3",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test2",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfCopyOfMockTests",
-                                                        "methodName": "test2",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test1",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfCopyOfMockTests",
-                                                        "methodName": "test1",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test51",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfCopyOfMockTests",
-                                                        "methodName": "test51",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test16",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfCopyOfMockTests",
-                                                        "methodName": "test16",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test17",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfCopyOfMockTests",
-                                                        "methodName": "test17",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test18",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfCopyOfMockTests",
-                                                        "methodName": "test18",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test19",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfCopyOfMockTests",
-                                                        "methodName": "test19",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test20",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfCopyOfMockTests",
-                                                        "methodName": "test20",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test21",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfCopyOfMockTests",
-                                                        "methodName": "test21",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test23",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfCopyOfMockTests",
-                                                        "methodName": "test23",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test24",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfCopyOfMockTests",
-                                                        "methodName": "test24",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test25",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfCopyOfMockTests",
-                                                        "methodName": "test25",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test126",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfCopyOfMockTests",
-                                                        "methodName": "test126",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "text": "CopyOfMockTests",
-                                            "type": "class_node",
-                                            "children": [
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test12",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfMockTests",
-                                                        "methodName": "test12",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test13",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfMockTests",
-                                                        "methodName": "test13",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test14",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfMockTests",
-                                                        "methodName": "test14",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test11",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfMockTests",
-                                                        "methodName": "test11",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test10",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfMockTests",
-                                                        "methodName": "test10",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test9",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfMockTests",
-                                                        "methodName": "test9",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test8",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfMockTests",
-                                                        "methodName": "test8",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test7",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfMockTests",
-                                                        "methodName": "test7",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test6",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfMockTests",
-                                                        "methodName": "test6",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test4",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfMockTests",
-                                                        "methodName": "test4",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test5",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfMockTests",
-                                                        "methodName": "test5",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test3",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfMockTests",
-                                                        "methodName": "test3",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test2",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfMockTests",
-                                                        "methodName": "test2",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test1",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfMockTests",
-                                                        "methodName": "test1",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test51",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfMockTests",
-                                                        "methodName": "test51",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test16",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfMockTests",
-                                                        "methodName": "test16",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test17",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfMockTests",
-                                                        "methodName": "test17",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test18",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfMockTests",
-                                                        "methodName": "test18",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test19",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfMockTests",
-                                                        "methodName": "test19",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test20",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfMockTests",
-                                                        "methodName": "test20",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test21",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfMockTests",
-                                                        "methodName": "test21",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test23",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfMockTests",
-                                                        "methodName": "test23",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test24",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfMockTests",
-                                                        "methodName": "test24",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test25",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfMockTests",
-                                                        "methodName": "test25",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test126",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.CopyOfMockTests",
-                                                        "methodName": "test126",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "text": "MockTests",
-                                            "type": "class_node",
-                                            "children": [
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test3",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.MockTests",
-                                                        "methodName": "test3",
-                                                        "testName": ""
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test2",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.MockTests",
-                                                        "methodName": "test2",
-                                                        "testName": ""
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test1",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.MockTests",
-                                                        "methodName": "test1",
-                                                        "testName": ""
-                                                    }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "text": "MockTests2",
-                                            "type": "class_node",
-                                            "children": [
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test3",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.MockTests2",
-                                                        "methodName": "test3",
-                                                        "testName": ""
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test2",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.MockTests2",
-                                                        "methodName": "test2",
-                                                        "testName": ""
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test1",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.MockTests2",
-                                                        "methodName": "test1",
-                                                        "testName": ""
-                                                    }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "text": "MockTests3",
-                                            "type": "class_node",
-                                            "children": [
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test1",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.MockTests3",
-                                                        "methodName": "test1",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "text": "MockTests4",
-                                            "type": "class_node",
-                                            "children": [
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test1",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.MockTests4",
-                                                        "methodName": "test1",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "text": "MockTests5",
-                                            "type": "class_node",
-                                            "children": [
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test1",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockitagain.MockTests5",
-                                                        "methodName": "test1",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                {
-                                    "text": "mockthird",
-                                    "type": "package_node",
-                                    "children": [
-                                        {
-                                            "text": "CopyOfCopyOfMockTests",
-                                            "type": "class_node",
-                                            "children": [
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test12",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfCopyOfMockTests",
-                                                        "methodName": "test12",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test13",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfCopyOfMockTests",
-                                                        "methodName": "test13",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test14",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfCopyOfMockTests",
-                                                        "methodName": "test14",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test11",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfCopyOfMockTests",
-                                                        "methodName": "test11",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test10",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfCopyOfMockTests",
-                                                        "methodName": "test10",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test9",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfCopyOfMockTests",
-                                                        "methodName": "test9",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test8",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfCopyOfMockTests",
-                                                        "methodName": "test8",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test7",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfCopyOfMockTests",
-                                                        "methodName": "test7",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test6",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfCopyOfMockTests",
-                                                        "methodName": "test6",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test4",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfCopyOfMockTests",
-                                                        "methodName": "test4",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test5",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfCopyOfMockTests",
-                                                        "methodName": "test5",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test3",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfCopyOfMockTests",
-                                                        "methodName": "test3",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test2",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfCopyOfMockTests",
-                                                        "methodName": "test2",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test1",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfCopyOfMockTests",
-                                                        "methodName": "test1",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test51",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfCopyOfMockTests",
-                                                        "methodName": "test51",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test16",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfCopyOfMockTests",
-                                                        "methodName": "test16",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test17",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfCopyOfMockTests",
-                                                        "methodName": "test17",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test18",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfCopyOfMockTests",
-                                                        "methodName": "test18",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test19",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfCopyOfMockTests",
-                                                        "methodName": "test19",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test20",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfCopyOfMockTests",
-                                                        "methodName": "test20",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test21",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfCopyOfMockTests",
-                                                        "methodName": "test21",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test23",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfCopyOfMockTests",
-                                                        "methodName": "test23",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test24",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfCopyOfMockTests",
-                                                        "methodName": "test24",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test25",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfCopyOfMockTests",
-                                                        "methodName": "test25",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test126",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfCopyOfMockTests",
-                                                        "methodName": "test126",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "text": "CopyOfMockTests",
-                                            "type": "class_node",
-                                            "children": [
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test12",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfMockTests",
-                                                        "methodName": "test12",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test13",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfMockTests",
-                                                        "methodName": "test13",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test14",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfMockTests",
-                                                        "methodName": "test14",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test11",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfMockTests",
-                                                        "methodName": "test11",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test10",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfMockTests",
-                                                        "methodName": "test10",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test9",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfMockTests",
-                                                        "methodName": "test9",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test8",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfMockTests",
-                                                        "methodName": "test8",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test7",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfMockTests",
-                                                        "methodName": "test7",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test6",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfMockTests",
-                                                        "methodName": "test6",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test4",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfMockTests",
-                                                        "methodName": "test4",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test5",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfMockTests",
-                                                        "methodName": "test5",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test3",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfMockTests",
-                                                        "methodName": "test3",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test2",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfMockTests",
-                                                        "methodName": "test2",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test1",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfMockTests",
-                                                        "methodName": "test1",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test51",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfMockTests",
-                                                        "methodName": "test51",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test16",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfMockTests",
-                                                        "methodName": "test16",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test17",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfMockTests",
-                                                        "methodName": "test17",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test18",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfMockTests",
-                                                        "methodName": "test18",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test19",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfMockTests",
-                                                        "methodName": "test19",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test20",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfMockTests",
-                                                        "methodName": "test20",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test21",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfMockTests",
-                                                        "methodName": "test21",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test23",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfMockTests",
-                                                        "methodName": "test23",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test24",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfMockTests",
-                                                        "methodName": "test24",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test25",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfMockTests",
-                                                        "methodName": "test25",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test126",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.CopyOfMockTests",
-                                                        "methodName": "test126",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "text": "MockTests",
-                                            "type": "class_node",
-                                            "children": [
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test3",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.MockTests",
-                                                        "methodName": "test3",
-                                                        "testName": ""
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test2",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.MockTests",
-                                                        "methodName": "test2",
-                                                        "testName": ""
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test1",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.MockTests",
-                                                        "methodName": "test1",
-                                                        "testName": ""
-                                                    }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "text": "MockTests2",
-                                            "type": "class_node",
-                                            "children": [
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test3",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.MockTests2",
-                                                        "methodName": "test3",
-                                                        "testName": ""
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test2",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.MockTests2",
-                                                        "methodName": "test2",
-                                                        "testName": ""
-                                                    }
-                                                },
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test1",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.MockTests2",
-                                                        "methodName": "test1",
-                                                        "testName": ""
-                                                    }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "text": "MockTests3",
-                                            "type": "class_node",
-                                            "children": [
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test1",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.MockTests3",
-                                                        "methodName": "test1",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "text": "MockTests4",
-                                            "type": "class_node",
-                                            "children": [
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test1",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.MockTests4",
-                                                        "methodName": "test1",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "text": "MockTests5",
-                                            "type": "class_node",
-                                            "children": [
-                                                {
-                                                    "type": "test_method_node",
-                                                    "text": "test1",
-                                                    "li_attr": {
-                                                        "className": "com.testng.tests.mockthird.MockTests5",
-                                                        "methodName": "test1",
-                                                        "testName": "",
-                                                        "params": ["first",
-                                                            "second"]
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                {
-                                    "text": "Test1",
-                                    "type": "class_node",
-                                    "children": [
-                                        {
-                                            "type": "test_method_node",
-                                            "text": "testMethod3",
-                                            "li_attr": {
-                                                "className": "com.testng.tests.Test1",
-                                                "methodName": "testMethod3",
-                                                "testName": ""
-                                            }
-                                        },
-                                        {
-                                            "type": "test_method_node",
-                                            "text": "testMethod2",
-                                            "li_attr": {
-                                                "className": "com.testng.tests.Test1",
-                                                "methodName": "testMethod2",
-                                                "testName": ""
-                                            }
-                                        },
-                                        {
-                                            "type": "test_method_node",
-                                            "text": "testMethod1",
-                                            "li_attr": {
-                                                "className": "com.testng.tests.Test1",
-                                                "methodName": "testMethod1",
-                                                "testName": ""
-                                            }
-                                        },
-                                        {
-                                            "type": "test_method_node",
-                                            "text": "testMethod5",
-                                            "li_attr": {
-                                                "className": "com.testng.tests.Test1",
-                                                "methodName": "testMethod5",
-                                                "testName": ""
-                                            }
-                                        },
-                                        {
-                                            "type": "test_method_node",
-                                            "text": "testBroken",
-                                            "li_attr": {
-                                                "className": "com.testng.tests.Test1",
-                                                "methodName": "testBroken",
-                                                "testName": "",
-                                                "params": ["str",
-                                                    "last"]
-                                            }
-                                        },
-                                        {
-                                            "type": "test_method_node",
-                                            "text": "throwExpectedException1ShouldPass",
-                                            "li_attr": {
-                                                "className": "com.testng.tests.Test1",
-                                                "methodName": "throwExpectedException1ShouldPass",
-                                                "testName": ""
-                                            }
-                                        },
-                                        {
-                                            "type": "test_method_node",
-                                            "text": "throwExpectedException2ShouldPass",
-                                            "li_attr": {
-                                                "className": "com.testng.tests.Test1",
-                                                "methodName": "throwExpectedException2ShouldPass",
-                                                "testName": ""
-                                            }
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        }
-    ]
+    "children": []
 };
+
+testInventoryDataDemo = {"text":"com.testng.tests","type":"root","children":[{"text":"com","type":"package_node","children":[{"text":"testng","type":"package_node","children":[{"text":"tests","type":"package_node","children":[{"text":"mock","type":"package_node","children":[{"text":"inner","type":"package_node","children":[{"text":"copy","type":"package_node","children":[{"text":"InnerMockTests","type":"class_node","children":[{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTe jsakkjjj kkkjjs jkkkasjd  fjjakjstNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"test2 - InnerMoclTestTest1","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"test2","testName":"InnerMoclTestTest1","testJavadoc":"javadoc for InnerMoclTestTest1"}},{"type":"test_method_node","text":"test3 - InnerMoclTestTest1","li_attr":{"className":"com.testng.tests.mock.inner.copy.InnerMockTests","methodName":"test3","testName":"InnerMoclTestTest1","testJavadoc":null}}]}]},{"text":"InnerMockTests","type":"class_node","children":[{"type":"test_method_node","text":"testNewName - InnerMoclTestTestNewName","li_attr":{"className":"com.testng.tests.mock.inner.InnerMockTests","methodName":"testNewName","testName":"InnerMoclTestTestNewName","testJavadoc":null}},{"type":"test_method_node","text":"test2 - InnerMoclTestTest1","li_attr":{"className":"com.testng.tests.mock.inner.InnerMockTests","methodName":"test2","testName":"InnerMoclTestTest1","testJavadoc":null}},{"type":"test_method_node","text":"test3 - InnerMoclTestTest1","li_attr":{"className":"com.testng.tests.mock.inner.InnerMockTests","methodName":"test3","testName":"InnerMoclTestTest1","testJavadoc":null}}]}]},{"text":"MockTests4","type":"class_node","children":[{"type":"test_method_node","text":"test1","li_attr":{"className":"com.testng.tests.mock.MockTests4","methodName":"test1","testName":"","testJavadoc":"javadoc for test1 in MockTests4","params":["first","second"]}}]},{"text":"MockTests5","type":"class_node","children":[{"type":"test_method_node","text":"test1","li_attr":{"className":"com.testng.tests.mock.MockTests5","methodName":"test1","testName":"","testJavadoc":null,"params":["first","second"]}}]}]},{"text":"MyCodeTests","type":"class_node","children":[{"type":"test_method_node","text":"testAdd - test add","li_attr":{"className":"com.testng.tests.MyCodeTests","methodName":"testAdd","testName":"test add","testJavadoc":null,"params":["num1","num2"]}}]},{"text":"Test1","type":"class_node","children":[{"type":"test_method_node","text":"testBroken","li_attr":{"className":"com.testng.tests.Test1","methodName":"testBroken","testName":"","testJavadoc":null,"params":["str","last"]}},{"type":"test_method_node","text":"testMethod3","li_attr":{"className":"com.testng.tests.Test1","methodName":"testMethod3","testName":"","testJavadoc":null}},{"type":"test_method_node","text":"testMethod5","li_attr":{"className":"com.testng.tests.Test1","methodName":"testMethod5","testName":"","testJavadoc":null}},{"type":"test_method_node","text":"testMethod1","li_attr":{"className":"com.testng.tests.Test1","methodName":"testMethod1","testName":"","testJavadoc":null}},{"type":"test_method_node","text":"testMethod2","li_attr":{"className":"com.testng.tests.Test1","methodName":"testMethod2","testName":"","testJavadoc":null}},{"type":"test_method_node","text":"throwExpectedException1ShouldPass","li_attr":{"className":"com.testng.tests.Test1","methodName":"throwExpectedException1ShouldPass","testName":"","testJavadoc":null}},{"type":"test_method_node","text":"throwExpectedException2ShouldPass","li_attr":{"className":"com.testng.tests.Test1","methodName":"throwExpectedException2ShouldPass","testName":"","testJavadoc":null}}]}]}]}]}]}
+
+function saveParamsForTest() {
+	id = $(".btn-save-params").attr("id");
+	inputArr = $("#params-form").find("input");
+	var paramsWithValues = [];
+	$.each(inputArr, function(index, value){
+		paramsWithValues.push(value.name + ":" + value.value);
+	});
+	$("#jstree_scenario_builder").jstree(true).get_node(id).li_attr.params = paramsWithValues;
+	
+}
 
 function createTestContainer() {
     var ref = $('#jstree_scenario_builder').jstree(true);
@@ -2169,6 +380,30 @@ function createTestContainer() {
         "type": "test_node"
     });
     if (sel) {
-        ref.edit(sel);
+        var newId = guid();
+    	var container_node = ref.get_node(sel);
+    	container_node.a_attr.id = newId + "_anchor";
+    	ref.set_id(sel,newId);
+        ref.edit(newId);
+    }
+}
+
+function createSuite() {
+    var ref = $('#jstree_scenario_builder').jstree(true);
+    sel = ref.get_selected();
+    if (!sel.length) {
+        return false;
+    }
+    sel = sel[0];
+    sel = ref.create_node(sel, {
+        "text": "New Suite",
+        "type": "suite_node"
+    });
+    if (sel) {
+    	var newId = guid();
+    	var suite_node = ref.get_node(sel);
+    	suite_node.a_attr.id = newId + "_anchor";
+    	ref.set_id(sel,newId);
+        ref.edit(newId);
     }
 }

@@ -8,7 +8,7 @@
           <!--href="jstree/themes/default/style.min.css"/>-->
     <link rel="stylesheet" href="./assets/bootstrap/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="./assets/dist/themes/proton/style.css"/>
-
+    <link rel="stylesheet" href="css/mystyle.css"/>
 
     <script>
         window.$q = [];
@@ -23,32 +23,63 @@
     </script>
 </head>
 <body>
-<div class="container">
+<div id="testInfo" class="" >
+
+</div>
+<div class="container-fluid">
     <div class="row">
+     <div class="demo col-lg-3 col-lg-offset-1">
         <input type="file"/>
+        </div>
     </div>
     <div class="row">
-        <div class="demo col-lg-3">
+        <div class="demo col-lg-2 col-lg-offset-1">
             <h3>Scenario</h3>
 
+            <button onclick="execute()">run</button>
             <div id="jstree_scenario_builder" class="demo"
                  style="margin-top: 1em; min-height: 200px;">
 
             </div>
         </div>
-        <div class="demo col-lg-offset-2 col-lg-4">
+        <div class="demo col-lg-offset-1 col-lg-3">
             <h3>Test Inventory</h3>
             <button onclick="refreshTestProject()">refresh</button>
+            <button onclick="expandAllTree('jstree_test_inventory')">expend all</button>
+            <button onclick="collapseAllTree('jstree_test_inventory')">collapse all</button>
             <input type="text" id="search_test" value="" class="input"
-                   style="margin:0em auto 1em auto; display:block; padding:4px; border-radius:4px; border:1px solid silver;">
+                   style="border-radius:4px; border:1px solid silver;">
 
             <div id="jstree_test_inventory" class="inventory" style="margin-top: 1em; min-height: 200px;"></div>
         </div>
+        <div class="demo col-lg-offset-1 col-lg-3">
+         <h3>Report</h3>
+         <button onclick="clearReport()">clear</button>
+         <div id="reporter"></div>
+        </div>
+    </div>
+    <div class="row" id="params">
+    <div class="demo col-lg-offset-1">
+     <form class="form-horizontal" id="params-form">
+    
+
+</form>
+ </div>
     </div>
     <script>
 
         var node;
+        function toggleTestInfo() {
+            if($("#testInfo").hasClass("open")) {
+                $("#testInfo").animate({bottom: '-=250'},300);
+                $("#testInfo").removeClass("open")
+            } else {
+                $("#testInfo").animate({bottom: '+=250'},300);
+                $("#testInfo").addClass("open")
+            }
+        }
         $(function () {
+
 
             $('#jstree_scenario_builder')
                     .jstree(
@@ -74,17 +105,7 @@
                             "data": {
                                 "text": "root",
                                 "type": "root",
-                                "children": [
-                                    {
-                                        "text": "suite1",
-                                        "type": "suite_node",
-                                        "children": [
-                                            {
-                                                "text": "test_container",
-                                                "type": "test_node"
-                                            }
-                                        ]}
-                                ]
+                                "children": []
                             }
                         },
                         "dnd": {
@@ -105,6 +126,7 @@
                         },
                         "checkbox" : {
                             "tie_selection": false,
+                            "three_state": false,
                             "whole_node": false
                         },
                         "types": {
@@ -113,17 +135,17 @@
                             },
                             "root": {
                                 "max_children": 1,
-                                "valid_children": [ "suite" ],
+                                "valid_children": [ "suite_node" ],
                                 "icon": "img/stkfrm_obj.gif"
                             },
                             "suite_node": {
 
                                 "icon": "img/suite.gif",
-                                "valid_children": [ "suite", "test_node", "test_method_node" ]
+                                "valid_children": [ "suite_node", "test_node", "test_method_node" ]
                             },
                             "test_node": {
                                 "icon": "img/test.gif",
-                                "valid_children": [ "suite", "test_node", "test_method_node" ]
+                                "valid_children": [ "suite_node", "test_node", "test_method_node" ]
                             },
                             "test_method_node": {
                                 "icon": "img/test.gif",
@@ -136,9 +158,30 @@
                         "plugins": [ "contextmenu", "dnd",
                             "search", "state", "types", "checkbox" ]
 
+                    }).bind("select_node.jstree", function(event, data) {
+                    	console.log("selected: " + data.node.id);
+                 
+                    	$("#params-form").empty();
+                    	$("#params-form").append("<fieldset><legend>Parameters</legend>");
+                    	
+                    	$.each(data.node.li_attr.params, function( index, value ) {
+                    		paramPair = value;
+                    		paramPair = paramPair.split(":");
+                    		var pName = paramPair[0];
+                    		var pVal = ""; 
+                    		if(paramPair.length > 1) {
+                    			pVal = paramPair[1]; 
+                    		}
+  							$("#params-form").append('<div class="control-group">' 
+  								+ '<label class="control-label"' + ' for="' + pName + '">' + pName + '</label>'
+  									+ '<div class="controls">'
+  										+ '<input id="' + pName + '"' + ' name="' + pName + '"' + ' value="' + pVal +'"' +' placeholder="e.g ..."' + ' class="input-xlarge">'
+  												+ ' <p class="help-block">prameter desk here</p></div></div></fieldset>'); 
+						});
+                    	$("#params-form").append('<div class="control-group">'
+                    		+ '<div class="controls">' + '<button type="button"' + ' onclick="saveParamsForTest()"' + ' id="' + data.node.id + '"' + ' class="btn btn-primary btn-save-params">Save</button></div></div>');
                     });
-
-
+            $('#jstree_scenario_builder').niceScroll({cursorcolor:"#888888",cursorwidth: "8px"});
             $('#jstree_test_inventory')
                     .jstree(
                     {
@@ -164,7 +207,7 @@
                                 return more.is_multi;
 
                             },
-                            'data': testInventoryData
+                            'data': testInventoryDataDemo
                         },
                         "types": {
                             "#": {
@@ -211,6 +254,7 @@
 
 
                     });
+            $('#jstree_test_inventory').niceScroll({cursorcolor:"#888888",cursorwidth: "8px"});
             var to = false;
             $('#search_test').keyup(function () {
                 if (to) {
@@ -229,7 +273,7 @@
 <script
         src="js/jquery-1.11.1.min.js"></script>
 <script src="jstree/jstree.min.js"></script>
-<script src="js/consts.js"></script>
+<script src="js/jquery.nicescroll.js"></script>
 
 <script src="js/jstreeConfig.js"></script>
 <script>

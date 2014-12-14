@@ -28,7 +28,7 @@ public class MyCodeTests {
 	@Test(testName = "test add")
 	@Parameters({ "num1", "num2" })
 	public void testAdd(int num1, int num2) throws InterruptedException {
-		Thread.sleep(2000);
+		Thread.sleep(300);
 		int res = myCode.add(num1, num2);
 		Assert.assertEquals(res, 9);
 	}

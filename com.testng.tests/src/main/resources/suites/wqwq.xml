@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="wqwq">
+  <test name="3f00080c-721d-4a3b-9d2c-d65e77708d35" enabled="true">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num1" value="1"/>
+            <parameter name="num2" value="8"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- 3f00080c-721d-4a3b-9d2c-d65e77708d35 -->
+  <test name="5562af81-5eaf-9a3e-bde4-5a657837e70b" enabled="true">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num1" value="2"/>
+            <parameter name="num2" value="7"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- 5562af81-5eaf-9a3e-bde4-5a657837e70b -->
+</suite> <!-- wqwq -->
+

@@ -21,43 +21,24 @@
 	window.$ = window.jQuery = function(a) {
 		window.$q.push(a);
 	};
-	var ws1;
-	var ws2;
+	var ws;
 	$(function() {
 // 		eventSource = new EventSource("HelloServlet");
 // 		eventSource.onmessage = function(event) {
 // 			$('#log').append("<p>" + event.data + "</p>");
 // 		};
 	     console.log( "ready!" );
-		ws1 = new WebSocket("ws://localhost:8080/WebSocketTestServlet");
-		ws2 = new WebSocket("ws://localhost:8080/WebSocketTestServlet");
-		
-		ws1.onopen = function(event) {
-			console.log("ws1.onopen for execute");
-			ws1.send("execute");
-			
+		ws = new WebSocket("ws://localhost:8080/WebSocketTestServlet");
+		ws.onopen = function(event) {
+			alert("ws.onopen");
+			ws.send("execute");
 			
 		}
-		ws1.onmessage = function(event) {
-			console.log("ws1.onmessage:" + event.data);
+		ws.onmessage = function(event) {
+			console.log("onmessage:" + event.data);
 		}
-		ws1.onclose = function(event) {
-			console.log("ws1.onclose");
-			console.log(event);
-		} 
-		
-		ws2.onopen = function(event) {
-			console.log("ws2.onopen for execute2");
-			ws1.send("execute2");
-			
-			
-		}
-		ws2.onmessage = function(event) {
-			console.log("ws2.onmessage:" + event.data);
-		}
-		ws2.onclose = function(event) {
-			console.log("ws2.onclose");
-			console.log(event);
+		ws.onclose = function(event) {
+			console.log("ws.onclose");
 		} 
 	});
 </script>
@@ -68,9 +49,6 @@
 </script>
 </head>
 <body>
-	<button onclick="run()">Run</button>
-	<h3>Basic AJAX demo</h3>
-	
 	<div class="row">
 		<div class="col-md-4 col-sm-8 col-xs-8">
 			<button type="button" onclick="demo_create();">Create</button>
