@@ -23,8 +23,8 @@
     </script>
 </head>
 <body>
-<div id="testInfo" class="" >
-    <div class="demo col-lg-offset-1">
+<div id="testInfo" class="col-lg-8" >
+    <div class="col-lg-offset-1">
         <form class="form-horizontal" id="params-form">
 
         </form>
@@ -32,21 +32,21 @@
 </div>
 <div class="container-fluid">
     <div class="row">
-     <div class="demo col-lg-3 col-lg-offset-1">
+     <div class="col-lg-3 col-lg-offset-1">
         <input type="file"/>
         </div>
     </div>
     <div class="row">
-        <div class="demo col-lg-2 col-lg-offset-1">
+        <div class="col-lg-2 col-lg-offset-1">
             <h3>Scenario</h3>
 
             <button onclick="execute()">run</button>
-            <div id="jstree_scenario_builder" class="demo"
+            <div id="jstree_scenario_builder" class=""
                  style="margin-top: 1em; min-height: 200px;">
 
             </div>
         </div>
-        <div class="demo col-lg-offset-1 col-lg-3">
+        <div class="col-lg-offset-1 col-lg-3">
             <h3>Test Inventory</h3>
             <button onclick="refreshTestProject()">refresh</button>
             <button onclick="expandAllTree('jstree_test_inventory')">expend all</button>
@@ -56,7 +56,7 @@
 
             <div id="jstree_test_inventory" class="inventory" style="margin-top: 1em; min-height: 200px;"></div>
         </div>
-        <div class="demo col-lg-offset-1 col-lg-3">
+        <div class="col-lg-offset-1 col-lg-3">
          <h3>Report</h3>
          <button onclick="clearReport()">clear</button>
          <div id="reporter"></div>
@@ -66,15 +66,21 @@
 
 
     <script>
-
+		function animateShowParams() {
+		 $("#testInfo").animate({bottom: '+=250'},300);
+	            $("#testInfo").addClass("open")
+		}
+		
+		function animateHideParams() {
+		  $("#testInfo").animate({bottom: '-=250'},300);
+                $("#testInfo").removeClass("open")
+		}
         var node;
         function toggleTestInfo() {
             if($("#testInfo").hasClass("open")) {
-                $("#testInfo").animate({bottom: '-=250'},300);
-                $("#testInfo").removeClass("open")
+               animateHideParams()
             } else {
-                $("#testInfo").animate({bottom: '+=250'},300);
-                $("#testInfo").addClass("open")
+               animateShowParams();
             }
         }
         $(function () {
@@ -161,7 +167,11 @@
                     	console.log("selected: " + data.node.id);
                  
                     	$("#params-form").empty();
-                    	$("#params-form").append("<fieldset><legend>Parameters</legend>");
+                    	$("#params-form").append('<fieldset><legend>Parameters<span id="hideTestInfo" class="' + 'glyphicon glyphicon-chevron-down pull-right"></span></legend>');
+                    	
+                    	$("#hideTestInfo").click(function() {
+                    		animateHideParams();
+                    	});
                     	
                     	$.each(data.node.li_attr.params, function( index, value ) {
                     		paramPair = value;
@@ -179,6 +189,11 @@
 						});
                     	$("#params-form").append('<div class="control-group">'
                     		+ '<div class="controls">' + '<button type="button"' + ' onclick="saveParamsForTest()"' + ' id="' + data.node.id + '"' + ' class="btn btn-primary btn-save-params">Save</button></div></div>');
+                    	if($("#testInfo").hasClass("open")) {
+                    	
+                    	} else {
+                    		animateShowParams();
+                    	}	
                     });
             $('#jstree_scenario_builder').niceScroll({cursorcolor:"#888888",cursorwidth: "8px"});
             $('#jstree_test_inventory')
