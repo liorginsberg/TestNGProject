@@ -23,9 +23,9 @@
     </script>
 </head>
 <body>
-<div id="testInfo" class="col-lg-8" >
-    <div class="col-lg-offset-1">
-        <form class="form-horizontal" id="params-form">
+<div id="testInfoRight">
+    <div>
+        <form class="form-horizontal col-lg-offset-1" id="params-form">
 
         </form>
     </div>
@@ -67,13 +67,13 @@
 
     <script>
 		function animateShowParams() {
-		 $("#testInfo").animate({bottom: '+=250'},300);
-	            $("#testInfo").addClass("open")
+		 $("#testInfoRight").animate({right: '+=300'},300);
+	            $("#testInfoRight").addClass("open")
 		}
 		
 		function animateHideParams() {
-		  $("#testInfo").animate({bottom: '-=250'},300);
-                $("#testInfo").removeClass("open")
+		  $("#testInfoRight").animate({right: '-=300'},300);
+                $("#testInfoRight").removeClass("open")
 		}
         var node;
         function toggleTestInfo() {
@@ -189,7 +189,7 @@
 						});
                     	$("#params-form").append('<div class="control-group">'
                     		+ '<div class="controls">' + '<button type="button"' + ' onclick="saveParamsForTest()"' + ' id="' + data.node.id + '"' + ' class="btn btn-primary btn-save-params">Save</button></div></div>');
-                    	if($("#testInfo").hasClass("open")) {
+                    	if($("#testInfoRight").hasClass("open")) {
                     	
                     	} else {
                     		animateShowParams();

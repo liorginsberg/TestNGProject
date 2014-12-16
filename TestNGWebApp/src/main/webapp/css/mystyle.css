@@ -18,6 +18,18 @@ body, html {
     box-shadow: 0px -8px 9px -1px rgba(0,0,0,0.28);
 }
 
+#testInfoRight {
+    width: 300px;
+    position: absolute;
+    z-index: 1000;
+    background: #ffffff;
+    height: 100%;
+    right: -300px;
+    -webkit-box-shadow: -3px 0px 6px 0px rgba(50, 50, 50, 0.75);
+	-moz-box-shadow:    -3px 0px 6px 0px rgba(50, 50, 50, 0.75);
+	box-shadow:         -3px 0px 6px 0px rgba(50, 50, 50, 0.75);
+}
+
 @media (min-width: 768px) {
 
     #jstree_test_inventory,#jstree_scenario_builder {

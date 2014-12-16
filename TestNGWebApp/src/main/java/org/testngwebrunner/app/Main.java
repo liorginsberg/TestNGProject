@@ -31,7 +31,7 @@ public class Main
         
         server.start();
         String url = "http://localhost:8080/test.html";
-
+        
         if(Desktop.isDesktopSupported()){
             Desktop desktop = Desktop.getDesktop();
             try {

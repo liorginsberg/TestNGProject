@@ -13,7 +13,7 @@
       </class> <!-- com.testng.tests.MyCodeTests -->
     </classes>
   </test> <!-- e0b00739-ca3f-1ce2-d806-8c536cae970e -->
-  <test name="e480361d-cbb3-e2e9-d214-64d8586b49a9:startContainer" enable="true"/>
+  <test name="e480361d-cbb3-e2e9-d214-64d8586b49a9:startContainer" enabled="true"/>
   <test name="3c9b1dd9-8f1f-dc11-4158-67b4496ce2d6" enabled="true">
     <classes>
       <class name="com.testng.tests.MyCodeTests">
@@ -26,6 +26,6 @@
       </class> <!-- com.testng.tests.MyCodeTests -->
     </classes>
   </test> <!-- 3c9b1dd9-8f1f-dc11-4158-67b4496ce2d6 -->
-  <test name="e480361d-cbb3-e2e9-d214-64d8586b49a9:endContainer" enable="true"/>
+  <test name="e480361d-cbb3-e2e9-d214-64d8586b49a9:endContainer" enabled="true"/>
 </suite> <!-- s1 -->
 
