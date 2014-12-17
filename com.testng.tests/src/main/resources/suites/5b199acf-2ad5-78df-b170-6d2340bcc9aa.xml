@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="5b199acf-2ad5-78df-b170-6d2340bcc9aa">
+  <test name="a1761ff0-d6f5-6ebc-552b-512bc60ae66b" enabled="true">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num1" value="1"/>
+            <parameter name="num2" value="4"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- a1761ff0-d6f5-6ebc-552b-512bc60ae66b -->
+  <test name="2bb8c6b0-24e0-5046-dece-a46f552e3647" enabled="true">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num1" value="2"/>
+            <parameter name="num2" value="5"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- 2bb8c6b0-24e0-5046-dece-a46f552e3647 -->
+  <test name="32c249c1-8748-4ed8-ed90-098b6ce89e91:startContainer" enabled="true"/>
+  <test name="59a75869-b7c8-336e-31ec-6cc358cee661" enabled="true">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num1" value="2"/>
+            <parameter name="num2" value="5"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- 59a75869-b7c8-336e-31ec-6cc358cee661 -->
+  <test name="6a4e15c4-b8e8-6df9-ede7-54307885a4de" enabled="true">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num1" value="2"/>
+            <parameter name="num2" value="7"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- 6a4e15c4-b8e8-6df9-ede7-54307885a4de -->
+  <test name="32c249c1-8748-4ed8-ed90-098b6ce89e91:endContainer" enabled="true"/>
+</suite> <!-- 5b199acf-2ad5-78df-b170-6d2340bcc9aa -->
+

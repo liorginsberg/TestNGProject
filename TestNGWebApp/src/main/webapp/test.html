@@ -115,6 +115,9 @@
                             "data": {
                                 "text": "root",
                                 "type": "root",
+                                "a_attr": {
+                                    "id": "builder_root"
+                             	},
                                 "children": []
                             }
                         },
@@ -145,17 +148,17 @@
                             },
                             "root": {
                                 "max_children": 1,
-                                "valid_children": [ "suite_node", "suite_file_node" ],
+                                "valid_children": [ "suite_node" ],
                                 "icon": "img/stkfrm_obj.gif"
                             },
                             "suite_node": {
 
                                 "icon": "img/suite.gif",
-                                "valid_children": [ "suite_node", "test_node", "test_method_node" ]
+                                "valid_children": [ "test_node", "test_method_node", "suite_node" ]
                             },
                             "test_node": {
                                 "icon": "img/test.gif",
-                                "valid_children": [ "suite_node", "test_node", "test_method_node" ]
+                                "valid_children": [ "test_node", "test_method_node" , "suite_node"]
                             },
                             "test_method_node": {
                                 "icon": "img/test.gif",
@@ -200,9 +203,9 @@
                     		animateShowParams();
                     	}	
                     }).bind("hover_node.jstree", function(e, data){
-                    	console.log("=== HOVER ====");
-                    	console.log(e);
-                    	console.log(data);
+                    	//console.log("=== HOVER ====");
+                    	//console.log(e);
+                    	//console.log(data);
                     });
             $('#jstree_scenario_builder').niceScroll({cursorcolor:"#888888",cursorwidth: "8px"});
             
@@ -238,9 +241,6 @@
                             }
                         },
                         "types": {
-                            "#": {
-                                "max_children": 1
-                            },
                             "root": {
                                 "valid_children": [ "package_node", "suite_folder_node"],
                                 "icon": "img/stkfrm_obj.gif"
@@ -259,11 +259,10 @@
                             },
                             "suite_folder_node": {
                             	 "icon": "img/suite.gif",
-                            	 "valid_children": ["suite_file_node", "suite_folder_node"]
+                            	 "valid_children": ["suite_node", "suite_folder_node"]
                             },
-                            "suite_file_node": {
-                            	 "icon": "img/suite.gif",
-                            	 "max_children": 0
+                            "suite_node": {
+                            	 "icon": "img/suite.gif"
                             }
 
                         },
@@ -274,7 +273,7 @@
                                 console.log(nodes);
                                 var drag = true;
                                 $.each(nodes, function () {
-                                    if (this.type != "test_method_node" && this.type != "suite_file_node") {
+                                    if (this.type != "test_method_node" && this.type != "suite_node") {
                                         console.log("cant drag element of type: " + this.type);
                                         drag = false;
                                     }

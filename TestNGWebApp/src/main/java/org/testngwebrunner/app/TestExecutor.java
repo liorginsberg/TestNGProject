@@ -37,18 +37,17 @@ public class TestExecutor implements LiveReporterListener {
 		this.session = session;
 
 		JsonParser parser = new JsonParser();
-		JsonObject execObb = (JsonObject) parser.parse(execJson);
+		JsonObject suiteJson = (JsonObject) parser.parse(execJson);
 
 		// NEW IMPLEMENTATION - WRITE XML YOUR SELF
 		XMLStringBuffer suiteBuffer = new XMLStringBuffer();
 		suiteBuffer.setDocType("suite SYSTEM \"" + Parser.TESTNG_DTD_URL + '\"');
 		
-		JsonObject suiteJson = execObb.getAsJsonArray("children").get(0).getAsJsonObject();
-
+		String suiteId = suiteJson.get("id").getAsString();
 		String suiteName = suiteJson.get("text").getAsString();
 		
 		Properties attr = new Properties();
-		attr.setProperty("name", suiteName);
+		attr.setProperty("name", suiteId);
 		suiteBuffer.push("suite", attr);
 		for (JsonElement testJson : suiteJson.getAsJsonArray("children")) {
 			JsonObject testJsonObj = (JsonObject)testJson;
@@ -71,7 +70,7 @@ public class TestExecutor implements LiveReporterListener {
 
 		String jsonGeneratedFile = suiteFolder + File.separator + suiteName + ".json";
 		writer = new PrintWriter(jsonGeneratedFile, "UTF-8");
-		writer.println(execJson);
+		writer.println(suiteJson.toString());
 		writer.close();
 		
 		// get the property value and print it out
@@ -83,6 +82,7 @@ public class TestExecutor implements LiveReporterListener {
 	}
 
 	private void handleTestJson(XMLStringBuffer suiteBuffer, JsonObject testJson) throws Exception {
+
 		if (testJson.get("type").getAsString().equals("test_method_node")) {
 			JsonObject li_attr_json = testJson.getAsJsonObject("li_attr");
 			String testName = li_attr_json.get("testName").getAsString();
@@ -135,14 +135,16 @@ public class TestExecutor implements LiveReporterListener {
 			suiteBuffer.pop("classes");
 			suiteBuffer.pop("test");
 			
-		} else if (testJson.get("type").getAsString().equals("test_node")) {
+		} else if (testJson.get("type").getAsString().equals("test_node") ||
+				testJson.get("type").getAsString().equals("suite_node")) {
+			String type = testJson.get("type").getAsString();
 			Properties attr = new Properties();
 			boolean checked = false;
 			if(testJson.get("state").getAsJsonObject().has("checked")) {
 				checked = testJson.get("state").getAsJsonObject().get("checked").getAsBoolean();
 			}
 			attr.setProperty("enabled", String.valueOf(checked));
-			attr.setProperty("name", testJson.get("id").getAsString() + ":startContainer");
+			attr.setProperty("name", testJson.get("id").getAsString() + (type.equals("test_node") ? ":startContainer": ":startSuite"));
 			suiteBuffer.addEmptyElement("test", attr);
 			
 			JsonArray childrenTests = testJson.getAsJsonArray("children");
@@ -152,7 +154,7 @@ public class TestExecutor implements LiveReporterListener {
 					handleTestJson(suiteBuffer, testJsonChild);
 				}
 			}	
-			attr.setProperty("name", testJson.get("id").getAsString() + ":endContainer");
+			attr.setProperty("name", testJson.get("id").getAsString() + (type.equals("test_node") ? ":endContainer": ":endtSuite"));
 			suiteBuffer.addEmptyElement("test", attr);
 		} else {
 			throw new Exception("Should not get here, type: " + testJson.get("type").getAsString());

@@ -7,6 +7,13 @@ body, html {
 .open {
 }
 
+
+/*hide root's checkbox*/
+#builder_root .jstree-checkbox {
+       display:none;
+}
+
+
 #testInfo {
     position: absolute;
     z-index: 1000;

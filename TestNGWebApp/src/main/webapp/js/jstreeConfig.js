@@ -86,6 +86,10 @@ function customMenu(node) {
                 if(property == "type") {
                 	if(object["type"] == "test_method_node" || object["type"] == "test_node") {
                 		$("#jstree_scenario_builder").jstree(true).set_icon(object["id"],"img/test.gif");
+                	} else if (object["type"] == "suite_node") {
+                		$("#jstree_scenario_builder").jstree(true).set_icon(object["id"],"img/suite.gif");
+                	} else {
+                		//skip
                 	}
                 	
                 }
@@ -117,7 +121,9 @@ function execute() {
 			recursiveIteration($("#jstree_scenario_builder").jstree(true).get_json('#', { 'flat' : false })[0]);
 			 
 			 console.log("connected: send execution...");
-		     ws1.send(JSON.stringify($("#jstree_scenario_builder").jstree(true).get_json('#', { 'flat' : false })[0])); 
+			 var jsonSuite = $("#jstree_scenario_builder").jstree(true).get_json('#', { 'flat' : false })[0].children[0];
+			 var jsonStringSuite = JSON.stringify(jsonSuite);
+		     ws1.send(jsonStringSuite); 
 		}
 		ws1.onmessage = function(event) {
 			var message = $.parseJSON(event.data);
@@ -142,6 +148,20 @@ function execute() {
 					$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testfail.gif");
 				} else {
 					$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testok.gif");
+				}
+				finalReport += message.type + " - " + message.message;
+				break;
+			case "startSuite":
+				
+				$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/suiterun.gif");
+				
+				finalReport += message.type + " - " + message.message;
+				break;
+			case "endSuite":
+				if(hasFailures($("#jstree_scenario_builder").jstree(true).get_node(message.message))){
+					$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/suitefail.gif");
+				} else {
+					$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/suiteok.gif");
 				}
 				finalReport += message.type + " - " + message.message;
 				break;
@@ -262,15 +282,14 @@ $(function() {
     });
 
     $("#jstree_scenario_builder").on('copy_node.jstree', function (e, data) {
-        console.log("====== from copy node listen function ======");
-        console.log(e);
-		console.log(data);
-		if(data.original.type == "suite_file_node") {
-			handleAddSuite(data);
-			return true;
-		}
+//        console.log("====== from copy node listen function ======");
+//        console.log(e);
+//		console.log(data);
+//		if(data.original.type == "suite_file_node") {
+//			//handleAddSuite(data);
+//			return true;
+//		}
 		
-		console.log("!!!!!!!!!!!!!!!!!!!!!! NOT GOOD !!!!!!!!!!!!!!");
         $.each(data.node.children_d, function (index, childID) {
             var ch_uuid = guid();
             console.log("child " + index + ":");
@@ -382,7 +401,7 @@ function createTestContainer() {
     }
     sel = sel[0];
     sel = ref.create_node(sel, {
-        "text": "New Test Container",
+        "text": "new_test_container",
         "type": "test_node"
     });
     if (sel) {
@@ -394,15 +413,21 @@ function createTestContainer() {
     }
 }
 
-function handleAddSuite(data) {
-	var jsonData = data.original.data.jsonSuite;
-	console.log(jsonData);
-	newParentType = $("#jstree_scenario_builder").jstree(true).get_node(data.parent).type;
-	if(newParentType == "root") {
-		$('#jstree_scenario_builder').jstree(true).settings.core.data = jsonData;
-        $('#jstree_scenario_builder').jstree(true).refresh();
-	} 
-}
+//function handleAddSuite(data) {
+//	var jsonData = data.original.data.jsonSuite;
+//	console.log(jsonData);
+//	newParentType = $("#jstree_scenario_builder").jstree(true).get_node(data.parent).type;
+//	if(newParentType == "root") {
+//		$('#jstree_scenario_builder').jstree(true).settings.core.data = jsonData;
+//        $('#jstree_scenario_builder').jstree(true).refresh();
+//	} else {
+//		var newPatent = $("#jstree_scenario_builder").jstree(true).get_node(data.parent);
+//		newParent.
+//		treeJson = $("#jstree_scenario_builder").jstree(true).get_json('#', { 'flat' : false })[0]);
+//		jsonData.children[0].type = "test_node";
+//		
+//	}
+//}
 
 function createSuite() {
     var ref = $('#jstree_scenario_builder').jstree(true);
@@ -412,7 +437,7 @@ function createSuite() {
     }
     sel = sel[0];
     sel = ref.create_node(sel, {
-        "text": "New Suite",
+        "text": "new_suite",
         "type": "suite_node"
     });
     if (sel) {

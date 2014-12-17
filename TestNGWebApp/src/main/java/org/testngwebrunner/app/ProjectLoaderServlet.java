@@ -1,6 +1,5 @@
 package org.testngwebrunner.app;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -17,7 +16,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Scanner;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -33,7 +31,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
-import com.thoughtworks.qdox.model.JavaMethod;
 
 public class ProjectLoaderServlet extends HttpServlet {
 
@@ -122,6 +119,7 @@ public class ProjectLoaderServlet extends HttpServlet {
 		}
 		JsonObject suitesObj = null;
 		try {
+			 handledSuitesFiles.clear();
 			 suitesObj = getSuitesDirectoryAsJsonJsTreeFormat(new File(suiteFolder));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -208,16 +206,13 @@ public class ProjectLoaderServlet extends HttpServlet {
 				if(handledSuitesFiles.contains(fileName)) {
 					return null;
 				}
-				node = new JsonObject();
-				node.addProperty("text", fileName);
-				node.addProperty("type", "suite_file_node");
+				
 				JsonObject data = new JsonObject();
 				data.addProperty("full_path", mainFile.getAbsolutePath());
 				
 				JsonParser parser = new JsonParser();
 	            JsonElement jsonElement = parser.parse(new FileReader(mainFile));
-	            
-				data.add("jsonSuite", jsonElement);
+	            node = (JsonObject)jsonElement;	         
 				node.add("data", data);
 				handledSuitesFiles.add(removeFileExtention(mainFile));
 			}
