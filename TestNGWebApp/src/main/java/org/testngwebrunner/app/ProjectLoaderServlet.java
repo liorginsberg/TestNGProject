@@ -1,8 +1,10 @@
 package org.testngwebrunner.app;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -15,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Scanner;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -28,6 +31,7 @@ import org.testngwebrunner.app.testcollector.ClassPathHack;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.thoughtworks.qdox.model.JavaMethod;
 
@@ -55,6 +59,7 @@ public class ProjectLoaderServlet extends HttpServlet {
 		long timeStart = System.nanoTime();
 		String classPath = null;
 		String classesFolder = null;
+		String suiteFolder = null;
 		
 		Properties prop = new Properties();
 		InputStream input = null;
@@ -73,6 +78,7 @@ public class ProjectLoaderServlet extends HttpServlet {
 			classPath = prop.getProperty("TEST_CLASSPATH");
 			classesFolder = prop.getProperty("CLASSES_DIRECTORY");
 			sourceFolder = prop.getProperty("SOURCE_DIR");
+			suiteFolder = prop.getProperty("SUITES_DIR");
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {
@@ -113,6 +119,16 @@ public class ProjectLoaderServlet extends HttpServlet {
 			if (obj.has("type")) {
 				children.add(obj);
 			}
+		}
+		JsonObject suitesObj = null;
+		try {
+			 suitesObj = getSuitesDirectoryAsJsonJsTreeFormat(new File(suiteFolder));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if(suitesObj != null) {
+			children.add(suitesObj);
 		}
 		root.add("children", children);
 		// JsonObject root = getDirectoryAsJsonJsTreeFormat(new
@@ -165,6 +181,79 @@ public class ProjectLoaderServlet extends HttpServlet {
 							return aText.compareTo(bText);
 						}
 						if(aType.equals("package_node")) {
+							return -1;
+						} else {
+							return 1;
+						}
+					}
+				});
+				children = listToJsonArray(chiledList);
+				node.add("children", children);
+			}
+		}
+
+		return node;
+	}
+	
+	private static List<String> handledSuitesFiles = new ArrayList<String>();
+	
+	
+	public JsonObject getSuitesDirectoryAsJsonJsTreeFormat(File mainFile) throws Exception {
+		
+		JsonObject node = null;
+		String fileName = removeFileExtention(mainFile);
+	
+		if (mainFile.isFile()) {
+			if (isSuiteFile(mainFile)) {
+				if(handledSuitesFiles.contains(fileName)) {
+					return null;
+				}
+				node = new JsonObject();
+				node.addProperty("text", fileName);
+				node.addProperty("type", "suite_file_node");
+				JsonObject data = new JsonObject();
+				data.addProperty("full_path", mainFile.getAbsolutePath());
+				
+				JsonParser parser = new JsonParser();
+	            JsonElement jsonElement = parser.parse(new FileReader(mainFile));
+	            
+				data.add("jsonSuite", jsonElement);
+				node.add("data", data);
+				handledSuitesFiles.add(removeFileExtention(mainFile));
+			}
+		} else {
+			node = new JsonObject();
+			node.addProperty("text", fileName);
+			node.addProperty("type", "suite_folder_node");
+			JsonArray children = new JsonArray();
+			for (File file : mainFile.listFiles()) {
+				JsonObject obj = getSuitesDirectoryAsJsonJsTreeFormat(file);
+				if (obj != null) {
+					children.add(obj);
+				}
+			}
+			if (children.size() > 0) {
+				
+				List<JsonElement> chiledList = jsonArrayToList(children);
+				
+				Collections.sort(chiledList, new Comparator<JsonElement>() {
+					@Override
+					public int compare(JsonElement a, JsonElement b) {
+						
+						JsonObject joa = (JsonObject)a;
+						JsonObject job = (JsonObject)b;
+						
+						String aType = joa.get("type").getAsString();
+						String bType = job.get("type").getAsString();
+						
+						
+
+						if (aType.equals(bType)) {
+							String aText = joa.get("text").getAsString();
+							String bText = job.get("text").getAsString();
+							return aText.compareTo(bText);
+						}
+						if(aType.equals("suite_folder_node")) {
 							return -1;
 						} else {
 							return 1;
@@ -268,6 +357,10 @@ public class ProjectLoaderServlet extends HttpServlet {
 	private boolean isClassFile(File file) throws Exception {
 		// TODO - make it better
 		return file.getAbsolutePath().endsWith(".class");
+	}
+	private boolean isSuiteFile(File file) throws Exception {
+		// TODO - make it better
+		return file.getAbsolutePath().endsWith(".json");
 	}
 
 	private String removeFileExtention(File file) {

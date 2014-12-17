@@ -85,6 +85,11 @@
         }
         $(function () {
 
+			$(document).on("dnd_stop.vakata", function (e, data) {
+				console.log("detected 'drop'");
+   			 	console.log(e);
+   			 	console.log(data);
+			});
 
             $('#jstree_scenario_builder')
                     .jstree(
@@ -96,15 +101,15 @@
                             },
                             "animation": 0,
                             "check_callback": function (operation, node, node_parent, node_position, more) {
-//                                // operation can be 'create_node', 'rename_node', 'delete_node', 'move_node' or 'copy_node'
-//                                // in case of 'rename_node' node_position is filled with the new node name
-//                                console.log("==== from jstree_scenario_builder ====")
-//                                console.log(operation);
-//                                console.log(node);
-//                                console.log(node_parent);
-//                                console.log(node_position);
-//                                console.log(more);
-
+                                // operation can be 'create_node', 'rename_node', 'delete_node', 'move_node' or 'copy_node'
+                                // in case of 'rename_node' node_position is filled with the new node name
+                                console.log("==== from jstree_scenario_builder ====")
+                                console.log(operation);
+                                console.log(node);
+                                console.log(node_parent);
+                                console.log(node_position);
+                                console.log(more);
+	
                                 return true;  //allow all other operations
                             },
                             "data": {
@@ -140,7 +145,7 @@
                             },
                             "root": {
                                 "max_children": 1,
-                                "valid_children": [ "suite_node" ],
+                                "valid_children": [ "suite_node", "suite_file_node" ],
                                 "icon": "img/stkfrm_obj.gif"
                             },
                             "suite_node": {
@@ -194,8 +199,13 @@
                     	} else {
                     		animateShowParams();
                     	}	
+                    }).bind("hover_node.jstree", function(e, data){
+                    	console.log("=== HOVER ====");
+                    	console.log(e);
+                    	console.log(data);
                     });
             $('#jstree_scenario_builder').niceScroll({cursorcolor:"#888888",cursorwidth: "8px"});
+            
             $('#jstree_test_inventory')
                     .jstree(
                     {
@@ -232,7 +242,7 @@
                                 "max_children": 1
                             },
                             "root": {
-                                "valid_children": [ "package_node"],
+                                "valid_children": [ "package_node", "suite_folder_node"],
                                 "icon": "img/stkfrm_obj.gif"
                             },
                             "package_node": {
@@ -241,11 +251,19 @@
                             },
                             "class_node": {
                                 "icon": "img/class_obj.png",
-                                "valid_children": [ "test_method_node" ]
+                                "valid_children": [ "test_method_node"]
                             },
                             "test_method_node": {
                                 "icon": "img/test.gif",
                                 "max_children": 0
+                            },
+                            "suite_folder_node": {
+                            	 "icon": "img/suite.gif",
+                            	 "valid_children": ["suite_file_node", "suite_folder_node"]
+                            },
+                            "suite_file_node": {
+                            	 "icon": "img/suite.gif",
+                            	 "max_children": 0
                             }
 
                         },
@@ -256,7 +274,7 @@
                                 console.log(nodes);
                                 var drag = true;
                                 $.each(nodes, function () {
-                                    if (this.type != "test_method_node") {
+                                    if (this.type != "test_method_node" && this.type != "suite_file_node") {
                                         console.log("cant drag element of type: " + this.type);
                                         drag = false;
                                     }

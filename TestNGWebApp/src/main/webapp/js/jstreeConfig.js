@@ -262,21 +262,27 @@ $(function() {
     });
 
     $("#jstree_scenario_builder").on('copy_node.jstree', function (e, data) {
+        console.log("====== from copy node listen function ======");
         console.log(e);
-
+		console.log(data);
+		if(data.original.type == "suite_file_node") {
+			handleAddSuite(data);
+			return true;
+		}
+		
+		console.log("!!!!!!!!!!!!!!!!!!!!!! NOT GOOD !!!!!!!!!!!!!!");
         $.each(data.node.children_d, function (index, childID) {
             var ch_uuid = guid();
             console.log("child " + index + ":");
             var child_node = $('#jstree_scenario_builder').jstree(true).get_node(childID);
-//            child_node.li_attr.id = ch_uuid;
             child_node.a_attr.id = ch_uuid + "_anchor";
             $('#jstree_scenario_builder').jstree(true).set_id(childID, ch_uuid);
         });
-
+		
         var uuid = guid();
-//        data.node.li_attr.id = uuid;
         data.node.a_attr.id = uuid + "_anchor";
         $('#jstree_scenario_builder').jstree(true).set_id(data.node.id, uuid);
+       
     });
 });
 
@@ -386,6 +392,16 @@ function createTestContainer() {
     	ref.set_id(sel,newId);
         ref.edit(newId);
     }
+}
+
+function handleAddSuite(data) {
+	var jsonData = data.original.data.jsonSuite;
+	console.log(jsonData);
+	newParentType = $("#jstree_scenario_builder").jstree(true).get_node(data.parent).type;
+	if(newParentType == "root") {
+		$('#jstree_scenario_builder').jstree(true).settings.core.data = jsonData;
+        $('#jstree_scenario_builder').jstree(true).refresh();
+	} 
 }
 
 function createSuite() {

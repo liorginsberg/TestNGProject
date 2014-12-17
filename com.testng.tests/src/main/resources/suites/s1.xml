@@ -1,31 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <suite name="s1">
-  <test name="e0b00739-ca3f-1ce2-d806-8c536cae970e" enabled="true">
+  <test name="db482a44-1ce8-57b1-5920-bd93b28cafe7" enabled="true">
     <classes>
       <class name="com.testng.tests.MyCodeTests">
         <methods>
           <include name="testAdd">
-            <parameter name="num1" value="3"/>
-            <parameter name="num2" value="5"/>
+            <parameter name="num1" value="1"/>
+            <parameter name="num2" value="4"/>
           </include> <!-- testAdd -->
         </methods>
       </class> <!-- com.testng.tests.MyCodeTests -->
     </classes>
-  </test> <!-- e0b00739-ca3f-1ce2-d806-8c536cae970e -->
-  <test name="e480361d-cbb3-e2e9-d214-64d8586b49a9:startContainer" enabled="true"/>
-  <test name="3c9b1dd9-8f1f-dc11-4158-67b4496ce2d6" enabled="true">
-    <classes>
-      <class name="com.testng.tests.MyCodeTests">
-        <methods>
-          <include name="testAdd">
-            <parameter name="num1" value="3"/>
-            <parameter name="num2" value="5"/>
-          </include> <!-- testAdd -->
-        </methods>
-      </class> <!-- com.testng.tests.MyCodeTests -->
-    </classes>
-  </test> <!-- 3c9b1dd9-8f1f-dc11-4158-67b4496ce2d6 -->
-  <test name="e480361d-cbb3-e2e9-d214-64d8586b49a9:endContainer" enabled="true"/>
+  </test> <!-- db482a44-1ce8-57b1-5920-bd93b28cafe7 -->
 </suite> <!-- s1 -->
 

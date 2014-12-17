@@ -30,7 +30,7 @@ public class TestExecutor implements LiveReporterListener {
 	private LiveReporter liveReporter;
 
 	public void runTests(Session session, String execJson) throws Exception {
-		System.out.println("runTest...");
+		
 		liveReporter = LiveReporter.getInstance();
 		liveReporter.addListener(this);
 
@@ -42,6 +42,7 @@ public class TestExecutor implements LiveReporterListener {
 		// NEW IMPLEMENTATION - WRITE XML YOUR SELF
 		XMLStringBuffer suiteBuffer = new XMLStringBuffer();
 		suiteBuffer.setDocType("suite SYSTEM \"" + Parser.TESTNG_DTD_URL + '\"');
+		
 		JsonObject suiteJson = execObb.getAsJsonArray("children").get(0).getAsJsonObject();
 
 		String suiteName = suiteJson.get("text").getAsString();
@@ -56,28 +57,23 @@ public class TestExecutor implements LiveReporterListener {
 		suiteBuffer.pop("suite");
 		
 		String xmlToWrite = suiteBuffer.toXML();
-		// END NEW IMPLEMENTATION
-//		List<XmlSuite> suites = null;
-//		try {
-//			suites = buildXmlSuite(execObb);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			session.close();
-//			return;
-//		}
-
+	
 		String classPath = null;
 
 		// get latest properties of project under test
 		Properties prop = ProjectLoaderServlet.currentProperties;
 
 		String suiteFolder = prop.getProperty("SUITES_DIR");
-//		String generatedFile = suiteFolder + File.separator + suites.get(0).getName() + ".xml";
 		String generatedFile = suiteFolder + File.separator + suiteName + ".xml"; //new imple
 		PrintWriter writer = new PrintWriter(generatedFile, "UTF-8");
 		writer.println(xmlToWrite);
 		writer.close();
 
+		String jsonGeneratedFile = suiteFolder + File.separator + suiteName + ".json";
+		writer = new PrintWriter(jsonGeneratedFile, "UTF-8");
+		writer.println(execJson);
+		writer.close();
+		
 		// get the property value and print it out
 		classPath = prop.getProperty("TEST_CLASSPATH");
 		classPath = System.getProperty("java.class.path") + classPath;
@@ -145,7 +141,7 @@ public class TestExecutor implements LiveReporterListener {
 			if(testJson.get("state").getAsJsonObject().has("checked")) {
 				checked = testJson.get("state").getAsJsonObject().get("checked").getAsBoolean();
 			}
-			attr.setProperty("enable", String.valueOf(checked));
+			attr.setProperty("enabled", String.valueOf(checked));
 			attr.setProperty("name", testJson.get("id").getAsString() + ":startContainer");
 			suiteBuffer.addEmptyElement("test", attr);
 			
