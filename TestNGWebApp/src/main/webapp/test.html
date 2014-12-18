@@ -90,7 +90,7 @@
    			 	console.log(e);
    			 	console.log(data);
 			});
-
+			$('#reporter').niceScroll({cursorcolor:"#888888",cursorwidth: "8px"});
             $('#jstree_scenario_builder')
                     .jstree(
                     {
@@ -263,6 +263,9 @@
                             },
                             "suite_node": {
                             	 "icon": "img/suite.gif"
+                            },
+                            "test_node": {
+                            	 "icon": "img/suite.gif"
                             }
 
                         },
@@ -307,6 +310,7 @@
 
 <script
         src="js/jquery-1.11.1.min.js"></script>
+<script src="js/attrchange.js"></script>
 <script src="jstree/jstree.min.js"></script>
 <script src="js/jquery.nicescroll.js"></script>
 

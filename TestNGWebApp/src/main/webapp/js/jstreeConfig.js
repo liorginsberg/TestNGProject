@@ -110,6 +110,11 @@ function hasFailures(node) {
     return hasFailure;
 }
 
+function scrollReporterEnd(){
+    $("#reporter").animate({ scrollTop: $("#reporter").height() }, "fast");
+}
+
+
 var ws1 = undefined; 
 function execute() {
 	
@@ -200,6 +205,7 @@ function execute() {
 			}
 			console.log(finalReport);
 			$("#reporter").append("<p>" + finalReport + "</p>");
+			scrollReporterEnd()
 		}
 		ws1.onerror = function(event) {
 			console.log("ws1.onerror");
@@ -234,7 +240,7 @@ var handleChildren = false;
 
 $(function() {
 	
-
+	
 	//$("html").niceScroll();
 	//$("#jstree_test_inventory").niceScroll();
 	//$("#jstree_scenario_builder").niceScroll();

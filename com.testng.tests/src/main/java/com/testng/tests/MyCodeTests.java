@@ -1,5 +1,7 @@
 package com.testng.tests;
 
+import java.util.Random;
+
 import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.Reporter;
@@ -25,10 +27,16 @@ public class MyCodeTests {
 
 	}
 
+	private  int randInt(int min, int max) {
+	    Random rand = new Random();
+	    int randomNum = rand.nextInt((max - min) + 1) + min;
+	    return randomNum;
+	}
+	
 	@Test(testName = "test add")
 	@Parameters({ "num1", "num2" })
 	public void testAdd(int num1, int num2) throws InterruptedException {
-		Thread.sleep(300);
+		Thread.sleep(randInt(300, 2000));
 		int res = myCode.add(num1, num2);
 		Assert.assertEquals(res, 9);
 	}

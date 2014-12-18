@@ -39,7 +39,7 @@ body, html {
 
 @media (min-width: 768px) {
 
-    #jstree_test_inventory,#jstree_scenario_builder {
+    #jstree_test_inventory,#jstree_scenario_builder,reporter {
         height: 90%;
         overflow-x: scroll;
         overflow-y: scroll;
@@ -52,7 +52,7 @@ body, html {
 /*height:100%;*/
 /*}*/
 
-#jstree_test_inventory,#jstree_scenario_builder {
+#jstree_test_inventory,#jstree_scenario_builder,#reporter {
     height: 90%;
     /*text-align: center;*/
 }

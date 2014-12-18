@@ -39,7 +39,7 @@ public class ExecutionListener implements ITestListener, IExecutionListener {
 
 	@Override
 	public void onStart(ITestContext context) {
-		Pattern p = Pattern.compile("([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}):([startContainer|endContainer]+)");
+		Pattern p = Pattern.compile("([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}):([startContainer|endContainer|startSuite|endSuite]+)");
 		Matcher m = p.matcher(context.getName());
 		if(m.find()) {
 			String containerEvent = m.group(2);

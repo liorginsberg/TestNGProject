@@ -35,7 +35,7 @@ public class TestExecutor implements LiveReporterListener {
 		liveReporter.addListener(this);
 
 		this.session = session;
-
+		System.out.println(execJson);
 		JsonParser parser = new JsonParser();
 		JsonObject suiteJson = (JsonObject) parser.parse(execJson);
 
@@ -154,7 +154,7 @@ public class TestExecutor implements LiveReporterListener {
 					handleTestJson(suiteBuffer, testJsonChild);
 				}
 			}	
-			attr.setProperty("name", testJson.get("id").getAsString() + (type.equals("test_node") ? ":endContainer": ":endtSuite"));
+			attr.setProperty("name", testJson.get("id").getAsString() + (type.equals("test_node") ? ":endContainer": ":endSuite"));
 			suiteBuffer.addEmptyElement("test", attr);
 		} else {
 			throw new Exception("Should not get here, type: " + testJson.get("type").getAsString());

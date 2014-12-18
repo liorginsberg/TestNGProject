@@ -212,8 +212,14 @@ public class ProjectLoaderServlet extends HttpServlet {
 				
 				JsonParser parser = new JsonParser();
 	            JsonElement jsonElement = parser.parse(new FileReader(mainFile));
-	            node = (JsonObject)jsonElement;	         
-				node.add("data", data);
+	            node = (JsonObject)jsonElement;	
+	            JsonObject state = node.getAsJsonObject("state");
+				state.addProperty("opened", false);
+				JsonObject a_attr = node.getAsJsonObject("a_attr");
+				a_attr.addProperty("class", "myClass");
+				node.add("a_attr", a_attr);
+				node.add("state", state);
+	            node.add("data", data);
 				handledSuitesFiles.add(removeFileExtention(mainFile));
 			}
 		} else {
