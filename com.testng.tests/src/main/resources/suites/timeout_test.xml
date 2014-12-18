@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="ab7709c9-a3f8-ebb2-da29-4a401f146748">
+  <test name="8ef11a47-cdc2-cbd5-8813-0d084df99dfb" enabled="true" time-out="30000">
+    <classes>
+      <class name="com.testng.tests.TestTimeout">
+        <methods>
+          <include name="testTimeout">
+            <parameter name="sleep" value="1000"/>
+          </include> <!-- testTimeout -->
+        </methods>
+      </class> <!-- com.testng.tests.TestTimeout -->
+    </classes>
+  </test> <!-- 8ef11a47-cdc2-cbd5-8813-0d084df99dfb -->
+  <test name="d0db1085-5fa1-e79c-20c5-4e397bbc1c0b" enabled="true" time-out="30000">
+    <classes>
+      <class name="com.testng.tests.TestTimeout">
+        <methods>
+          <include name="testTimeout">
+            <parameter name="sleep" value="1000"/>
+          </include> <!-- testTimeout -->
+        </methods>
+      </class> <!-- com.testng.tests.TestTimeout -->
+    </classes>
+  </test> <!-- d0db1085-5fa1-e79c-20c5-4e397bbc1c0b -->
+  <test name="22f2787e-a37c-7794-88a9-c860b27aae18" enabled="true" time-out="1000">
+    <classes>
+      <class name="com.testng.tests.TestTimeout">
+        <methods>
+          <include name="testTimeout">
+            <parameter name="sleep" value="2000"/>
+          </include> <!-- testTimeout -->
+        </methods>
+      </class> <!-- com.testng.tests.TestTimeout -->
+    </classes>
+  </test> <!-- 22f2787e-a37c-7794-88a9-c860b27aae18 -->
+  <test name="8ed833e4-0d38-98b0-ae5f-9591138f3be3" enabled="true" time-out="1000">
+    <classes>
+      <class name="com.testng.tests.TestTimeout">
+        <methods>
+          <include name="testTimeout">
+            <parameter name="sleep" value="2000"/>
+          </include> <!-- testTimeout -->
+        </methods>
+      </class> <!-- com.testng.tests.TestTimeout -->
+    </classes>
+  </test> <!-- 8ed833e4-0d38-98b0-ae5f-9591138f3be3 -->
+  <test name="cfab249c-5d03-1d58-a047-7415fba53ce2:startContainer" enabled="true"/>
+  <test name="05ccd746-fd23-db48-54dc-68803029bbac" enabled="true" time-out="30000">
+    <classes>
+      <class name="com.testng.tests.TestTimeout">
+        <methods>
+          <include name="testTimeout">
+            <parameter name="sleep" value="1000"/>
+          </include> <!-- testTimeout -->
+        </methods>
+      </class> <!-- com.testng.tests.TestTimeout -->
+    </classes>
+  </test> <!-- 05ccd746-fd23-db48-54dc-68803029bbac -->
+  <test name="dd999a4c-c895-7e7a-fa27-bd0aac89939e" enabled="true" time-out="30000">
+    <classes>
+      <class name="com.testng.tests.TestTimeout">
+        <methods>
+          <include name="testTimeout">
+            <parameter name="sleep" value="1000"/>
+          </include> <!-- testTimeout -->
+        </methods>
+      </class> <!-- com.testng.tests.TestTimeout -->
+    </classes>
+  </test> <!-- dd999a4c-c895-7e7a-fa27-bd0aac89939e -->
+  <test name="cfab249c-5d03-1d58-a047-7415fba53ce2:endContainer" enabled="true"/>
+</suite> <!-- ab7709c9-a3f8-ebb2-da29-4a401f146748 -->
+

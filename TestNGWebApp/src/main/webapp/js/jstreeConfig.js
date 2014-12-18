@@ -25,7 +25,13 @@ function customMenu(node) {
             action: function () {
                 var ref = $('#jstree_scenario_builder').jstree(true);
                 sel = ref.get_selected();
+                var node = ref.get_node(sel);
                 ref.edit(sel);
+                if(node.type == "suite_node") {
+                	var uuid = guid();
+                	ref.set_id(sel, uuid);
+           			node.a_attr.id = uuid + "_anchor";
+                }
             }
         },
 
@@ -307,6 +313,7 @@ $(function() {
         var uuid = guid();
         data.node.a_attr.id = uuid + "_anchor";
         $('#jstree_scenario_builder').jstree(true).set_id(data.node.id, uuid);
+        
        
     });
 });
@@ -390,12 +397,15 @@ testInventoryData = {
 
 function saveParamsForTest() {
 	id = $(".btn-save-params").attr("id");
-	inputArr = $("#params-form").find("input");
+	inputArr = $("#params-form").find("input.param");
 	var paramsWithValues = [];
 	$.each(inputArr, function(index, value){
 		paramsWithValues.push(value.name + ":" + value.value);
 	});
+	
+	inputTimeout = $("#params-form").find("input.timeout")
 	$("#jstree_scenario_builder").jstree(true).get_node(id).li_attr.params = paramsWithValues;
+	$("#jstree_scenario_builder").jstree(true).get_node(id).li_attr.timeout = inputTimeout.val();
 	
 }
 

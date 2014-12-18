@@ -86,9 +86,9 @@
         $(function () {
 
 			$(document).on("dnd_stop.vakata", function (e, data) {
-				console.log("detected 'drop'");
-   			 	console.log(e);
-   			 	console.log(data);
+				//console.log("detected 'drop'");
+   			 	//console.log(e);
+   			 	//console.log(data);
 			});
 			$('#reporter').niceScroll({cursorcolor:"#888888",cursorwidth: "8px"});
             $('#jstree_scenario_builder')
@@ -103,12 +103,16 @@
                             "check_callback": function (operation, node, node_parent, node_position, more) {
                                 // operation can be 'create_node', 'rename_node', 'delete_node', 'move_node' or 'copy_node'
                                 // in case of 'rename_node' node_position is filled with the new node name
-                                console.log("==== from jstree_scenario_builder ====")
-                                console.log(operation);
-                                console.log(node);
-                                console.log(node_parent);
-                                console.log(node_position);
-                                console.log(more);
+                               
+                               if(operation == "move_node" || operation == "copy_node" ) {
+                               		console.log("==== callback operation of jstree_scenario_builder: " + operation + "======");
+                               		console.log("node:");
+                               		console.log(node);
+                               		console.log("node_parent:");
+                               		console.log(node_parent);
+                               		console.log("more:");
+                               		console.log(more);
+                               }
 	
                                 return true;  //allow all other operations
                             },
@@ -192,9 +196,15 @@
   							$("#params-form").append('<div class="control-group">' 
   								+ '<label class="control-label"' + ' for="' + pName + '">' + pName + '</label>'
   									+ '<div class="controls">'
-  										+ '<input id="' + pName + '"' + ' name="' + pName + '"' + ' value="' + pVal +'"' +' placeholder="e.g ..."' + ' class="input-xlarge">'
-  												+ ' <p class="help-block">prameter desk here</p></div></div></fieldset>'); 
+  										+ '<input class="param"' + 'id="' + pName + '"' + ' name="' + pName + '"' + ' value="' + pVal +'"' +' placeholder="e.g ..."' + ' class="input-xlarge">'
+  												+ ' <p class="help-block">prameter desk here</p></div></div>'); 
 						});
+						var timeoutVal = data.node.li_attr.timeout;						
+						$("#params-form").append('<div class="control-group">' 
+  								+ '<label class="control-label"' + ' for="timeout">timeout</label>'
+  									+ '<div class="controls">'
+  										+ '<input class="timeout"' + ' id="timeout"' + ' name="timeout"' + ' value="' + timeoutVal +'"' +' placeholder="e.g ..."' + ' class="input-xlarge">'
+  												+ ' <p class="help-block">prameter desk here</p></div></div></fieldset>'); 
                     	$("#params-form").append('<div class="control-group">'
                     		+ '<div class="controls">' + '<button type="button"' + ' onclick="saveParamsForTest()"' + ' id="' + data.node.id + '"' + ' class="btn btn-primary btn-save-params">Save</button></div></div>');
                     	if($("#testInfoRight").hasClass("open")) {
@@ -219,19 +229,16 @@
                             },
                             "animation": 100,
                             "check_callback": function (operation, node, node_parent, node_position, more) {
-                                // operation can be 'create_node', 'rename_node', 'delete_node', 'move_node' or 'copy_node'
-                                // in case of 'rename_node' node_position is filled with the new node name
-                                if (operation == "copy_node") {
-
-                                }
-//                                console.log("==== from jjstree_test_inventory ====")
-//                                console.log(operation);
-//                                console.log(node.attr("id","new5instance"));
-//                                console.log(node_parent);
-//                                console.log(node_position);
-//                                console.log(more);
-
-                                return more.is_multi;
+                               
+								 if(operation == "move_node" || operation == "copy_node" ) {
+                               		console.log("==== callback operation of jstree_test_inventory: " + operation + "======");
+                               		console.log("node:");
+                               		console.log(node);
+                               		console.log("node_parent:");
+                               		console.log(node_parent);
+                               		console.log("more:");
+                               		console.log(more);
+                               }
 
                             },
                             'data': {

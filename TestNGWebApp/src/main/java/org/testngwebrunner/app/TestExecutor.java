@@ -86,13 +86,16 @@ public class TestExecutor implements LiveReporterListener {
 		if (testJson.get("type").getAsString().equals("test_method_node")) {
 			JsonObject li_attr_json = testJson.getAsJsonObject("li_attr");
 			String testName = li_attr_json.get("testName").getAsString();
+			String timeout = li_attr_json.get("timeout").getAsString();
 			String id = testJson.get("id").getAsString();
+			
 			boolean checked = false;
 			if(testJson.get("state").getAsJsonObject().has("checked")) {
 				checked = testJson.get("state").getAsJsonObject().get("checked").getAsBoolean();
 			}
 			
 			Properties attr = new Properties();
+			attr.setProperty("time-out", timeout);
 			attr.setProperty("enabled", String.valueOf(checked));
 			attr.setProperty("name", id);
 			suiteBuffer.push("test", attr);

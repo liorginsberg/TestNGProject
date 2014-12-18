@@ -215,9 +215,10 @@ public class ProjectLoaderServlet extends HttpServlet {
 	            node = (JsonObject)jsonElement;	
 	            JsonObject state = node.getAsJsonObject("state");
 				state.addProperty("opened", false);
-				JsonObject a_attr = node.getAsJsonObject("a_attr");
-				a_attr.addProperty("class", "myClass");
-				node.add("a_attr", a_attr);
+				// in order to hide expand option
+				//JsonObject li_attr = node.getAsJsonObject(".jstree-leaf");
+				//li_attr.addProperty("class", "hide-expand");
+				//node.add("li_attr", li_attr);
 				node.add("state", state);
 	            node.add("data", data);
 				handledSuitesFiles.add(removeFileExtention(mainFile));
@@ -329,6 +330,7 @@ public class ProjectLoaderServlet extends HttpServlet {
 				}
 
 				li_attr_obj.add("params", paramsArray);
+				li_attr_obj.addProperty("timeout", "0");
 			}
 			if (testMethods == null) {
 				testMethods = new JsonArray();
