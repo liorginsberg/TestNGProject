@@ -54,16 +54,16 @@ function customMenu(node) {
         group: { // The "group" menu item
             label: "Group",
             action: function () {
-                var ref = $('#jstree_demo').jstree(true);
+                var ref = $('#jstree_scenario_builder').jstree(true);
                 sel = ref.get_selected();
                 currentParId = ref.get_parent(sel[0]);
 
-                newSuiteId = ref.create_node(currentParId, {
+                newTestGroupId = ref.create_node(currentParId, {
                     "text": "New Suite",
                     "type": "suite"
                 });
-                ref.move_node(sel, newSuiteId);
-                ref.edit(newSuiteId);
+                ref.move_node(sel, newTestGroupId);
+//              ref.edit(newTestGroupId);
 
             }
         }
@@ -289,22 +289,13 @@ $(function() {
 
         file = this.files[0];
         selectedFile = file;
-        console.log(file);
         fr.readAsText(file);
     });
 
     $("#jstree_scenario_builder").on('copy_node.jstree', function (e, data) {
-//        console.log("====== from copy node listen function ======");
-//        console.log(e);
-//		console.log(data);
-//		if(data.original.type == "suite_file_node") {
-//			//handleAddSuite(data);
-//			return true;
-//		}
 		
         $.each(data.node.children_d, function (index, childID) {
             var ch_uuid = guid();
-            console.log("child " + index + ":");
             var child_node = $('#jstree_scenario_builder').jstree(true).get_node(childID);
             child_node.a_attr.id = ch_uuid + "_anchor";
             $('#jstree_scenario_builder').jstree(true).set_id(childID, ch_uuid);
@@ -426,6 +417,7 @@ function createTestContainer() {
     	container_node.a_attr.id = newId + "_anchor";
     	ref.set_id(sel,newId);
         ref.edit(newId);
+        return newId;
     }
 }
 

@@ -103,17 +103,7 @@
                             "check_callback": function (operation, node, node_parent, node_position, more) {
                                 // operation can be 'create_node', 'rename_node', 'delete_node', 'move_node' or 'copy_node'
                                 // in case of 'rename_node' node_position is filled with the new node name
-                               
-                               if(operation == "move_node" || operation == "copy_node" ) {
-                               		console.log("==== callback operation of jstree_scenario_builder: " + operation + "======");
-                               		console.log("node:");
-                               		console.log(node);
-                               		console.log("node_parent:");
-                               		console.log(node_parent);
-                               		console.log("more:");
-                               		console.log(more);
-                               }
-	
+
                                 return true;  //allow all other operations
                             },
                             "data": {
@@ -129,7 +119,7 @@
                             "always_copy": false,
                             "check_while_dragging": true,
                             "is_draggable": function (nodes) {
-                                console.log(nodes);
+                                //console.log(nodes);
                                 var drag = true;
                                 $.each(nodes, function () {
 //                                    if (this.type != "test_method_node") {
@@ -137,7 +127,7 @@
 //                                        drag = false;
 //                                    }
                                 });
-                                console.log(drag);
+                                //console.log(drag);
                                 return drag;
                             }
                         },
@@ -230,15 +220,8 @@
                             "animation": 100,
                             "check_callback": function (operation, node, node_parent, node_position, more) {
                                
-								 if(operation == "move_node" || operation == "copy_node" ) {
-                               		console.log("==== callback operation of jstree_test_inventory: " + operation + "======");
-                               		console.log("node:");
-                               		console.log(node);
-                               		console.log("node_parent:");
-                               		console.log(node_parent);
-                               		console.log("more:");
-                               		console.log(more);
-                               }
+                            	return false;
+							
 
                             },
                             'data': {
@@ -280,15 +263,12 @@
                             "always_copy": true,
                             "check_while_dragging": true,
                             "is_draggable": function (nodes) {
-                                console.log(nodes);
                                 var drag = true;
                                 $.each(nodes, function () {
-                                    if (this.type != "test_method_node" && this.type != "suite_node") {
-                                        console.log("cant drag element of type: " + this.type);
+                                    if (this.type != "test_method_node" && this.type != "suite_node" && this.type != "test_node") {
                                         drag = false;
                                     }
                                 });
-                                console.log(drag);
                                 return drag;
                             }
                         },
