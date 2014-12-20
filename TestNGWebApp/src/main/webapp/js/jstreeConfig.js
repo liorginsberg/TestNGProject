@@ -37,11 +37,13 @@ function customMenu(node) {
 
         addSuite: {
             label: "Add Suite",
-            action: createSuite
+            action: createSuite,
+            icon: "img/from_jdt/new_testsuite (1).gif"
         },
         addTestContainer: {
             label: "Add Test Container",
-            action: createTestContainer
+            action: createTestContainer,
+            icon: "img/testcontainer_new.png"
         },
         deleteItem: { // The "delete" menu item
             label: "Delete",
@@ -57,13 +59,25 @@ function customMenu(node) {
                 var ref = $('#jstree_scenario_builder').jstree(true);
                 sel = ref.get_selected();
                 currentParId = ref.get_parent(sel[0]);
-
-                newTestGroupId = ref.create_node(currentParId, {
-                    "text": "New Suite",
-                    "type": "suite"
+                
+                if (!sel.length) {
+                    return false;
+                }
+               
+                newContainer = ref.create_node(currentParId, {
+                    "text": "new_test_container",
+                    "type": "test_node"
                 });
-                ref.move_node(sel, newTestGroupId);
-//              ref.edit(newTestGroupId);
+                if (newContainer) {
+                    var newId = guid();
+                	var container_node = ref.get_node(newContainer);
+                	container_node.a_attr.id = newId + "_anchor";
+                	ref.set_id(sel,newId);                  
+                    ref.move_node(sel, newId);
+                    ref.edit(newId);
+                } else {
+                	console.log("new gruop container not created");
+                }
 
             }
         }
@@ -83,22 +97,42 @@ function customMenu(node) {
 
 
 
- function recursiveIteration(object) {
+ function recursiveIteration(object, ref) {
     for (var property in object) {
         if (object.hasOwnProperty(property)) {
             if (typeof object[property] == "object"){
-                recursiveIteration(object[property]);
+                recursiveIteration(object[property], ref);
             }else{
                 if(property == "type") {
-                	if(object["type"] == "test_method_node" || object["type"] == "test_node") {
-                		$("#jstree_scenario_builder").jstree(true).set_icon(object["id"],"img/test.gif");
+                	if(object["type"] == "test_method_node") {
+                		ref.set_icon(object["id"],"img/test.gif");                		
+                	} else if(object["type"] == "test_node") {
+                		ref.set_icon(object["id"],"img/testcontainer.png");
                 	} else if (object["type"] == "suite_node") {
-                		$("#jstree_scenario_builder").jstree(true).set_icon(object["id"],"img/suite.gif");
+                		ref.set_icon(object["id"],"img/suite.gif");
                 	} else {
                 		//skip
                 	}
                 	
                 }
+            }
+        }
+    }
+}
+
+function undeterminedToChecked(object, undeterminedArray) {
+	for (var property in object) {
+        if (object.hasOwnProperty(property)) {
+            if (typeof object[property] == "object"){
+            	undeterminedToChecked(object[property], undeterminedArray);
+            } else {
+            	if(property == "id") {
+            		 if($.inArray(object[property],undeterminedArray) !== -1) {            			 
+            			 console.log("changing the untetermine to checked for " + object[property]);
+            			 object.state.checked = true;
+            			 console.log(object);
+            		 }
+            	}
             }
         }
     }
@@ -128,11 +162,18 @@ function execute() {
 		ws1 = new WebSocket("ws://localhost:8080/WebSocketTestServlet");
 		ws1.onopen = function(event) {
 			 console.log("clear last run");
-			 
-			recursiveIteration($("#jstree_scenario_builder").jstree(true).get_json('#', { 'flat' : false })[0]);
+			ref = $("#jstree_scenario_builder").jstree(true);
+			recursiveIteration(ref.get_json('#', { 'flat' : false })[0], ref);
 			 
 			 console.log("connected: send execution...");
-			 var jsonSuite = $("#jstree_scenario_builder").jstree(true).get_json('#', { 'flat' : false })[0].children[0];
+			 var jsonSuite = ref.get_json('#', { 'flat' : false })[0].children[0];
+			 
+			 var undeterminedArray = []
+			 $.each($(".jstree-undetermined"), function(index, value) {
+				 undeterminedArray.push($(value).parent().parent().attr("id"));  
+			 });
+			 var finalJson = undeterminedToChecked(jsonSuite, undeterminedArray);
+			 
 			 var jsonStringSuite = JSON.stringify(jsonSuite);
 		     ws1.send(jsonStringSuite); 
 		}
@@ -150,15 +191,15 @@ function execute() {
 				break;
 			case "startContainer":
 				
-				$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testrun.gif");
+				$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testcontainer_run.png");
 				
 				finalReport += message.type + " - " + message.message;
 				break;
 			case "endContainer":
 				if(hasFailures($("#jstree_scenario_builder").jstree(true).get_node(message.message))){
-					$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testfail.gif");
+					$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testcontainer_fail.png");
 				} else {
-					$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testok.gif");
+					$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testcontainer_ok.png");
 				}
 				finalReport += message.type + " - " + message.message;
 				break;
@@ -250,7 +291,7 @@ $(function() {
 	//$("html").niceScroll();
 	//$("#jstree_test_inventory").niceScroll();
 	//$("#jstree_scenario_builder").niceScroll();
-	$("#jstree_scenario_builder").on('check_node.jstree', function(e, data) {
+	$(".jstree_scenario_builder").on('check_node.jstree', function(e, data) {
 	    /*var nodeId = data.node.id;
 	    var parentNodeId = data.node.parent;
 	   
@@ -417,7 +458,6 @@ function createTestContainer() {
     	container_node.a_attr.id = newId + "_anchor";
     	ref.set_id(sel,newId);
         ref.edit(newId);
-        return newId;
     }
 }
 

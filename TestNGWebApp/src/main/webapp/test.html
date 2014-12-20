@@ -133,7 +133,6 @@
                         },
                         "checkbox" : {
                             "tie_selection": false,
-                            "three_state": false,
                             "whole_node": false
                         },
                         "types": {
@@ -151,7 +150,7 @@
                                 "valid_children": [ "test_node", "test_method_node", "suite_node" ]
                             },
                             "test_node": {
-                                "icon": "img/test.gif",
+                                "icon": "img/testcontainer.png",
                                 "valid_children": [ "test_node", "test_method_node" , "suite_node"]
                             },
                             "test_method_node": {
@@ -218,11 +217,8 @@
                                 'responsive': true
                             },
                             "animation": 100,
-                            "check_callback": function (operation, node, node_parent, node_position, more) {
-                               
+                            "check_callback": function (operation, node, node_parent, node_position, more) {                             
                             	return false;
-							
-
                             },
                             'data': {
                                 "text": "root",
@@ -248,14 +244,14 @@
                                 "max_children": 0
                             },
                             "suite_folder_node": {
-                            	 "icon": "img/suite.gif",
+                            	 "icon": "img/folder.png",
                             	 "valid_children": ["suite_node", "suite_folder_node"]
                             },
                             "suite_node": {
                             	 "icon": "img/suite.gif"
                             },
                             "test_node": {
-                            	 "icon": "img/suite.gif"
+                            	 "icon": "img/testcontainer.png"
                             }
 
                         },
