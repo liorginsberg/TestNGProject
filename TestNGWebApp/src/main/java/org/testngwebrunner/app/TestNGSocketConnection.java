@@ -20,7 +20,7 @@ public class TestNGSocketConnection {
 
 		
 			OutputStreamWriter osw = new OutputStreamWriter(bos);
-			osw.write("Client Says: HHHAAAAAAAAAAAAAAAAYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY!!!!!!!" +  (char) 13);
+			osw.write("pause" +  (char) 13);
 			osw.flush();
 			BufferedInputStream bis = new BufferedInputStream(connection.getInputStream());
 		

@@ -17,14 +17,10 @@ import org.testng.ITestResult;
 
 public class TestNGListenerSocket implements IExecutionListener, ITestListener {
 
-	static ServerSocket serverSocket;
 	private ServerSocket serverSocket;
 	protected final static int port = 4441;
-	static Socket connection;
 
-	static boolean first;
 	static StringBuffer process;
-	static String TimeStamp;
 
 	private boolean pause = false;
 	private boolean serverUP = false;
@@ -33,35 +29,39 @@ public class TestNGListenerSocket implements IExecutionListener, ITestListener {
 	public void onExecutionStart() {
 		startServer();
 		System.out.println("execution start");
-//		try {
-//			server = new ServerSocket(port);
-//			System.out.println("server socket: initialize");
-//			int character;
-//			while (true) {
-//				connection = server.accept();
-//				BufferedInputStream is = new BufferedInputStream(connection.getInputStream());
-//				InputStreamReader isr = new InputStreamReader(is);
-//				process = new StringBuffer();
-//				while ((character = isr.read()) != 13) {
-//					process.append((char) character);
-//				}
-//				BufferedOutputStream os = new BufferedOutputStream(connection.getOutputStream());
-//				OutputStreamWriter osw = new OutputStreamWriter(os);
-//				osw.write("Server Respond:" + process.toString() + (char) 13);
-//				osw.flush();
-//				break;
-//			}
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		// try {
+		// server = new ServerSocket(port);
+		// System.out.println("server socket: initialize");
+		// int character;
+		// while (true) {
+		// connection = server.accept();
+		// BufferedInputStream is = new
+		// BufferedInputStream(connection.getInputStream());
+		// InputStreamReader isr = new InputStreamReader(is);
+		// process = new StringBuffer();
+		// while ((character = isr.read()) != 13) {
+		// process.append((char) character);
+		// }
+		// BufferedOutputStream os = new
+		// BufferedOutputStream(connection.getOutputStream());
+		// OutputStreamWriter osw = new OutputStreamWriter(os);
+		// osw.write("Server Respond:" + process.toString() + (char) 13);
+		// osw.flush();
+		// break;
+		// }
+		// } catch (IOException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 
 	}
 
 	@Override
 	public void onExecutionFinish() {
 		try {
-			server.close();
+			System.out.println("closing server...");
+			serverUP = false;
+			serverSocket.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -71,7 +71,6 @@ public class TestNGListenerSocket implements IExecutionListener, ITestListener {
 
 	@Override
 	public void onTestStart(ITestResult result) {
-		
 
 	}
 
@@ -101,7 +100,16 @@ public class TestNGListenerSocket implements IExecutionListener, ITestListener {
 
 	@Override
 	public void onStart(ITestContext context) {
-		while (pause) {}
+
+		while (pause) {
+			System.out.println("pausing,,,");
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 
 	}
 
@@ -112,10 +120,10 @@ public class TestNGListenerSocket implements IExecutionListener, ITestListener {
 	}
 
 	public void startServer() {
+		serverUP = true;
 		final ExecutorService clientProcessingPool = Executors.newFixedThreadPool(10);
 
 		Runnable serverTask = new Runnable() {
-			
 
 			@Override
 			public void run() {
@@ -133,6 +141,7 @@ public class TestNGListenerSocket implements IExecutionListener, ITestListener {
 			}
 		};
 		Thread serverThread = new Thread(serverTask);
+		serverThread.setName("server4441");
 		serverThread.start();
 
 	}
@@ -147,6 +156,7 @@ public class TestNGListenerSocket implements IExecutionListener, ITestListener {
 		@Override
 		public void run() {
 			try {
+				System.out.println("a new socket runnable running");
 				BufferedInputStream is = new BufferedInputStream(clientSocket.getInputStream());
 				InputStreamReader isr = new InputStreamReader(is);
 				process = new StringBuffer();
@@ -154,7 +164,7 @@ public class TestNGListenerSocket implements IExecutionListener, ITestListener {
 				while ((character = isr.read()) != 13) {
 					process.append((char) character);
 				}
-				if(process.toString().equals("pause")) {
+				if (process.toString().equals("pause")) {
 					pause = true;
 				}
 				BufferedOutputStream os = new BufferedOutputStream(clientSocket.getOutputStream());
