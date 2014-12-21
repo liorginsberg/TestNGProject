@@ -267,6 +267,11 @@ function execute() {
 }
 
 
+function sendCmd(cmd) {
+	console.log("send command " + cmd)
+	ws1.send(cmd);
+}
+
 function expandAllTree(jstreeId) {
 	var jstreeId = "#" + jstreeId; 
 	$(jstreeId).jstree(true).open_all();

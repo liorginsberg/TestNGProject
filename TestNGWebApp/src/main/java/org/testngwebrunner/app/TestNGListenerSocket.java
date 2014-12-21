@@ -29,31 +29,6 @@ public class TestNGListenerSocket implements IExecutionListener, ITestListener {
 	public void onExecutionStart() {
 		startServer();
 		System.out.println("execution start");
-		// try {
-		// server = new ServerSocket(port);
-		// System.out.println("server socket: initialize");
-		// int character;
-		// while (true) {
-		// connection = server.accept();
-		// BufferedInputStream is = new
-		// BufferedInputStream(connection.getInputStream());
-		// InputStreamReader isr = new InputStreamReader(is);
-		// process = new StringBuffer();
-		// while ((character = isr.read()) != 13) {
-		// process.append((char) character);
-		// }
-		// BufferedOutputStream os = new
-		// BufferedOutputStream(connection.getOutputStream());
-		// OutputStreamWriter osw = new OutputStreamWriter(os);
-		// osw.write("Server Respond:" + process.toString() + (char) 13);
-		// osw.flush();
-		// break;
-		// }
-		// } catch (IOException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-
 	}
 
 	@Override
@@ -102,7 +77,7 @@ public class TestNGListenerSocket implements IExecutionListener, ITestListener {
 	public void onStart(ITestContext context) {
 
 		while (pause) {
-			System.out.println("pausing,,,");
+			System.out.println("in pause mode");
 			try {
 				Thread.sleep(2000);
 			} catch (InterruptedException e) {
@@ -115,7 +90,15 @@ public class TestNGListenerSocket implements IExecutionListener, ITestListener {
 
 	@Override
 	public void onFinish(ITestContext context) {
-		// TODO Auto-generated method stub
+		while (pause) {
+			System.out.println("in pause mode");
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 
 	}
 
@@ -166,6 +149,10 @@ public class TestNGListenerSocket implements IExecutionListener, ITestListener {
 				}
 				if (process.toString().equals("pause")) {
 					pause = true;
+				} else if(process.toString().equals("resume")) {			
+					pause = false;
+				} else {
+					System.out.println("message not handled: " + process.toString());
 				}
 				BufferedOutputStream os = new BufferedOutputStream(clientSocket.getOutputStream());
 				OutputStreamWriter osw = new OutputStreamWriter(os);

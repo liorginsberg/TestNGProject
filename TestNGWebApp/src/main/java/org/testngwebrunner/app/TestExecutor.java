@@ -28,6 +28,7 @@ public class TestExecutor implements LiveReporterListener {
 
 	private Session session;
 	private LiveReporter liveReporter;
+	private Process p;
 
 	public void runTests(Session session, String execJson) throws Exception {
 		
@@ -79,6 +80,10 @@ public class TestExecutor implements LiveReporterListener {
 
 		testCommandLine(classPath, generatedFile);
 
+	}
+	
+	public void stopExecution() {
+		p.destroy();
 	}
 
 	private void handleTestJson(XMLStringBuffer suiteBuffer, JsonObject testJson) throws Exception {
@@ -165,23 +170,9 @@ public class TestExecutor implements LiveReporterListener {
 
 	}
 
-	private List<XmlSuite> buildXmlSuite(JsonObject execObb) {
-
-		List<XmlSuite> suitesList = new ArrayList<XmlSuite>();
-
-		JsonArray rootArray = execObb.getAsJsonArray("children");
-		for (JsonElement child : rootArray) {
-
-			JsonObject suitChild = (JsonObject) child;
-			XmlSuite xmlSuite = createXmlSuite(suitChild);
-
-			suitesList.add(xmlSuite);
-		}
-		return suitesList;
-	}
 
 	private void testCommandLine(String classpath, String xmlFile) throws Exception {
-		Process p = Runtime.getRuntime().exec(
+		p = Runtime.getRuntime().exec(
 				"cmd /c java -cp \"" + classpath + "\"  org.testng.TestNG " + xmlFile
 						+ " -listener org.testngwebrunner.app.ExecutionListener,org.testngwebrunner.app.TestNGListenerSocket -usedefaultlisteners false");
 		inheritIO(p.getInputStream(), System.out);
@@ -201,84 +192,6 @@ public class TestExecutor implements LiveReporterListener {
 				}
 			}
 		}).start();
-	}
-
-	// in case type test_method_node
-	private XmlSuite createXmlSuite(JsonObject suiteJson) {
-		XmlSuite xmlSuite = new XmlSuite();
-		xmlSuite.setVerbose(-1);
-		String suiteName = suiteJson.get("text").getAsString();
-		xmlSuite.setName(suiteName);
-
-		JsonArray rootArray = suiteJson.getAsJsonArray("children");
-		// Map<String, Integer> testCounter = new HashMap<String, Integer>();
-		for (JsonElement child : rootArray) {
-			JsonObject testChild = (JsonObject) child;
-			XmlTest xmlTest = createXmlTest(testChild);
-			// String testName = xmlTest.getName();
-			// if (testCounter.containsKey(testName)) {
-			// int count = testCounter.get(testName);
-			// xmlTest.setName(testName + "(" + ++count + ")");
-			// testCounter.put(testName, count);
-			// } else {
-			// testCounter.put(xmlTest.getName(), 0);
-			// }
-
-			xmlSuite.addTest(xmlTest);
-		}
-		String xmlString = xmlSuite.toXml();// TODO Auto-generated method
-		System.out.println(xmlString);
-		return xmlSuite;
-
-	}
-
-	private XmlTest createXmlTest(JsonObject testJson) {
-		XmlTest xmlTest = new XmlTest();
-		xmlTest.setVerbose(2);
-		xmlTest.setPreserveOrder("true");
-		JsonObject li_attr_json = testJson.getAsJsonObject("li_attr");
-		// TODO HAndle
-		// boolean checked =
-		// testJson.getAsJsonObject("state").get("checked").getAsBoolean();
-		String testName = li_attr_json.get("testName").getAsString();
-		String id = testJson.get("id").getAsString();
-		// if (!testName.isEmpty()) {
-		// xmlTest.setName(testName);
-		// }
-		// testName = testJson.get("text").getAsString();
-		xmlTest.setName(id);
-
-		String className = li_attr_json.get("className").getAsString();
-		String methodName = li_attr_json.get("methodName").getAsString();
-		JsonArray paramArray = li_attr_json.getAsJsonArray("params");
-		XmlClass xmlClass = new XmlClass(className, false);
-
-		List<XmlInclude> includes = new ArrayList<XmlInclude>();
-
-		XmlInclude inc = new XmlInclude(methodName);
-		if (paramArray != null) {
-			for (JsonElement jsonElement : paramArray) {
-
-				String paramString = jsonElement.getAsString();
-				String[] paramPair = paramString.split(":");
-				String param = paramPair[0];
-				String value = null;
-				try {
-					value = paramPair[1];
-				} catch (Exception e) {
-					liveReporter.report("{\"type\":\"missingParamValue\",\"message\":\"param missing\"}");
-				}
-				inc.addParameter(param, value);
-			}
-		}
-		includes.add(inc);
-		// inc.setDescription("my desc");
-		xmlClass.setIncludedMethods(includes);
-		List<XmlClass> classes = new ArrayList<XmlClass>();
-		classes.add(xmlClass);
-		xmlTest.setClasses(classes);
-
-		return xmlTest;
 	}
 
 	@Override
@@ -304,5 +217,97 @@ public class TestExecutor implements LiveReporterListener {
 		}
 
 	}
+	
+	private List<XmlSuite> buildXmlSuite(JsonObject execObb) {
+		
+		List<XmlSuite> suitesList = new ArrayList<XmlSuite>();
+		
+		JsonArray rootArray = execObb.getAsJsonArray("children");
+		for (JsonElement child : rootArray) {
+			
+			JsonObject suitChild = (JsonObject) child;
+			XmlSuite xmlSuite = createXmlSuite(suitChild);
+			
+			suitesList.add(xmlSuite);
+		}
+		return suitesList;
+	}
 
+	// in case type test_method_node
+	private XmlSuite createXmlSuite(JsonObject suiteJson) {
+		XmlSuite xmlSuite = new XmlSuite();
+		xmlSuite.setVerbose(-1);
+		String suiteName = suiteJson.get("text").getAsString();
+		xmlSuite.setName(suiteName);
+		
+		JsonArray rootArray = suiteJson.getAsJsonArray("children");
+		// Map<String, Integer> testCounter = new HashMap<String, Integer>();
+		for (JsonElement child : rootArray) {
+			JsonObject testChild = (JsonObject) child;
+			XmlTest xmlTest = createXmlTest(testChild);
+			// String testName = xmlTest.getName();
+			// if (testCounter.containsKey(testName)) {
+			// int count = testCounter.get(testName);
+			// xmlTest.setName(testName + "(" + ++count + ")");
+			// testCounter.put(testName, count);
+			// } else {
+			// testCounter.put(xmlTest.getName(), 0);
+			// }
+			
+			xmlSuite.addTest(xmlTest);
+		}
+		String xmlString = xmlSuite.toXml();// TODO Auto-generated method
+		System.out.println(xmlString);
+		return xmlSuite;
+		
+	}
+	
+	private XmlTest createXmlTest(JsonObject testJson) {
+		XmlTest xmlTest = new XmlTest();
+		xmlTest.setVerbose(2);
+		xmlTest.setPreserveOrder("true");
+		JsonObject li_attr_json = testJson.getAsJsonObject("li_attr");
+		// TODO HAndle
+		// boolean checked =
+		// testJson.getAsJsonObject("state").get("checked").getAsBoolean();
+		String testName = li_attr_json.get("testName").getAsString();
+		String id = testJson.get("id").getAsString();
+		// if (!testName.isEmpty()) {
+		// xmlTest.setName(testName);
+		// }
+		// testName = testJson.get("text").getAsString();
+		xmlTest.setName(id);
+		
+		String className = li_attr_json.get("className").getAsString();
+		String methodName = li_attr_json.get("methodName").getAsString();
+		JsonArray paramArray = li_attr_json.getAsJsonArray("params");
+		XmlClass xmlClass = new XmlClass(className, false);
+		
+		List<XmlInclude> includes = new ArrayList<XmlInclude>();
+		
+		XmlInclude inc = new XmlInclude(methodName);
+		if (paramArray != null) {
+			for (JsonElement jsonElement : paramArray) {
+				
+				String paramString = jsonElement.getAsString();
+				String[] paramPair = paramString.split(":");
+				String param = paramPair[0];
+				String value = null;
+				try {
+					value = paramPair[1];
+				} catch (Exception e) {
+					liveReporter.report("{\"type\":\"missingParamValue\",\"message\":\"param missing\"}");
+				}
+				inc.addParameter(param, value);
+			}
+		}
+		includes.add(inc);
+		// inc.setDescription("my desc");
+		xmlClass.setIncludedMethods(includes);
+		List<XmlClass> classes = new ArrayList<XmlClass>();
+		classes.add(xmlClass);
+		xmlTest.setClasses(classes);
+		
+		return xmlTest;
+	}
 }
