@@ -31,7 +31,9 @@ public class TestExecutorWebSocket {
 			conn.resumeExec();
 			conn.close();
 		} else if (message.equals("stop")) {
-			testExecutor.stopExecution();
+			TestNGSocketConnection conn = new TestNGSocketConnection();
+			conn.skipAll();
+			conn.close();
 		} else {
 			testExecutor = new TestExecutor();
 			testExecutor.runTests(session, message);

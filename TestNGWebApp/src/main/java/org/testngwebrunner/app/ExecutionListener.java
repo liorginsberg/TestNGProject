@@ -53,7 +53,7 @@ public class ExecutionListener implements ITestListener, IExecutionListener {
 
 	@Override
 	public void onFinish(ITestContext context) {
-	//	System.out.println("{\"type\":\"finish\", \"message\":\"" + context.getName() + "\"}");
+		System.out.println("{\"type\":\"finish\", \"message\":\"" + context.getName() + "\"}");
 
 	}
 

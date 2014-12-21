@@ -14,6 +14,7 @@ import org.testng.IExecutionListener;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
+import org.testngwebrunner.app.listeners.MyTransformer;
 
 public class TestNGListenerSocket implements IExecutionListener, ITestListener {
 
@@ -151,6 +152,8 @@ public class TestNGListenerSocket implements IExecutionListener, ITestListener {
 					pause = true;
 				} else if(process.toString().equals("resume")) {			
 					pause = false;
+				} else if(process.toString().equals("skipAll")) {			
+					MyMethodInterceptor.stopAll = true;
 				} else {
 					System.out.println("message not handled: " + process.toString());
 				}

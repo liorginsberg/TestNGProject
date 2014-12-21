@@ -150,6 +150,18 @@ function hasFailures(node) {
     return hasFailure;
 }
 
+function allSkiped(node) {
+	var allSkiped = true;
+	$.each(node.children_d,function(index, value) {
+		childNode = $("#jstree_scenario_builder").jstree(true).get_node(value);
+		if(childNode.icon == "img/testfail.gif" || childNode.icon == "img/testok.gif") {		
+			allSkiped = false;
+			return false;
+		}
+	});
+	return allSkiped;
+}
+
 function scrollReporterEnd(){
     $("#reporter").animate({ scrollTop: $("#reporter").height() }, "fast");
 }
@@ -196,10 +208,13 @@ function execute() {
 				finalReport += message.type + " - " + message.message;
 				break;
 			case "endContainer":
-				if(hasFailures($("#jstree_scenario_builder").jstree(true).get_node(message.message))){
-					$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testcontainer_fail.png");
+				ref = $("#jstree_scenario_builder").jstree(true);
+				if(allSkiped(ref.get_node(message.message))) {
+					ref.set_icon(message.message,"img/testcontainer.png");
+				}else if(hasFailures(ref.get_node(message.message))){
+					ref.set_icon(message.message,"img/testcontainer_fail.png");
 				} else {
-					$("#jstree_scenario_builder").jstree(true).set_icon(message.message,"img/testcontainer_ok.png");
+					ref.set_icon(message.message,"img/testcontainer_ok.png");
 				}
 				finalReport += message.type + " - " + message.message;
 				break;
@@ -227,6 +242,10 @@ function execute() {
 				finalReport += message.type + " - " + message.message;
 				break;
 			case "finish":
+				ref = $("#jstree_scenario_builder").jstree(true);
+				if(ref.get_node(message.message).icon == "img/testrun.gif") {
+					ref.set_icon(message.message,"img/test.gif");
+				}
 				finalReport += message.type + " - " + message.message;
 				break;
 			case "testSuccess":

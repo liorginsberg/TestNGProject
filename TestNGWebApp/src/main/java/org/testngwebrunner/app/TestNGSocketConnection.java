@@ -7,8 +7,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 
-import com.sun.corba.se.pept.transport.Connection;
-
 public class TestNGSocketConnection {
 
 	
@@ -56,6 +54,20 @@ public class TestNGSocketConnection {
 		
 		System.out.println(instr.toString());
 	}
+	
+	public void skipAll() throws IOException {
+		System.out.println("about to send \"skipAll\" to TestNGServersocket" );
+		osw.write("skipAll" + (char) 13);
+		osw.flush();
+		int c;
+		while ((c = isr.read()) != 13) {
+			instr.append((char) c);
+		}
+		
+		System.out.println(instr.toString());
+	}
+	
+	
 	public void echo(String msg) throws IOException {
 		
 		System.out.println("about to send \"" + msg + "\" to TestNGServersocket" );
@@ -68,6 +80,7 @@ public class TestNGSocketConnection {
 		System.out.println(instr.toString());
 	}
 	
+	
 	public void close() {
 		try {
 			osw.close();
@@ -78,4 +91,5 @@ public class TestNGSocketConnection {
 		}
 	
 	}
+
 }

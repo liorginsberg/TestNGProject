@@ -15,9 +15,6 @@ public class MyMethodSelector implements IMethodSelector{
 
 	@Override
 	public boolean includeMethod(IMethodSelectorContext context, ITestNGMethod method, boolean isTestMethod) {
-		if(method.getMethodName().equals("testAdd")) {
-			method.addMethodDependedUpon("test1");
-		}
 		System.out.println("MyMethodSelector.includeMethod " + method.getMethodName());
 		return true;
 	}
