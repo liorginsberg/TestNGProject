@@ -199,6 +199,17 @@ function execute() {
 			case "finishExecution":
 				ws1.close();
 				ws1 = undefined; 
+				ref = $("#jstree_scenario_builder").jstree(true);
+				allTree = ref.get_json('#', { 'flat' : false })[0];
+				suiteId = allTree.children[0].id;
+				if(allSkiped(ref.get_node(suiteId))) {
+					ref.set_icon(suiteId,"img/suite.gif");
+				}else if(hasFailures(ref.get_node(suiteId))){
+					ref.set_icon(suiteId,"img/suitefail.gif");
+				} else {
+					ref.set_icon(suiteId,"img/suiteok.gif");
+				}
+				
 				finalReport += "Execution Finish";
 				break;
 			case "startContainer":
@@ -310,8 +321,17 @@ var handleChildren = false;
 
 
 $(function() {
-	
-	
+	//prevent unload by mistake
+//	$(window).on('beforeunload', function(e) {
+//
+//	    if (1)
+//	    {
+//	    	console.log(e);
+//	        return "Unloading this page may lose .What do you want to do..."
+//	        e.preventDefault();
+//	    }
+//	});
+
 	//$("html").niceScroll();
 	//$("#jstree_test_inventory").niceScroll();
 	//$("#jstree_scenario_builder").niceScroll();

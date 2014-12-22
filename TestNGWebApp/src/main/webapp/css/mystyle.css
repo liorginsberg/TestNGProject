@@ -13,6 +13,11 @@ body, html {
        display:none;
 }
 
+.col-padding {
+	padding: 30;
+}
+
+
 #testInfo {
     position: absolute;
     z-index: 1000;

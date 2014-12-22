@@ -1,84 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite name="74960208-1d8a-77db-2f37-4642fa2c1242">
-  <test name="f01d3ce5-d8b8-36b2-53df-afbfa7c14821" enabled="true" time-out="30000">
+<suite name="4a09999f-62e3-97d8-8c6a-c4801ba6bab0">
+  <test name="fb75fd44-18e0-d37e-1bad-b2858f1c2f62:startContainer" enabled="true"/>
+  <test name="18ad97b4-6e15-b341-1152-800d24c197d5" enabled="true" time-out="30000">
     <classes>
       <class name="com.testng.tests.TestTimeout">
         <methods>
           <include name="testTimeout">
-            <parameter name="sleep" value="1000"/>
+            <parameter name="sleep" value="356"/>
           </include> <!-- testTimeout -->
         </methods>
       </class> <!-- com.testng.tests.TestTimeout -->
     </classes>
-  </test> <!-- f01d3ce5-d8b8-36b2-53df-afbfa7c14821 -->
-  <test name="aa474a03-0f9d-8a20-3a7a-24bd66eb3649" enabled="true" time-out="40000">
+  </test> <!-- 18ad97b4-6e15-b341-1152-800d24c197d5 -->
+  <test name="a4f456c9-cf27-66f9-4d1b-d0f117d0f012" enabled="true" time-out="100">
     <classes>
       <class name="com.testng.tests.TestTimeout">
         <methods>
           <include name="testTimeout">
-            <parameter name="sleep" value="20000"/>
+            <parameter name="sleep" value="455"/>
           </include> <!-- testTimeout -->
         </methods>
       </class> <!-- com.testng.tests.TestTimeout -->
     </classes>
-  </test> <!-- aa474a03-0f9d-8a20-3a7a-24bd66eb3649 -->
-  <test name="ed5b3b9d-63ab-416a-4af4-24b112f7bad2" enabled="true" time-out="30000">
-    <classes>
-      <class name="com.testng.tests.TestTimeout">
-        <methods>
-          <include name="testTimeout">
-            <parameter name="sleep" value="10000"/>
-          </include> <!-- testTimeout -->
-        </methods>
-      </class> <!-- com.testng.tests.TestTimeout -->
-    </classes>
-  </test> <!-- ed5b3b9d-63ab-416a-4af4-24b112f7bad2 -->
-  <test name="0cdbd012-d867-ca0a-9020-b475fb841b54" enabled="true" time-out="5000">
-    <classes>
-      <class name="com.testng.tests.TestTimeout">
-        <methods>
-          <include name="testTimeout">
-            <parameter name="sleep" value="2000"/>
-          </include> <!-- testTimeout -->
-        </methods>
-      </class> <!-- com.testng.tests.TestTimeout -->
-    </classes>
-  </test> <!-- 0cdbd012-d867-ca0a-9020-b475fb841b54 -->
-  <test name="ecf5c373-35a4-05a3-66b8-f54a93ad33f1" enabled="true" time-out="5000">
-    <classes>
-      <class name="com.testng.tests.TestTimeout">
-        <methods>
-          <include name="testTimeout">
-            <parameter name="sleep" value="4000"/>
-          </include> <!-- testTimeout -->
-        </methods>
-      </class> <!-- com.testng.tests.TestTimeout -->
-    </classes>
-  </test> <!-- ecf5c373-35a4-05a3-66b8-f54a93ad33f1 -->
-  <test name="ae7e1e39-7340-73ad-efaf-7a8f5c03d44f:startContainer" enabled="true"/>
-  <test name="f285c78d-fb0b-63ce-390d-54c1b409ce0a" enabled="true" time-out="30000">
-    <classes>
-      <class name="com.testng.tests.TestTimeout">
-        <methods>
-          <include name="testTimeout">
-            <parameter name="sleep" value="12000"/>
-          </include> <!-- testTimeout -->
-        </methods>
-      </class> <!-- com.testng.tests.TestTimeout -->
-    </classes>
-  </test> <!-- f285c78d-fb0b-63ce-390d-54c1b409ce0a -->
-  <test name="09fce5ef-6b57-0d13-5721-2e261eb1c4ef" enabled="true" time-out="30000">
-    <classes>
-      <class name="com.testng.tests.TestTimeout">
-        <methods>
-          <include name="testTimeout">
-            <parameter name="sleep" value="15000"/>
-          </include> <!-- testTimeout -->
-        </methods>
-      </class> <!-- com.testng.tests.TestTimeout -->
-    </classes>
-  </test> <!-- 09fce5ef-6b57-0d13-5721-2e261eb1c4ef -->
-  <test name="ae7e1e39-7340-73ad-efaf-7a8f5c03d44f:endContainer" enabled="true"/>
-</suite> <!-- 74960208-1d8a-77db-2f37-4642fa2c1242 -->
+  </test> <!-- a4f456c9-cf27-66f9-4d1b-d0f117d0f012 -->
+  <test name="fb75fd44-18e0-d37e-1bad-b2858f1c2f62:endContainer" enabled="true"/>
+</suite> <!-- 4a09999f-62e3-97d8-8c6a-c4801ba6bab0 -->
 

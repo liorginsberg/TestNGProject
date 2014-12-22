@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite name="f360f81d-51d8-3006-f318-d17bc0624d8a">
-  <test name="dceecdcc-cbe5-fe26-0f3f-86bc357ccd8d:startContainer" enabled="true"/>
-  <test name="0c56bfe6-8396-ab57-31a7-510d5ec5a23e" enabled="true" time-out="30000">
+<suite name="ed901333-ad90-b8ea-270e-e1ddeaa08599">
+  <test name="832fca4a-509d-4ee4-36de-721d5749717a:startContainer" enabled="true"/>
+  <test name="1b908fb3-1f82-2653-933c-786b7698392b" enabled="true" time-out="30000">
     <classes>
       <class name="com.testng.tests.TestTimeout">
         <methods>
@@ -12,8 +12,8 @@
         </methods>
       </class> <!-- com.testng.tests.TestTimeout -->
     </classes>
-  </test> <!-- 0c56bfe6-8396-ab57-31a7-510d5ec5a23e -->
-  <test name="c5ea10e6-6855-1feb-6222-a5c864241bdd" enabled="true" time-out="30000">
+  </test> <!-- 1b908fb3-1f82-2653-933c-786b7698392b -->
+  <test name="b75c0dcc-016c-81c5-cf0a-5cf83bb2165e" enabled="true" time-out="30000">
     <classes>
       <class name="com.testng.tests.TestTimeout">
         <methods>
@@ -23,8 +23,8 @@
         </methods>
       </class> <!-- com.testng.tests.TestTimeout -->
     </classes>
-  </test> <!-- c5ea10e6-6855-1feb-6222-a5c864241bdd -->
-  <test name="f5a9fbcd-882b-cb80-c177-87d479453c04" enabled="true" time-out="1000">
+  </test> <!-- b75c0dcc-016c-81c5-cf0a-5cf83bb2165e -->
+  <test name="9c43d09f-50d0-88fb-9aa3-f2f4e59176ae" enabled="true" time-out="1000">
     <classes>
       <class name="com.testng.tests.TestTimeout">
         <methods>
@@ -34,8 +34,8 @@
         </methods>
       </class> <!-- com.testng.tests.TestTimeout -->
     </classes>
-  </test> <!-- f5a9fbcd-882b-cb80-c177-87d479453c04 -->
-  <test name="fb54978f-5c42-6d44-5c7d-d4d48a1d9b54" enabled="true" time-out="1000">
+  </test> <!-- 9c43d09f-50d0-88fb-9aa3-f2f4e59176ae -->
+  <test name="79f0e507-daa6-22c1-ef18-49c8af722cc4" enabled="true" time-out="1000">
     <classes>
       <class name="com.testng.tests.TestTimeout">
         <methods>
@@ -45,7 +45,7 @@
         </methods>
       </class> <!-- com.testng.tests.TestTimeout -->
     </classes>
-  </test> <!-- fb54978f-5c42-6d44-5c7d-d4d48a1d9b54 -->
-  <test name="dceecdcc-cbe5-fe26-0f3f-86bc357ccd8d:endContainer" enabled="true"/>
-</suite> <!-- f360f81d-51d8-3006-f318-d17bc0624d8a -->
+  </test> <!-- 79f0e507-daa6-22c1-ef18-49c8af722cc4 -->
+  <test name="832fca4a-509d-4ee4-36de-721d5749717a:endContainer" enabled="true"/>
+</suite> <!-- ed901333-ad90-b8ea-270e-e1ddeaa08599 -->
 

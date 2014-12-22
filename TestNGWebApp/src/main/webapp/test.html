@@ -32,12 +32,12 @@
 </div>
 <div class="container-fluid">
     <div class="row">
-     <div class="col-lg-3 col-lg-offset-1">
+     <div class="col-lg-3 col-padding">
         <input type="file"/>
         </div>
     </div>
     <div class="row">
-        <div class="col-lg-2 col-lg-offset-1">
+        <div class="col-lg-4 col-padding">
             <h3>Scenario</h3>
 
             <button onclick="execute()">run</button>
@@ -49,7 +49,7 @@
 
             </div>
         </div>
-        <div class="col-lg-offset-1 col-lg-3">
+        <div class="col-lg-4 col-padding">
             <h3>Test Inventory</h3>
             <button onclick="refreshTestProject()">refresh</button>
             <button onclick="expandAllTree('jstree_test_inventory')">expend all</button>
@@ -59,7 +59,7 @@
 
             <div id="jstree_test_inventory" class="inventory" style="margin-top: 1em; min-height: 200px;"></div>
         </div>
-        <div class="col-lg-offset-1 col-lg-3">
+        <div class="col-lg-4 col-padding">
          <h3>Report</h3>
          <button onclick="clearReport()">clear</button>
          <div id="reporter"></div>

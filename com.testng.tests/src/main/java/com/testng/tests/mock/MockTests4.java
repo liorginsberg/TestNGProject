@@ -12,8 +12,7 @@ public class MockTests4 {
 	 * @param second
 	 */
 	@Test
-	@Parameters(value={"first","second"})
-	public void test1(String first, int second) {
-		Reporter.log("MockTests.test1 runs...", true);
+	public void test1() {
+		System.out.println("MockTests4.test1 runs...");
 	}
 }
