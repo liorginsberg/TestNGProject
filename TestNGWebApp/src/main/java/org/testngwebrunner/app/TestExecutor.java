@@ -1,7 +1,9 @@
 package org.testngwebrunner.app;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
@@ -10,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.UUID;
 
 import org.eclipse.jetty.websocket.api.Session;
 import org.testng.reporters.XMLStringBuffer;
@@ -29,7 +32,9 @@ public class TestExecutor implements LiveReporterListener {
 	private Session session;
 	private LiveReporter liveReporter;
 	private Process p;
-
+    private Properties prop;
+    private OutputStream output = null;
+    
 	public void runTests(Session session, String execJson) throws Exception {
 		
 		liveReporter = LiveReporter.getInstance();
@@ -50,10 +55,19 @@ public class TestExecutor implements LiveReporterListener {
 		Properties attr = new Properties();
 		attr.setProperty("name", suiteId);
 		suiteBuffer.push("suite", attr);
+		
+		prop = new Properties();
+		
+		output = new FileOutputStream("id.properties");
+		
 		for (JsonElement testJson : suiteJson.getAsJsonArray("children")) {
 			JsonObject testJsonObj = (JsonObject)testJson;
-			handleTestJson(suiteBuffer, testJsonObj);
+			handleTestJson(suiteBuffer, testJsonObj, false);
 		}
+		
+		prop.store(output, null);
+		output.close();
+		
 		suiteBuffer.pop("suite");
 		
 		String xmlToWrite = suiteBuffer.toXML();
@@ -82,17 +96,22 @@ public class TestExecutor implements LiveReporterListener {
 
 	}
 	
-	public void stopExecution() {
-		p.destroy();
-	}
 
-	private void handleTestJson(XMLStringBuffer suiteBuffer, JsonObject testJson) throws Exception {
+	private void handleTestJson(XMLStringBuffer suiteBuffer, JsonObject testJson, boolean generateNewId) throws Exception {
 
 		if (testJson.get("type").getAsString().equals("test_method_node")) {
 			JsonObject li_attr_json = testJson.getAsJsonObject("li_attr");
 			String testName = li_attr_json.get("testName").getAsString();
 			String timeout = li_attr_json.get("timeout").getAsString();
-			String id = testJson.get("id").getAsString();
+			String testId = null;
+			String realId = null;
+			if(generateNewId) {
+				testId = UUID.randomUUID().toString(); 
+				realId = testJson.get("id").getAsString();
+			} else {				
+				realId = testId = testJson.get("id").getAsString();
+			}
+			prop.setProperty(testId, realId);
 			
 			boolean checked = false;
 			if(testJson.get("state").getAsJsonObject().has("checked")) {
@@ -102,7 +121,7 @@ public class TestExecutor implements LiveReporterListener {
 			Properties attr = new Properties();
 			attr.setProperty("time-out", timeout);
 			attr.setProperty("enabled", String.valueOf(checked));
-			attr.setProperty("name", id);
+			attr.setProperty("name", testId);
 			suiteBuffer.push("test", attr);
 			
 			suiteBuffer.push("classes");
@@ -152,17 +171,37 @@ public class TestExecutor implements LiveReporterListener {
 				checked = testJson.get("state").getAsJsonObject().get("checked").getAsBoolean();
 			}
 			attr.setProperty("enabled", String.valueOf(checked));
-			attr.setProperty("name", testJson.get("id").getAsString() + (type.equals("test_node") ? ":startContainer": ":startSuite"));
+			String testId = null;
+			String realId = null;
+			if(generateNewId) {
+				testId = UUID.randomUUID().toString(); 
+				realId = testJson.get("id").getAsString();
+			} else {				
+				realId = testId = testJson.get("id").getAsString();
+			}
+			prop.setProperty(testId, realId);
+			
+			attr.setProperty("name", testId + (type.equals("test_node") ? ":startContainer": ":startSuite"));
 			suiteBuffer.addEmptyElement("test", attr);
+			int count = 1;
+			if(testJson.has("data")) {
+				JsonObject dataJson = testJson.getAsJsonObject("data");
+				if(dataJson.has("ddt")) {
+					JsonObject ddtJson = dataJson.getAsJsonObject("ddt");
+					count = ddtJson.get("count").getAsInt();
+				}
+			}
 			
 			JsonArray childrenTests = testJson.getAsJsonArray("children");
 			if(childrenTests != null) {
-				for(JsonElement testElement: childrenTests) {
-					JsonObject testJsonChild = (JsonObject)testElement;
-					handleTestJson(suiteBuffer, testJsonChild);
+				for(int i = 0; i< count; i++) {				
+					for(JsonElement testElement: childrenTests) {
+						JsonObject testJsonChild = (JsonObject)testElement;
+						handleTestJson(suiteBuffer, testJsonChild, true);
+					}
 				}
 			}	
-			attr.setProperty("name", testJson.get("id").getAsString() + (type.equals("test_node") ? ":endContainer": ":endSuite"));
+			attr.setProperty("name", testId + (type.equals("test_node") ? ":endContainer": ":endSuite"));
 			suiteBuffer.addEmptyElement("test", attr);
 		} else {
 			throw new Exception("Should not get here, type: " + testJson.get("type").getAsString());

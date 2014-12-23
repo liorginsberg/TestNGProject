@@ -482,6 +482,11 @@ function saveParamsForTest() {
 	inputTimeout = $("#params-form").find("input.timeout")
 	$("#jstree_scenario_builder").jstree(true).get_node(id).li_attr.params = paramsWithValues;
 	$("#jstree_scenario_builder").jstree(true).get_node(id).li_attr.timeout = inputTimeout.val();
+	data = {};
+	data.ddt = {};
+	data.ddt.count = 3;
+	$("#jstree_scenario_builder").jstree(true).get_node(id).data = data;
+	
 	
 }
 
