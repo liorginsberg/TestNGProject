@@ -177,7 +177,7 @@
                     		animateHideParams();
                     	});
                     	if(data.node.type == "test_method_node") {
-                    		if(data.node.li_attr.hasOwnProperty(params)) {
+                    		if(data.node.li_attr.hasOwnProperty("params")) {
 		                    	$.each(data.node.li_attr.params, function( index, value ) {
 		                    		paramPair = value;
 		                    		paramPair = paramPair.split(":");
@@ -205,7 +205,22 @@
 	  									+ '<div class="controls">'
 	  										+ '<label class="checkbox"' + ' for="csvChb">'
 	  											+ '<input ' + 'type="checkbox"' +' class="ddt"' + ' id="csvChb"' + ' name="ddtoptions"' + ' value="CSV">CSV'											
-	  										+ ' </label></div></div></fieldset>');
+	  										+ ' </label></div></div>'
+	  										
+	  									 +	'<div class="control-group" ' + 'id="csvDiv"'+ ' style="display:none">' 
+	  		  								+ '<label class="control-label"' + ' for="filebutton">Select CSV</label>'
+	  		  									+ '<div class="controls">'
+	  		  										+ '<input ' + 'type="file"' + ' class="input-file"' + ' id="filebutton"' + ' name="filebutton">'
+	  		  												+ '</div></div></fieldset>');
+                    		$("#csvChb").change(function(){
+                    			if(this.checked) {
+                    			    $("#csvDiv").show(150);
+                    			} else {
+                    				 $("#csvDiv").hide(150);
+                    			}
+                    			       
+                    		});
+				
                     	}
                     	$("#params-form").append('<div class="control-group">'
                     		+ '<div class="controls">' + '<button type="button"' + ' onclick="saveParamsForTest()"' + ' id="' + data.node.id + '"' + ' class="btn btn-primary btn-save-params">Save</button></div></div>');
