@@ -176,27 +176,37 @@
                     	$("#hideTestInfo").click(function() {
                     		animateHideParams();
                     	});
-                    	
-                    	$.each(data.node.li_attr.params, function( index, value ) {
-                    		paramPair = value;
-                    		paramPair = paramPair.split(":");
-                    		var pName = paramPair[0];
-                    		var pVal = ""; 
-                    		if(paramPair.length > 1) {
-                    			pVal = paramPair[1]; 
+                    	if(data.node.type == "test_method_node") {
+                    		if(data.node.li_attr.hasOwnProperty(params)) {
+		                    	$.each(data.node.li_attr.params, function( index, value ) {
+		                    		paramPair = value;
+		                    		paramPair = paramPair.split(":");
+		                    		var pName = paramPair[0];
+		                    		var pVal = ""; 
+		                    		if(paramPair.length > 1) {
+		                    			pVal = paramPair[1]; 
+		                    		}
+		  							$("#params-form").append('<div class="control-group">' 
+		  								+ '<label class="control-label"' + ' for="' + pName + '">' + pName + '</label>'
+		  									+ '<div class="controls">'
+		  										+ '<input class="param"' + 'id="' + pName + '"' + ' name="' + pName + '"' + ' value="' + pVal +'"' +' placeholder="e.g ..."' + ' class="input-xlarge">'
+		  												+ ' <p class="help-block">prameter desk here</p></div></div>'); 
+								});
                     		}
-  							$("#params-form").append('<div class="control-group">' 
-  								+ '<label class="control-label"' + ' for="' + pName + '">' + pName + '</label>'
-  									+ '<div class="controls">'
-  										+ '<input class="param"' + 'id="' + pName + '"' + ' name="' + pName + '"' + ' value="' + pVal +'"' +' placeholder="e.g ..."' + ' class="input-xlarge">'
-  												+ ' <p class="help-block">prameter desk here</p></div></div>'); 
-						});
-						var timeoutVal = data.node.li_attr.timeout;						
-						$("#params-form").append('<div class="control-group">' 
-  								+ '<label class="control-label"' + ' for="timeout">timeout</label>'
-  									+ '<div class="controls">'
-  										+ '<input class="timeout"' + ' id="timeout"' + ' name="timeout"' + ' value="' + timeoutVal +'"' +' placeholder="e.g ..."' + ' class="input-xlarge">'
-  												+ ' <p class="help-block">prameter desk here</p></div></div></fieldset>'); 
+							var timeoutVal = data.node.li_attr.timeout;						
+							$("#params-form").append('<div class="control-group">' 
+	  								+ '<label class="control-label"' + ' for="ddt">Data Driven</label>'
+	  									+ '<div class="controls">'
+	  										+ '<input class="timeout"' + ' id="timeout"' + ' name="timeout"' + ' value="' + timeoutVal +'"' +' placeholder="e.g ..."' + ' class="input-xlarge">'
+	  												+ ' <p class="help-block">prameter desk here</p></div></div></fieldset>');
+                    	} else if(data.node.type == "test_node") {
+                    		$("#params-form").append('<div class="control-group">' 
+	  								+ '<label class="control-label"' + ' for="ddtoptions">Data Driven</label>'
+	  									+ '<div class="controls">'
+	  										+ '<label class="checkbox"' + ' for="csvChb">'
+	  											+ '<input ' + 'type="checkbox"' +' class="ddt"' + ' id="csvChb"' + ' name="ddtoptions"' + ' value="CSV">CSV'											
+	  										+ ' </label></div></div></fieldset>');
+                    	}
                     	$("#params-form").append('<div class="control-group">'
                     		+ '<div class="controls">' + '<button type="button"' + ' onclick="saveParamsForTest()"' + ' id="' + data.node.id + '"' + ' class="btn btn-primary btn-save-params">Save</button></div></div>');
                     	if($("#testInfoRight").hasClass("open")) {
