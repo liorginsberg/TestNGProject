@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="385ce6e0-aa96-7d35-53a5-976efa00e438">
+  <test name="46ec930e-ae14-aa94-de9d-140c2a9efd75:startContainer" enabled="true"/>
+  <test name="a6e97d41-cc0e-44f7-94cd-0e495ea107d6" enabled="true" time-out="0">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num1" value="2"/>
+            <parameter name="num2" value="7"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- a6e97d41-cc0e-44f7-94cd-0e495ea107d6 -->
+  <test name="48f5c09c-7114-480b-9e67-a0f156a3330d:startContainer" enabled="true"/>
+  <test name="d10c8a94-5de2-4388-9f22-6e8f56a0e43e" enabled="true" time-out="0">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num1" value="${num3}"/>
+            <parameter name="num2" value="${num4}"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- d10c8a94-5de2-4388-9f22-6e8f56a0e43e -->
+  <test name="d9d81c88-49d8-44b5-8a3b-628ce82eb19e" enabled="true" time-out="0">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num1" value="${num3}"/>
+            <parameter name="num2" value="${num4}"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- d9d81c88-49d8-44b5-8a3b-628ce82eb19e -->
+  <test name="a157d769-3370-448e-b826-7981b813d703" enabled="true" time-out="0">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num1" value="${num3}"/>
+            <parameter name="num2" value="${num4}"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- a157d769-3370-448e-b826-7981b813d703 -->
+  <test name="22547703-3902-49e1-b265-8701321d7f70" enabled="true" time-out="0">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num1" value="${num3}"/>
+            <parameter name="num2" value="${num4}"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- 22547703-3902-49e1-b265-8701321d7f70 -->
+  <test name="48f5c09c-7114-480b-9e67-a0f156a3330d:endContainer" enabled="true"/>
+  <test name="f699fa23-4d24-448d-9e79-27b840cb429f" enabled="true" time-out="0">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num1" value="3"/>
+            <parameter name="num2" value="5"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- f699fa23-4d24-448d-9e79-27b840cb429f -->
+  <test name="9c187c89-9f3f-4eb7-9e30-476795903725:startContainer" enabled="true"/>
+  <test name="8f824726-1f13-40ab-b294-82080d78b368" enabled="true" time-out="0">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num1" value="${num3}"/>
+            <parameter name="num2" value="${num4}"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- 8f824726-1f13-40ab-b294-82080d78b368 -->
+  <test name="92d59125-6f96-4417-8734-3f2d751ed3f5" enabled="true" time-out="0">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num1" value="${num3}"/>
+            <parameter name="num2" value="${num4}"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- 92d59125-6f96-4417-8734-3f2d751ed3f5 -->
+  <test name="d48f32c8-1753-4f39-b374-07bb43cf9615" enabled="true" time-out="0">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num1" value="${num3}"/>
+            <parameter name="num2" value="${num4}"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- d48f32c8-1753-4f39-b374-07bb43cf9615 -->
+  <test name="e766ec40-97eb-463e-9164-5832747321f9" enabled="true" time-out="0">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num1" value="${num3}"/>
+            <parameter name="num2" value="${num4}"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- e766ec40-97eb-463e-9164-5832747321f9 -->
+  <test name="9c187c89-9f3f-4eb7-9e30-476795903725:endContainer" enabled="true"/>
+  <test name="6df96fb2-1564-48d8-bff3-902cdad3123e" enabled="true" time-out="0">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num1" value="5"/>
+            <parameter name="num2" value="2"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- 6df96fb2-1564-48d8-bff3-902cdad3123e -->
+  <test name="b699b941-e188-4a94-b414-7011772c7d1d:startContainer" enabled="true"/>
+  <test name="cd51c662-db32-42ef-a5f4-4e4d29e97ec5" enabled="true" time-out="0">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num1" value="${num3}"/>
+            <parameter name="num2" value="${num4}"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- cd51c662-db32-42ef-a5f4-4e4d29e97ec5 -->
+  <test name="6675534e-9463-430b-acf3-dd971fc68fc4" enabled="true" time-out="0">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num1" value="${num3}"/>
+            <parameter name="num2" value="${num4}"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- 6675534e-9463-430b-acf3-dd971fc68fc4 -->
+  <test name="5f78c8f8-72e2-478b-b183-88a923c79d1f" enabled="true" time-out="0">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num1" value="${num3}"/>
+            <parameter name="num2" value="${num4}"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- 5f78c8f8-72e2-478b-b183-88a923c79d1f -->
+  <test name="dfb26ff7-4673-498c-96a7-e8dd101eec1b" enabled="true" time-out="0">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num1" value="${num3}"/>
+            <parameter name="num2" value="${num4}"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- dfb26ff7-4673-498c-96a7-e8dd101eec1b -->
+  <test name="b699b941-e188-4a94-b414-7011772c7d1d:endContainer" enabled="true"/>
+  <test name="e3db304f-e944-4499-a928-78a0308bd1e6" enabled="true" time-out="0">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num1" value="-1"/>
+            <parameter name="num2" value="10"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- e3db304f-e944-4499-a928-78a0308bd1e6 -->
+  <test name="26f672fe-0ece-4f0a-a17b-26c14a4f4403:startContainer" enabled="true"/>
+  <test name="ead139a4-908a-42d0-a3da-19035b80b232" enabled="true" time-out="0">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num1" value="${num3}"/>
+            <parameter name="num2" value="${num4}"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- ead139a4-908a-42d0-a3da-19035b80b232 -->
+  <test name="3262d297-7e5e-465d-9e2e-5ad38e3f9d70" enabled="true" time-out="0">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num1" value="${num3}"/>
+            <parameter name="num2" value="${num4}"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- 3262d297-7e5e-465d-9e2e-5ad38e3f9d70 -->
+  <test name="5b9b2f5a-7e84-4236-b77a-cbe73f89fbce" enabled="true" time-out="0">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num1" value="${num3}"/>
+            <parameter name="num2" value="${num4}"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- 5b9b2f5a-7e84-4236-b77a-cbe73f89fbce -->
+  <test name="5b62e8bc-eddd-4562-b7e9-9c9cef0c788c" enabled="true" time-out="0">
+    <classes>
+      <class name="com.testng.tests.MyCodeTests">
+        <methods>
+          <include name="testAdd">
+            <parameter name="num1" value="${num3}"/>
+            <parameter name="num2" value="${num4}"/>
+          </include> <!-- testAdd -->
+        </methods>
+      </class> <!-- com.testng.tests.MyCodeTests -->
+    </classes>
+  </test> <!-- 5b62e8bc-eddd-4562-b7e9-9c9cef0c788c -->
+  <test name="26f672fe-0ece-4f0a-a17b-26c14a4f4403:endContainer" enabled="true"/>
+  <test name="46ec930e-ae14-aa94-de9d-140c2a9efd75:endContainer" enabled="true"/>
+</suite> <!-- 385ce6e0-aa96-7d35-53a5-976efa00e438 -->
+

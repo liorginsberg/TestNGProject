@@ -37,6 +37,7 @@ public class MyCodeTests {
 	@Parameters({ "num1", "num2" })
 	public void testAdd(int num1, int num2) throws InterruptedException {
 		Thread.sleep(randInt(300, 2000));
+		System.out.println("num1=" + num1 + ", num2=" + num2);
 		int res = myCode.add(num1, num2);
 		Assert.assertEquals(res, 9);
 	}

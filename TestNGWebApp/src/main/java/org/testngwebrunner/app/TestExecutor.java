@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.jetty.websocket.api.Session;
 import org.testng.reporters.XMLStringBuffer;
@@ -62,7 +64,7 @@ public class TestExecutor implements LiveReporterListener {
 		
 		for (JsonElement testJson : suiteJson.getAsJsonArray("children")) {
 			JsonObject testJsonObj = (JsonObject)testJson;
-			handleTestJson(suiteBuffer, testJsonObj, false);
+			handleTestJson(suiteBuffer, testJsonObj, false, new JsonArray(), new JsonArray());
 		}
 		
 		prop.store(output, null);
@@ -97,7 +99,7 @@ public class TestExecutor implements LiveReporterListener {
 	}
 	
 
-	private void handleTestJson(XMLStringBuffer suiteBuffer, JsonObject testJson, boolean generateNewId) throws Exception {
+	private void handleTestJson(XMLStringBuffer suiteBuffer, JsonObject testJson, boolean generateNewId, JsonArray headers, JsonArray data) throws Exception {
 
 		if (testJson.get("type").getAsString().equals("test_method_node")) {
 			JsonObject li_attr_json = testJson.getAsJsonObject("li_attr");
@@ -151,7 +153,19 @@ public class TestExecutor implements LiveReporterListener {
 					}
 					attr = new Properties();
 					attr.setProperty("name", param);
-					attr.setProperty("value", value);
+					Pattern p = Pattern.compile(".*\\$\\{(.*)\\}.*");
+					Matcher m = p.matcher(value);
+					String newVal = null;
+					while(m.find()) {
+						String ref = m.group(1);						
+						for(int i = 0; i < headers.size(); i++) {
+							if(headers.get(i).getAsString().equals(ref)) {							
+								newVal = value.replaceAll("\\$\\{" + ref + "\\}", data.get(i).getAsString());
+								break;
+							}
+						}
+					}
+					attr.setProperty("value", newVal == null ? value : newVal);
 					suiteBuffer.addEmptyElement("parameter", attr);
 				}
 			}
@@ -184,20 +198,33 @@ public class TestExecutor implements LiveReporterListener {
 			attr.setProperty("name", testId + (type.equals("test_node") ? ":startContainer": ":startSuite"));
 			suiteBuffer.addEmptyElement("test", attr);
 			int count = 1;
+			JsonArray currentHeaders = null;
+			JsonArray currentData = null;
 			if(testJson.has("data")) {
 				JsonObject dataJson = testJson.getAsJsonObject("data");
 				if(dataJson.has("ddt")) {
 					JsonObject ddtJson = dataJson.getAsJsonObject("ddt");
-					count = ddtJson.get("count").getAsInt();
+					currentData = ddtJson.get("csvData").getAsJsonArray();
+					
+					//num of data rows
+					count = currentData.size() -1;
+					
+					//current headers
+					currentHeaders = currentData.get(0).getAsJsonArray();
+					currentHeaders.addAll(headers);
+					
 				}
 			}
 			
 			JsonArray childrenTests = testJson.getAsJsonArray("children");
 			if(childrenTests != null) {
-				for(int i = 0; i< count; i++) {				
+				for(int i = 0; i< count; i++) {
+					
 					for(JsonElement testElement: childrenTests) {
 						JsonObject testJsonChild = (JsonObject)testElement;
-						handleTestJson(suiteBuffer, testJsonChild, true);
+						JsonArray rowData = currentData.get(i+1).getAsJsonArray();
+						rowData.addAll(data);
+						handleTestJson(suiteBuffer, testJsonChild, true, currentHeaders, rowData);
 					}
 				}
 			}	

@@ -179,7 +179,7 @@
                     	var autoCompleteArr = [];
                     	if(data.node.type == "test_method_node") {
                     		if(data.node.li_attr.hasOwnProperty("params")) {
-                    			ref = $("#jstree_scenario_builder").jstree(true);
+                    			/*ref = $("#jstree_scenario_builder").jstree(true);
                     			$.each(data.node.parents, function(index, val) {
                     				parent = ref.get_node(val);
                     				if(parent.hasOwnProperty("data")) {
@@ -189,7 +189,7 @@
 		                    				console.log(parentData.ddt.csvHeaders[0]);
                     					}
                     				}
-                    			});
+                    			});*/
                     			
 		                    	$.each(data.node.li_attr.params, function( index, value ) {
 		                    		paramPair = value;
@@ -205,7 +205,7 @@
 		  										+ '<input class="param"' + 'id="' + pName + '"' + ' name="' + pName + '"' + ' value="' + pVal +'"' +' placeholder="e.g ..."' + ' class="input-xlarge">'
 		  												+ ' <p class="help-block">prameter desc here</p></div></div>'); 
 								});
-		                    	$.each(autoCompleteArr,function(index, val){
+		                    	/*$.each(autoCompleteArr,function(index, val){
 		                    		autoCompleteArr[index] = "${" + val + "}";	
 		                    	});
 		                    	
@@ -216,7 +216,7 @@
 		  						        source: ['@hello','@hola'],
 		  						     	character: '@'  
 		  					      	});   
-		  						});
+		  						});*/
 		                    	
                     		}
 							var timeoutVal = data.node.li_attr.timeout;						

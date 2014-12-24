@@ -59,7 +59,7 @@ function saveCsvToNode(id) {
 		var csvData = $.csv.toArrays(csv);
 		var data = {};
 		data.ddt = {};
-		data.ddt.csvHeaders = csvData;
+		data.ddt.csvData = csvData;
 		data.ddt.csvFile = tempFileCsv.name;
 		
 		ref = $('#jstree_scenario_builder').jstree(true);
