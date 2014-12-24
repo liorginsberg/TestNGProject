@@ -95,6 +95,7 @@
 										<entry key="RUNTIME_CLASSPATH" value="${test_classpath}" />
 										<entry key="RESOURCES_DIR" value="${basedir}${file.separator}src${file.separator}main${file.separator}resources" />
 										<entry key="SUITES_DIR" value="${basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}suites" />
+										<entry key="CSV_DIR" value="${basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}csv" />
 									</propertyfile>
 								</target>
 							</configuration>

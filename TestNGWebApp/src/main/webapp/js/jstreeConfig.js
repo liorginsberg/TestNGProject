@@ -370,7 +370,7 @@ $(function() {
     } else {
         alert('The File APIs are not fully supported in this browser.');
     }
-    $("input").change(function () {
+    $("#loadProp").change(function () {
 
         file = this.files[0];
         selectedFile = file;
@@ -474,20 +474,18 @@ testInventoryData = {
 function saveParamsForTest() {
 	id = $(".btn-save-params").attr("id");
 	inputArr = $("#params-form").find("input.param");
-	var paramsWithValues = [];
-	$.each(inputArr, function(index, value){
-		paramsWithValues.push(value.name + ":" + value.value);
-	});
-	
-	inputTimeout = $("#params-form").find("input.timeout")
-	$("#jstree_scenario_builder").jstree(true).get_node(id).li_attr.params = paramsWithValues;
-	$("#jstree_scenario_builder").jstree(true).get_node(id).li_attr.timeout = inputTimeout.val();
-	data = {};
-	data.ddt = {};
-	data.ddt.count = 3;
-	$("#jstree_scenario_builder").jstree(true).get_node(id).data = data;
-	
-	
+	if(inputArr.length > 0) {
+		var paramsWithValues = [];
+		$.each(inputArr, function(index, value){
+			paramsWithValues.push(value.name + ":" + value.value);
+		});
+		
+		inputTimeout = $("#params-form").find("input.timeout")
+		$("#jstree_scenario_builder").jstree(true).get_node(id).li_attr.params = paramsWithValues;
+		$("#jstree_scenario_builder").jstree(true).get_node(id).li_attr.timeout = inputTimeout.val();
+	} else {
+		saveCsvToNode(id);
+	}
 }
 
 function createTestContainer() {

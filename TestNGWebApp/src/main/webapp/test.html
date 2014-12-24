@@ -33,7 +33,7 @@
 <div class="container-fluid">
     <div class="row">
      <div class="col-lg-3 col-padding">
-        <input type="file"/>
+        <input type="file" id="loadProp"/>
         </div>
     </div>
     <div class="row">
@@ -176,8 +176,21 @@
                     	$("#hideTestInfo").click(function() {
                     		animateHideParams();
                     	});
+                    	var autoCompleteArr = [];
                     	if(data.node.type == "test_method_node") {
                     		if(data.node.li_attr.hasOwnProperty("params")) {
+                    			ref = $("#jstree_scenario_builder").jstree(true);
+                    			$.each(data.node.parents, function(index, val) {
+                    				parent = ref.get_node(val);
+                    				if(parent.hasOwnProperty("data")) {
+                    					parentData = parent.data;
+                    					if(parentData != null && parentData.hasOwnProperty("ddt")) {
+                    						autoCompleteArr = autoCompleteArr.concat(parentData.ddt.csvHeaders[0]);
+		                    				console.log(parentData.ddt.csvHeaders[0]);
+                    					}
+                    				}
+                    			});
+                    			
 		                    	$.each(data.node.li_attr.params, function( index, value ) {
 		                    		paramPair = value;
 		                    		paramPair = paramPair.split(":");
@@ -190,15 +203,28 @@
 		  								+ '<label class="control-label"' + ' for="' + pName + '">' + pName + '</label>'
 		  									+ '<div class="controls">'
 		  										+ '<input class="param"' + 'id="' + pName + '"' + ' name="' + pName + '"' + ' value="' + pVal +'"' +' placeholder="e.g ..."' + ' class="input-xlarge">'
-		  												+ ' <p class="help-block">prameter desk here</p></div></div>'); 
+		  												+ ' <p class="help-block">prameter desc here</p></div></div>'); 
 								});
+		                    	$.each(autoCompleteArr,function(index, val){
+		                    		autoCompleteArr[index] = "${" + val + "}";	
+		                    	});
+		                    	
+		                    	var paramsInput = $("input.param");
+		  						$.each(paramsInput, function(){
+		  							console.log(autoCompleteArr);
+		  							$(this).tagautocomplete({
+		  						        source: ['@hello','@hola'],
+		  						     	character: '@'  
+		  					      	});   
+		  						});
+		                    	
                     		}
 							var timeoutVal = data.node.li_attr.timeout;						
 							$("#params-form").append('<div class="control-group">' 
-	  								+ '<label class="control-label"' + ' for="ddt">Data Driven</label>'
+	  								+ '<label class="control-label"' + ' for="timeout">Timeout</label>'
 	  									+ '<div class="controls">'
 	  										+ '<input class="timeout"' + ' id="timeout"' + ' name="timeout"' + ' value="' + timeoutVal +'"' +' placeholder="e.g ..."' + ' class="input-xlarge">'
-	  												+ ' <p class="help-block">prameter desk here</p></div></div></fieldset>');
+	  												+ ' <p class="help-block">prameter desc here</p></div></div></fieldset>');
                     	} else if(data.node.type == "test_node") {
                     		$("#params-form").append('<div class="control-group">' 
 	  								+ '<label class="control-label"' + ' for="ddtoptions">Data Driven</label>'
@@ -212,6 +238,7 @@
 	  		  									+ '<div class="controls">'
 	  		  										+ '<input ' + 'type="file"' + ' class="input-file"' + ' id="filebutton"' + ' name="filebutton">'
 	  		  												+ '</div></div></fieldset>');
+                    		handleCheckDDT();
                     		$("#csvChb").change(function(){
                     			if(this.checked) {
                     			    $("#csvDiv").show(150);
@@ -220,6 +247,7 @@
                     			}
                     			       
                     		});
+                    		
 				
                     	}
                     	$("#params-form").append('<div class="control-group">'
@@ -326,6 +354,12 @@
 <script src="js/jquery.nicescroll.js"></script>
 
 <script src="js/jstreeConfig.js"></script>
+<script src="js/jquery.csv-0.71.min.js"></script>
+<script src="js/deps/bootstrap-typeahead.js"></script>
+<script src="js/deps/rangy-core.js"></script>
+<script src="js/deps/caret-position.js"></script>
+<script src="js/bootstrap-tagautocomplete.js"></script>
+<script src="js/ddt.js"></script>
 <script>
     $.each($q, function (i, f) {
         $(f)
