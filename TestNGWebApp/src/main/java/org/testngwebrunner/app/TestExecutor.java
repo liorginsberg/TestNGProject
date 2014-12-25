@@ -222,9 +222,14 @@ public class TestExecutor implements LiveReporterListener {
 					
 					for(JsonElement testElement: childrenTests) {
 						JsonObject testJsonChild = (JsonObject)testElement;
-						JsonArray rowData = currentData.get(i+1).getAsJsonArray();
-						rowData.addAll(data);
-						handleTestJson(suiteBuffer, testJsonChild, true, currentHeaders, rowData);
+						JsonArray rowData = null;
+						if(currentData != null && currentHeaders != null) {
+							rowData = currentData.get(i+1).getAsJsonArray();
+							rowData.addAll(data);
+							handleTestJson(suiteBuffer, testJsonChild, true, currentHeaders, rowData);
+						} else {
+							handleTestJson(suiteBuffer, testJsonChild, true, headers, data);
+						}
 					}
 				}
 			}	
@@ -240,7 +245,7 @@ public class TestExecutor implements LiveReporterListener {
 	private void testCommandLine(String classpath, String xmlFile) throws Exception {
 		p = Runtime.getRuntime().exec(
 				"cmd /c java -cp \"" + classpath + "\"  org.testng.TestNG " + xmlFile
-						+ " -listener org.testngwebrunner.app.ExecutionListener,org.testngwebrunner.app.TestNGListenerSocket,org.testngwebrunner.app.MyMethodInterceptor -usedefaultlisteners false");
+						+ " -listener org.uncommons.reportng.HTMLReporter,org.testngwebrunner.app.ExecutionListener,org.testngwebrunner.app.TestNGListenerSocket,org.testngwebrunner.app.MyMethodInterceptor -d c:\\testng\\logs -usedefaultlisteners true");
 		inheritIO(p.getInputStream(), System.out);
 		inheritIO(p.getErrorStream(), System.err);
 
