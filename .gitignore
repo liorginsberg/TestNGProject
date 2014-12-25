@@ -107,7 +107,10 @@ crashlytics.properties
 crashlytics-build.properties
 
 #TestNG
-*/test-output/
+*/test-output
+TestNGWebApp/id.properties
 
 #project-specific
-*/my.properties
+my.properties
+id.properties
+
