@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="./assets/bootstrap/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="./assets/dist/themes/proton/style.css"/>
     <link rel="stylesheet" href="css/mystyle.css"/>
-
     <script>
         window.$q = [];
         window.$ = window.jQuery = function (a) {
@@ -234,11 +233,24 @@
 	  										+ ' </label></div></div>'
 	  										
 	  									 +	'<div class="control-group" ' + 'id="csvDiv"'+ ' style="display:none">' 
-	  		  								+ '<label class="control-label"' + ' for="filebutton">Select CSV</label>'
+	  										+ '<div class="input-group">'
+	  					                		+ '<span class="input-group-btn">'
+	  					                    		+ '<span class="btn btn-primary btn-file">Browse&hellip; '
+	  					                    			+ '<input type="file"' +' id="filebutton"' + ' name="filebutton">'
+	  					                   			+ '</span>'
+	  					                   		+ '</span>'
+	  					                		+ '<input type="text"' + ' class="form-control" readonly>'
+	  					                   	+ '</div></div></fieldset>');
+  									 
+	  		  								/*+ '<label class="control-label"' + ' for="filebutton">Select CSV</label>'
 	  		  									+ '<div class="controls">'
-	  		  										+ '<input ' + 'type="file"' + ' class="input-file"' + ' id="filebutton"' + ' name="filebutton">'
-	  		  												+ '</div></div></fieldset>');
+	  		  										+ '<span class="btn btn-default btn-file">Browse '
+	  		  											+'<input type="file"' +' id="filebutton"' + ' name="filebutton">'
+	  		  										+'</span>'
+	  		  									+ '</div></div></fieldset>');*/
+	  		  										
                     		handleCheckDDT();
+                    		
                     		$("#csvChb").change(function(){
                     			if(this.checked) {
                     			    $("#csvDiv").show(150);

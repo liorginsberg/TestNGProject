@@ -10,7 +10,21 @@
 			<artifactId>com.testng.infra</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.google.inject</groupId>
+			<artifactId>guice</artifactId>
+			<version>3.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.uncommons</groupId>
+			<artifactId>reportng</artifactId>
+			<version>1.1.2</version>
+		</dependency>
 	</dependencies>
+
+
 	<build>
 		<pluginManagement>
 			<plugins>
@@ -83,7 +97,8 @@
 										<entry key="BUILD_TIMESATMP" value="${ts}" />
 										<entry key="BUILD_TIME" type="date" value="now" pattern="DDD HH:mm" />
 										<entry key="BASE_DIR" value="${basedir}" />
-										<entry key="SOURCE_DIR" value="${basedir}${file.separator}src${file.separator}main${file.separator}java"  />
+										<entry key="SOURCE_DIR"
+											value="${basedir}${file.separator}src${file.separator}main${file.separator}java" />
 										<entry key="JAVA_HOME" value="${java.home}" />
 										<entry key="M2_HOME" value="${env.M2_HOME}" />
 										<entry key="TARGET_DIRECTORY" value="${project.build.directory}" />
@@ -93,14 +108,46 @@
 										<entry key="SYSTEM_LINE_SEPARATOR" value="${line.separator}" />
 										<entry key="TEST_CLASSPATH" value="${test_classpath}" />
 										<entry key="RUNTIME_CLASSPATH" value="${test_classpath}" />
-										<entry key="RESOURCES_DIR" value="${basedir}${file.separator}src${file.separator}main${file.separator}resources" />
-										<entry key="SUITES_DIR" value="${basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}suites" />
-										<entry key="CSV_DIR" value="${basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}csv" />
+										<entry key="RESOURCES_DIR"
+											value="${basedir}${file.separator}src${file.separator}main${file.separator}resources" />
+										<entry key="SUITES_DIR"
+											value="${basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}suites" />
+										<entry key="CSV_DIR"
+											value="${basedir}${file.separator}src${file.separator}main${file.separator}resources${file.separator}csv" />
 									</propertyfile>
 								</target>
 							</configuration>
 							<goals>
 								<goal>run</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-failsafe-plugin</artifactId>
+					<version>2.12</version>
+					<configuration>
+						<properties>
+							<property>
+								<name>usedefaultlisteners</name>
+								<value>false</value>
+							</property>
+							<property>
+								<name>listener</name>
+								<value>org.uncommons.reportng.HTMLReporter</value>
+							</property>
+						</properties>
+						<suiteXmlFiles>
+							<suiteXmlFile>testng.xml</suiteXmlFile>
+						</suiteXmlFiles>
+						<workingDirectory>target/</workingDirectory>
+					</configuration>
+					<executions>
+						<execution>
+							<goals>
+								<goal>integration-test</goal>
+								<goal>verify</goal>
 							</goals>
 						</execution>
 					</executions>

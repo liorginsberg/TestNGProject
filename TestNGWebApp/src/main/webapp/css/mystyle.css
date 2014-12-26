@@ -64,3 +64,35 @@ body, html {
 .test_bold {
     font-weight: 600
 }
+
+.btn-file {
+  position: relative;
+  overflow: hidden;
+}
+.btn-file input[type=file] {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 100%;
+  min-height: 100%;
+  font-size: 100px;
+  text-align: right;
+  filter: alpha(opacity=0);
+  opacity: 0;
+  background: red;
+  cursor: inherit;
+  display: block;
+}
+input[readonly] {
+  background-color: white !important;
+  cursor: text !important;
+}
+
+#csvDiv {
+	margin: 12px 0;
+}
+
+.csvLoad {
+	background: url(../img/csv_icon.gif) no-repeat scroll 7px 7px;
+	padding-left:30px;
+}
