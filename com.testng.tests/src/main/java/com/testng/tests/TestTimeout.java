@@ -1,7 +1,6 @@
 package com.testng.tests;
 
-import java.util.UUID;
-
+import org.testng.Reporter;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
@@ -12,6 +11,8 @@ public class TestTimeout {
 		try {
 			System.out.println("Sleeping for " + sleep +"ms ...");
 			Thread.sleep(sleep);
+			Reporter.log("hello : SLEEPING...)");
+			Reporter.getCurrentTestResult().setAttribute("ok", "wow");
 		} catch (Exception e) {}
 	}
 }

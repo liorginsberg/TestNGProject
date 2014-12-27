@@ -245,7 +245,7 @@ public class TestExecutor implements LiveReporterListener {
 	private void testCommandLine(String classpath, String xmlFile) throws Exception {
 		p = Runtime.getRuntime().exec(
 				"cmd /c java -cp \"" + classpath + "\"  org.testng.TestNG " + xmlFile
-						+ " -listener org.uncommons.reportng.HTMLReporter,org.testngwebrunner.app.ExecutionListener,org.testngwebrunner.app.TestNGListenerSocket,org.testngwebrunner.app.MyMethodInterceptor -d c:\\testng\\logs -usedefaultlisteners true");
+						+ " -listener org.uncommons.reportng.HTMLReporter,org.testngwebrunner.app.ExecutionListener,org.testngwebrunner.app.rmi.TestNGListenerRmi,org.testngwebrunner.app.MyMethodInterceptor -d c:\\testng\\logs -usedefaultlisteners true");
 		inheritIO(p.getInputStream(), System.out);
 		inheritIO(p.getErrorStream(), System.err);
 
