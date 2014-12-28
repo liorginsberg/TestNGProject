@@ -8,9 +8,9 @@ public class TestTimeout {
 	@Parameters({ "sleep" })
 	public void testTimeout(long sleep) {
 		try {
-			Reporter.getInstance().report("Sleeping for " + sleep + "ms ...");
+			//Reporter.getInstance().report("Sleeping for " + sleep + "ms ...");
 			Thread.sleep(sleep);
-			Reporter.getInstance().report("hello : SLEEPING...)");
+			//Reporter.getInstance().report("hello : SLEEPING...)");
 		} catch (Exception e) {
 			System.out.println("ok.... Some thing is wrong....");
 		}
