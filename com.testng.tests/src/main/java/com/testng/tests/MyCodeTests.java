@@ -3,13 +3,9 @@ package com.testng.tests;
 import java.util.Random;
 
 import org.testng.Assert;
-import org.testng.ITestContext;
-import org.testng.Reporter;
-import org.testng.TestListenerAdapter;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
-import org.testng.reporters.XMLStringBuffer;
 
 import com.testng.infra.MyCode;
 
@@ -22,7 +18,7 @@ public class MyCodeTests {
 
 	@BeforeClass
 	public void beforeClass() {
-		System.out.println("before class called ...");
+		Reporter.getInstance().report("before class called ...");
 		myCode = new MyCode();
 
 	}
@@ -37,7 +33,7 @@ public class MyCodeTests {
 	@Parameters({ "num1", "num2" })
 	public void testAdd(int num1, int num2) throws InterruptedException {
 		Thread.sleep(randInt(300, 700));
-		System.out.println("num1=" + num1 + ", num2=" + num2);
+		Reporter.getInstance().report("num1=" + num1 + ", num2=" + num2);
 		int res = myCode.add(num1, num2);
 		Assert.assertEquals(res, 9);
 	}

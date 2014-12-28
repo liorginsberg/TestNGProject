@@ -1,0 +1,122 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>report</title>
+    <link rel="stylesheet" href="./assets/bootstrap/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="./assets/dist/themes/proton/style.css"/>
+    <link rel="stylesheet" href="css/mystyle.css"/>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-4">
+            <h3>Execution</h3>
+            <div id="execution-jstree">
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <h3>Test Result</h3>
+        </div>
+    </div>
+</div>
+
+
+
+    <script>
+        $(function () {
+
+			$(document).on("dnd_stop.vakata", function (e, data) {
+				//console.log("detected 'drop'");
+   			 	//console.log(e);
+   			 	//console.log(data);
+			});
+			$('#reporter').niceScroll({cursorcolor:"#888888",cursorwidth: "8px"});
+            $('#jstree_scenario_builder')
+                    .jstree(
+                    {
+                        "core": {
+                            "themes": {
+                                'name': 'proton',
+                                'responsive': true
+                            },
+                            "animation": 0,
+                            "check_callback": function (operation, node, node_parent, node_position, more) {
+                                // operation can be 'create_node', 'rename_node', 'delete_node', 'move_node' or 'copy_node'
+                                // in case of 'rename_node' node_position is filled with the new node name
+
+                                return true;  //allow all other operations
+                            },
+                            "data": {
+                                "text": "root",
+                                "type": "root",
+                                "a_attr": {
+                                    "id": "builder_root"
+                             	},
+                                "children": []
+                            }
+                        },
+                        "dnd": {
+                            "always_copy": false,
+                            "check_while_dragging": true,
+                            "is_draggable": function (nodes) {
+                                //console.log(nodes);
+                                var drag = true;
+                                $.each(nodes, function () {
+//                                    if (this.type != "test_method_node") {
+//                                        console.log("cant drag element of type: " + this.type);
+//                                        drag = false;
+//                                    }
+                                });
+                                //console.log(drag);
+                                return drag;
+                            }
+                        },
+                        "checkbox" : {
+                            "tie_selection": false,
+                            "whole_node": false
+                        },
+                        "types": {
+                            "#": {
+                                "max_children": 1
+                            },
+                            "root": {
+                                "max_children": 1,
+                                "valid_children": [ "suite_node" ],
+                                "icon": "img/stkfrm_obj.gif"
+                            },
+                            "suite_node": {
+
+                                "icon": "img/suite.gif",
+                                "valid_children": [ "test_node", "test_method_node", "suite_node" ]
+                            },
+                            "test_node": {
+                                "icon": "img/testcontainer.png",
+                                "valid_children": [ "test_node", "test_method_node" , "suite_node"]
+                            },
+                            "test_method_node": {
+                                "icon": "img/test.gif",
+                                "max_children": 0
+                            }
+                        },
+                        "contextmenu": {
+                            "items": customMenu
+                        },
+                        "plugins": [ "contextmenu", "dnd",
+                            "search", "state", "types", "checkbox" ]
+
+                    }).bind("select_node.jstree", function(event, data) {
+                    	console.log("selected: " + data.node.id);
+                 	}).bind("hover_node.jstree", function(e, data){
+                    	console.log("=== HOVER ====");                 	
+                    });
+            $('#jstree_scenario_builder').niceScroll({cursorcolor:"#888888",cursorwidth: "8px"});                    
+    </script>
+
+
+<script
+        src="js/jquery-1.11.1.min.js"></script>
+<script src="jstree/jstree.min.js"></script>
+<script src="js/jquery.nicescroll.js"></script>
+</body>
+</html>

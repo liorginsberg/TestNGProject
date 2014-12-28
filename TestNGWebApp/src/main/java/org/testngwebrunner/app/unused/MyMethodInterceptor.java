@@ -1,4 +1,4 @@
-package org.testngwebrunner.app;
+package org.testngwebrunner.app.unused;
 
 import java.util.ArrayList;
 import java.util.List;

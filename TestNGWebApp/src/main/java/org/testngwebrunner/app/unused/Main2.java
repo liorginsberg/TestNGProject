@@ -1,4 +1,4 @@
-package org.testngwebrunner.app.testcollector;
+package org.testngwebrunner.app.unused;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,6 +10,7 @@ import java.util.Properties;
 
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
+import org.testngwebrunner.app.testcollector.ClassPathHack;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;

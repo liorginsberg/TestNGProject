@@ -1,4 +1,4 @@
-package org.testngwebrunner.app;
+package org.testngwebrunner.app.unused;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -14,7 +14,6 @@ import org.testng.IExecutionListener;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
-import org.testngwebrunner.app.listeners.MyTransformer;
 
 public class TestNGListenerSocket implements IExecutionListener, ITestListener {
 

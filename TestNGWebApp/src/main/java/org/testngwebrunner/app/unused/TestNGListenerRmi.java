@@ -1,4 +1,4 @@
-package org.testngwebrunner.app.rmi;
+package org.testngwebrunner.app.unused;
 
 import java.rmi.AccessException;
 import java.rmi.NoSuchObjectException;
@@ -12,7 +12,8 @@ import org.testng.IExecutionListener;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
-import org.testngwebrunner.app.MyMethodInterceptor;
+import org.testngwebrunner.app.rmi.Constant;
+import org.testngwebrunner.app.rmi.IExecutionActionRemote;
 
 public class TestNGListenerRmi implements IExecutionListener, ITestListener {
 
@@ -21,13 +22,11 @@ public class TestNGListenerRmi implements IExecutionListener, ITestListener {
 
 	@Override
 	public void onExecutionStart() {
-		System.out.println("execution start");
 		startServer();
 	}
 
 	@Override
 	public void onExecutionFinish() {
-		System.out.println("execution finish");
 		stopServer();
 	}
 
@@ -93,19 +92,20 @@ public class TestNGListenerRmi implements IExecutionListener, ITestListener {
 
 		try {
 			ExecutionActionRemoteImpl impl = new ExecutionActionRemoteImpl();
-			rmiRegistry = LocateRegistry.createRegistry(Constant.RMI_PORT);
-			rmiRegistry.rebind(Constant.RMI_ID, impl);
+			rmiRegistry = LocateRegistry.createRegistry(Constant.EXECUTION_RMI_PORT);
+			rmiRegistry.rebind(Constant.EXECUTION_RMI_ID, impl);
 		} catch (RemoteException e) {
 			System.out.println(e.getMessage());
 		}
-		System.out.println("Started RMI Server");
+		System.out.println("Started RMI Action Server");
 	}
 
 	private void stopServer() {
 		if (rmiRegistry != null) {
 			try {
-				rmiRegistry.unbind(Constant.RMI_ID);
+				rmiRegistry.unbind(Constant.EXECUTION_RMI_ID);
 				UnicastRemoteObject.unexportObject(rmiRegistry, true);
+				System.out.println("Stopped RMI Aciton Server");
 			} catch (NoSuchObjectException e) {
 				System.out.println(e.getMessage());
 			} catch (AccessException e) {

@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite name="37ee657d-2ef5-da21-da98-3869bbbc55f6">
-    <listeners>
-        <listener class-name="com.testng.tests.listeners.HTMLReporter"/>
-    </listeners>
-  <test name="61836881-7b11-7594-bb64-ddace66b3959" enabled="true" time-out="30000">
+<suite name="0c70f415-526c-72fa-fdb5-74a3ad805e05">
+  <test name="08150f45-ee66-a2e7-0cff-d30b07ca3462" enabled="true" time-out="30000">
     <classes>
       <class name="com.testng.tests.TestTimeout">
         <methods>
@@ -14,9 +11,9 @@
         </methods>
       </class> <!-- com.testng.tests.TestTimeout -->
     </classes>
-  </test> <!-- 61836881-7b11-7594-bb64-ddace66b3959 -->
-  <test name="a9f83ef5-fd39-d326-d200-ccdfb40cc5ab:startContainer" enabled="true"/>
-  <test name="a4a05bb6-49ec-4c24-b11b-6082a67e1394" enabled="true" time-out="0">
+  </test> <!-- 08150f45-ee66-a2e7-0cff-d30b07ca3462 -->
+  <test name="094e3729-4821-8ae2-61be-e1b762977b26:startContainer" enabled="true"/>
+  <test name="dd4d4de4-f5df-480b-9a01-3aaffda5860b" enabled="true" time-out="0">
     <classes>
       <class name="com.testng.tests.TestTimeout">
         <methods>
@@ -26,8 +23,8 @@
         </methods>
       </class> <!-- com.testng.tests.TestTimeout -->
     </classes>
-  </test> <!-- a4a05bb6-49ec-4c24-b11b-6082a67e1394 -->
-  <test name="c9ba4a50-c44c-410b-93bb-78bc6406019b" enabled="true" time-out="30000">
+  </test> <!-- dd4d4de4-f5df-480b-9a01-3aaffda5860b -->
+  <test name="3b516632-7027-466a-bde3-91f5fc5b0614" enabled="true" time-out="30000">
     <classes>
       <class name="com.testng.tests.TestTimeout">
         <methods>
@@ -37,8 +34,8 @@
         </methods>
       </class> <!-- com.testng.tests.TestTimeout -->
     </classes>
-  </test> <!-- c9ba4a50-c44c-410b-93bb-78bc6406019b -->
-  <test name="67077067-a0aa-4aa8-b20c-eaa26eeb2f9d" enabled="true" time-out="0">
+  </test> <!-- 3b516632-7027-466a-bde3-91f5fc5b0614 -->
+  <test name="2e166cf5-6afd-4133-a515-1deb2f40bc52" enabled="true" time-out="0">
     <classes>
       <class name="com.testng.tests.TestTimeout">
         <methods>
@@ -48,8 +45,8 @@
         </methods>
       </class> <!-- com.testng.tests.TestTimeout -->
     </classes>
-  </test> <!-- 67077067-a0aa-4aa8-b20c-eaa26eeb2f9d -->
-  <test name="1d861d24-b86c-4085-a4b3-c4713025462a" enabled="true" time-out="100">
+  </test> <!-- 2e166cf5-6afd-4133-a515-1deb2f40bc52 -->
+  <test name="41a20e68-1505-4147-88de-62757c688aff" enabled="true" time-out="100">
     <classes>
       <class name="com.testng.tests.TestTimeout">
         <methods>
@@ -59,8 +56,8 @@
         </methods>
       </class> <!-- com.testng.tests.TestTimeout -->
     </classes>
-  </test> <!-- 1d861d24-b86c-4085-a4b3-c4713025462a -->
-  <test name="602a37a2-8018-4b7d-8f11-b9227edd72b6" enabled="true" time-out="0">
+  </test> <!-- 41a20e68-1505-4147-88de-62757c688aff -->
+  <test name="a6a0d324-78d1-4e08-89e9-a1f9b483098a" enabled="true" time-out="0">
     <classes>
       <class name="com.testng.tests.TestTimeout">
         <methods>
@@ -70,8 +67,8 @@
         </methods>
       </class> <!-- com.testng.tests.TestTimeout -->
     </classes>
-  </test> <!-- 602a37a2-8018-4b7d-8f11-b9227edd72b6 -->
-  <test name="f95aa987-ec86-4201-8836-3641aecd2fb7" enabled="true" time-out="0">
+  </test> <!-- a6a0d324-78d1-4e08-89e9-a1f9b483098a -->
+  <test name="12d81e98-9423-434d-8539-45aa3b977876" enabled="true" time-out="0">
     <classes>
       <class name="com.testng.tests.TestTimeout">
         <methods>
@@ -81,9 +78,9 @@
         </methods>
       </class> <!-- com.testng.tests.TestTimeout -->
     </classes>
-  </test> <!-- f95aa987-ec86-4201-8836-3641aecd2fb7 -->
-  <test name="a9f83ef5-fd39-d326-d200-ccdfb40cc5ab:endContainer" enabled="true"/>
-  <test name="84fe0d5b-7190-fb49-9552-98223c84b46f" enabled="true" time-out="30000">
+  </test> <!-- 12d81e98-9423-434d-8539-45aa3b977876 -->
+  <test name="094e3729-4821-8ae2-61be-e1b762977b26:endContainer" enabled="true"/>
+  <test name="4ee3fb59-01b7-ad6c-aa66-0b005a83a3b4" enabled="true" time-out="30000">
     <classes>
       <class name="com.testng.tests.TestTimeout">
         <methods>
@@ -93,6 +90,6 @@
         </methods>
       </class> <!-- com.testng.tests.TestTimeout -->
     </classes>
-  </test> <!-- 84fe0d5b-7190-fb49-9552-98223c84b46f -->
-</suite> <!-- 37ee657d-2ef5-da21-da98-3869bbbc55f6 -->
+  </test> <!-- 4ee3fb59-01b7-ad6c-aa66-0b005a83a3b4 -->
+</suite> <!-- 0c70f415-526c-72fa-fdb5-74a3ad805e05 -->
 

@@ -6,6 +6,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.rmi.AccessException;
+import java.rmi.NoSuchObjectException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,6 +30,8 @@ import org.testng.xml.XmlClass;
 import org.testng.xml.XmlInclude;
 import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlTest;
+import org.testngwebrunner.app.rmi.Constant;
+import org.testngwebrunner.app.rmi.IExecutionListenerRemote;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -34,11 +43,12 @@ public class TestExecutor implements LiveReporterListener {
 	private Session session;
 	private LiveReporter liveReporter;
 	private Process p;
-    private Properties prop;
-    private OutputStream output = null;
-    
+	private Properties prop;
+	private OutputStream output = null;
+	private Registry rmiRegistry;
+
 	public void runTests(Session session, String execJson) throws Exception {
-		
+
 		liveReporter = LiveReporter.getInstance();
 		liveReporter.addListener(this);
 
@@ -50,37 +60,38 @@ public class TestExecutor implements LiveReporterListener {
 		// NEW IMPLEMENTATION - WRITE XML YOUR SELF
 		XMLStringBuffer suiteBuffer = new XMLStringBuffer();
 		suiteBuffer.setDocType("suite SYSTEM \"" + Parser.TESTNG_DTD_URL + '\"');
-		
+
 		String suiteId = suiteJson.get("id").getAsString();
 		String suiteName = suiteJson.get("text").getAsString();
-		
+
 		Properties attr = new Properties();
 		attr.setProperty("name", suiteId);
 		suiteBuffer.push("suite", attr);
-		
+
 		prop = new Properties();
-		
+
 		output = new FileOutputStream("id.properties");
-		
+
 		for (JsonElement testJson : suiteJson.getAsJsonArray("children")) {
-			JsonObject testJsonObj = (JsonObject)testJson;
+			JsonObject testJsonObj = (JsonObject) testJson;
 			handleTestJson(suiteBuffer, testJsonObj, false, new JsonArray(), new JsonArray());
 		}
-		
+
 		prop.store(output, null);
 		output.close();
-		
+
 		suiteBuffer.pop("suite");
-		
+
 		String xmlToWrite = suiteBuffer.toXML();
-	
+
 		String classPath = null;
 
 		// get latest properties of project under test
 		Properties prop = ProjectLoaderServlet.currentProperties;
 
 		String suiteFolder = prop.getProperty("SUITES_DIR");
-		String generatedFile = suiteFolder + File.separator + suiteName + ".xml"; //new imple
+		String generatedFile = suiteFolder + File.separator + suiteName + ".xml"; // new
+																					// imple
 		PrintWriter writer = new PrintWriter(generatedFile, "UTF-8");
 		writer.println(xmlToWrite);
 		writer.close();
@@ -89,7 +100,7 @@ public class TestExecutor implements LiveReporterListener {
 		writer = new PrintWriter(jsonGeneratedFile, "UTF-8");
 		writer.println(suiteJson.toString());
 		writer.close();
-		
+
 		// get the property value and print it out
 		classPath = prop.getProperty("TEST_CLASSPATH");
 		classPath = System.getProperty("java.class.path") + classPath;
@@ -97,9 +108,9 @@ public class TestExecutor implements LiveReporterListener {
 		testCommandLine(classPath, generatedFile);
 
 	}
-	
 
-	private void handleTestJson(XMLStringBuffer suiteBuffer, JsonObject testJson, boolean generateNewId, JsonArray headers, JsonArray data) throws Exception {
+	private void handleTestJson(XMLStringBuffer suiteBuffer, JsonObject testJson, boolean generateNewId, JsonArray headers, JsonArray data)
+			throws Exception {
 
 		if (testJson.get("type").getAsString().equals("test_method_node")) {
 			JsonObject li_attr_json = testJson.getAsJsonObject("li_attr");
@@ -107,37 +118,37 @@ public class TestExecutor implements LiveReporterListener {
 			String timeout = li_attr_json.get("timeout").getAsString();
 			String testId = null;
 			String realId = null;
-			if(generateNewId) {
-				testId = UUID.randomUUID().toString(); 
+			if (generateNewId) {
+				testId = UUID.randomUUID().toString();
 				realId = testJson.get("id").getAsString();
-			} else {				
+			} else {
 				realId = testId = testJson.get("id").getAsString();
 			}
 			prop.setProperty(testId, realId);
-			
+
 			boolean checked = false;
-			if(testJson.get("state").getAsJsonObject().has("checked")) {
+			if (testJson.get("state").getAsJsonObject().has("checked")) {
 				checked = testJson.get("state").getAsJsonObject().get("checked").getAsBoolean();
 			}
-			
+
 			Properties attr = new Properties();
 			attr.setProperty("time-out", timeout);
 			attr.setProperty("enabled", String.valueOf(checked));
 			attr.setProperty("name", testId);
 			suiteBuffer.push("test", attr);
-			
+
 			suiteBuffer.push("classes");
 			String className = li_attr_json.get("className").getAsString();
 			attr = new Properties();
 			attr.setProperty("name", className);
 			suiteBuffer.push("class", attr);
 			suiteBuffer.push("methods");
-			
+
 			String methodName = li_attr_json.get("methodName").getAsString();
 			attr = new Properties();
 			attr.setProperty("name", methodName);
 			suiteBuffer.push("include", attr);
-			
+
 			JsonArray paramArray = li_attr_json.getAsJsonArray("params");
 			if (paramArray != null) {
 				for (JsonElement jsonElement : paramArray) {
@@ -156,10 +167,10 @@ public class TestExecutor implements LiveReporterListener {
 					Pattern p = Pattern.compile(".*\\$\\{(.*)\\}.*");
 					Matcher m = p.matcher(value);
 					String newVal = null;
-					while(m.find()) {
-						String ref = m.group(1);						
-						for(int i = 0; i < headers.size(); i++) {
-							if(headers.get(i).getAsString().equals(ref)) {							
+					while (m.find()) {
+						String ref = m.group(1);
+						for (int i = 0; i < headers.size(); i++) {
+							if (headers.get(i).getAsString().equals(ref)) {
 								newVal = value.replaceAll("\\$\\{" + ref + "\\}", data.get(i).getAsString());
 								break;
 							}
@@ -169,62 +180,61 @@ public class TestExecutor implements LiveReporterListener {
 					suiteBuffer.addEmptyElement("parameter", attr);
 				}
 			}
-			
+
 			suiteBuffer.pop("include");
 			suiteBuffer.pop("methods");
 			suiteBuffer.pop("class");
 			suiteBuffer.pop("classes");
 			suiteBuffer.pop("test");
-			
-		} else if (testJson.get("type").getAsString().equals("test_node") ||
-				testJson.get("type").getAsString().equals("suite_node")) {
+
+		} else if (testJson.get("type").getAsString().equals("test_node") || testJson.get("type").getAsString().equals("suite_node")) {
 			String type = testJson.get("type").getAsString();
 			Properties attr = new Properties();
 			boolean checked = false;
-			if(testJson.get("state").getAsJsonObject().has("checked")) {
+			if (testJson.get("state").getAsJsonObject().has("checked")) {
 				checked = testJson.get("state").getAsJsonObject().get("checked").getAsBoolean();
 			}
 			attr.setProperty("enabled", String.valueOf(checked));
 			String testId = null;
 			String realId = null;
-			if(generateNewId) {
-				testId = UUID.randomUUID().toString(); 
+			if (generateNewId) {
+				testId = UUID.randomUUID().toString();
 				realId = testJson.get("id").getAsString();
-			} else {				
+			} else {
 				realId = testId = testJson.get("id").getAsString();
 			}
 			prop.setProperty(testId, realId);
-			
-			attr.setProperty("name", testId + (type.equals("test_node") ? ":startContainer": ":startSuite"));
+
+			attr.setProperty("name", testId + (type.equals("test_node") ? ":startContainer" : ":startSuite"));
 			suiteBuffer.addEmptyElement("test", attr);
 			int count = 1;
 			JsonArray currentHeaders = null;
 			JsonArray currentData = null;
-			if(testJson.has("data")) {
+			if (testJson.has("data")) {
 				JsonObject dataJson = testJson.getAsJsonObject("data");
-				if(dataJson.has("ddt")) {
+				if (dataJson.has("ddt")) {
 					JsonObject ddtJson = dataJson.getAsJsonObject("ddt");
 					currentData = ddtJson.get("csvData").getAsJsonArray();
-					
-					//num of data rows
-					count = currentData.size() -1;
-					
-					//current headers
+
+					// num of data rows
+					count = currentData.size() - 1;
+
+					// current headers
 					currentHeaders = currentData.get(0).getAsJsonArray();
 					currentHeaders.addAll(headers);
-					
+
 				}
 			}
-			
+
 			JsonArray childrenTests = testJson.getAsJsonArray("children");
-			if(childrenTests != null) {
-				for(int i = 0; i< count; i++) {
-					
-					for(JsonElement testElement: childrenTests) {
-						JsonObject testJsonChild = (JsonObject)testElement;
+			if (childrenTests != null) {
+				for (int i = 0; i < count; i++) {
+
+					for (JsonElement testElement : childrenTests) {
+						JsonObject testJsonChild = (JsonObject) testElement;
 						JsonArray rowData = null;
-						if(currentData != null && currentHeaders != null) {
-							rowData = currentData.get(i+1).getAsJsonArray();
+						if (currentData != null && currentHeaders != null) {
+							rowData = currentData.get(i + 1).getAsJsonArray();
 							rowData.addAll(data);
 							handleTestJson(suiteBuffer, testJsonChild, true, currentHeaders, rowData);
 						} else {
@@ -232,8 +242,8 @@ public class TestExecutor implements LiveReporterListener {
 						}
 					}
 				}
-			}	
-			attr.setProperty("name", testId + (type.equals("test_node") ? ":endContainer": ":endSuite"));
+			}
+			attr.setProperty("name", testId + (type.equals("test_node") ? ":endContainer" : ":endSuite"));
 			suiteBuffer.addEmptyElement("test", attr);
 		} else {
 			throw new Exception("Should not get here, type: " + testJson.get("type").getAsString());
@@ -241,28 +251,18 @@ public class TestExecutor implements LiveReporterListener {
 
 	}
 
-
 	private void testCommandLine(String classpath, String xmlFile) throws Exception {
-		p = Runtime.getRuntime().exec(
-				"cmd /c java -cp \"" + classpath + "\"  org.testng.TestNG " + xmlFile
-						+ " -listener org.uncommons.reportng.HTMLReporter,org.testngwebrunner.app.ExecutionListener,org.testngwebrunner.app.rmi.TestNGListenerRmi,org.testngwebrunner.app.MyMethodInterceptor -d c:\\testng\\logs -usedefaultlisteners true");
-		inheritIO(p.getInputStream(), System.out);
-		inheritIO(p.getErrorStream(), System.err);
+		startServer();
+		p = Runtime
+				.getRuntime()
+				.exec("java -cp \""
+						+ classpath
+						+ "\"  org.testng.TestNG "
+						+ xmlFile
+						+ " -listener org.uncommons.reportng.HTMLReporter,org.testngwebrunner.app.ExecutionListener -d c:\\testng\\logs -usedefaultlisteners true");
+		p.waitFor();
+		stopServer();
 
-	}
-
-	private void inheritIO(final InputStream src, final PrintStream dest) {
-		new Thread(new Runnable() {
-			public void run() {
-				LiveReporter liveReporter = LiveReporter.getInstance();
-				Scanner sc = new Scanner(src);
-				while (sc.hasNextLine()) {
-					String output = sc.nextLine();
-					dest.println(output);
-					liveReporter.report(output);
-				}
-			}
-		}).start();
 	}
 
 	@Override
@@ -288,17 +288,17 @@ public class TestExecutor implements LiveReporterListener {
 		}
 
 	}
-	
+
 	private List<XmlSuite> buildXmlSuite(JsonObject execObb) {
-		
+
 		List<XmlSuite> suitesList = new ArrayList<XmlSuite>();
-		
+
 		JsonArray rootArray = execObb.getAsJsonArray("children");
 		for (JsonElement child : rootArray) {
-			
+
 			JsonObject suitChild = (JsonObject) child;
 			XmlSuite xmlSuite = createXmlSuite(suitChild);
-			
+
 			suitesList.add(xmlSuite);
 		}
 		return suitesList;
@@ -310,7 +310,7 @@ public class TestExecutor implements LiveReporterListener {
 		xmlSuite.setVerbose(-1);
 		String suiteName = suiteJson.get("text").getAsString();
 		xmlSuite.setName(suiteName);
-		
+
 		JsonArray rootArray = suiteJson.getAsJsonArray("children");
 		// Map<String, Integer> testCounter = new HashMap<String, Integer>();
 		for (JsonElement child : rootArray) {
@@ -324,15 +324,15 @@ public class TestExecutor implements LiveReporterListener {
 			// } else {
 			// testCounter.put(xmlTest.getName(), 0);
 			// }
-			
+
 			xmlSuite.addTest(xmlTest);
 		}
 		String xmlString = xmlSuite.toXml();// TODO Auto-generated method
 		System.out.println(xmlString);
 		return xmlSuite;
-		
+
 	}
-	
+
 	private XmlTest createXmlTest(JsonObject testJson) {
 		XmlTest xmlTest = new XmlTest();
 		xmlTest.setVerbose(2);
@@ -348,18 +348,18 @@ public class TestExecutor implements LiveReporterListener {
 		// }
 		// testName = testJson.get("text").getAsString();
 		xmlTest.setName(id);
-		
+
 		String className = li_attr_json.get("className").getAsString();
 		String methodName = li_attr_json.get("methodName").getAsString();
 		JsonArray paramArray = li_attr_json.getAsJsonArray("params");
 		XmlClass xmlClass = new XmlClass(className, false);
-		
+
 		List<XmlInclude> includes = new ArrayList<XmlInclude>();
-		
+
 		XmlInclude inc = new XmlInclude(methodName);
 		if (paramArray != null) {
 			for (JsonElement jsonElement : paramArray) {
-				
+
 				String paramString = jsonElement.getAsString();
 				String[] paramPair = paramString.split(":");
 				String param = paramPair[0];
@@ -378,7 +378,53 @@ public class TestExecutor implements LiveReporterListener {
 		List<XmlClass> classes = new ArrayList<XmlClass>();
 		classes.add(xmlClass);
 		xmlTest.setClasses(classes);
-		
+
 		return xmlTest;
+	}
+
+	// RMI
+	private void startServer() {
+
+		try {
+			ExecutionListenerRemoteImpl impl = new ExecutionListenerRemoteImpl();
+			rmiRegistry = LocateRegistry.createRegistry(Constant.EXECUTION_LISTENER_RMI_PORT);
+			rmiRegistry.rebind(Constant.EXECUTION_LISTENER_RMI_ID, impl);
+		} catch (RemoteException e) {
+			System.out.println(e.getMessage());
+		}
+		System.out.println("Started RMI Listener Server");
+	}
+
+	private void stopServer() {
+		if (rmiRegistry != null) {
+			try {
+				rmiRegistry.unbind(Constant.EXECUTION_LISTENER_RMI_ID);
+				UnicastRemoteObject.unexportObject(rmiRegistry, true);
+				System.out.println("Stopped RMI Listener Server");
+			} catch (NoSuchObjectException e) {
+				System.out.println(e.getMessage());
+			} catch (AccessException e) {
+				System.out.println(e.getMessage());
+			} catch (RemoteException e) {
+				System.out.println(e.getMessage());
+			} catch (NotBoundException e) {
+				System.out.println(e.getMessage());
+			}
+		}
+	}
+
+	class ExecutionListenerRemoteImpl extends UnicastRemoteObject implements IExecutionListenerRemote {
+
+		private static final long serialVersionUID = 1L;
+
+		protected ExecutionListenerRemoteImpl() throws RemoteException {
+			super();
+		}
+
+		@Override
+		public void report(String message) throws RemoteException {
+			LiveReporter.getInstance().report(message);
+		}
+
 	}
 }
