@@ -44,6 +44,8 @@ public class TestExecutor implements LiveReporterListener {
 	private Properties prop;
 	private OutputStream output = null;
 	private Registry rmiRegistry;
+	private boolean debug;
+	private final String REMOTE_DEBUG_PORT = "1001";
 
 	public void runTests(Session session, String execJson) throws Exception {
 
@@ -251,15 +253,19 @@ public class TestExecutor implements LiveReporterListener {
 
 	private void testCommandLine(String classpath, String xmlFile) throws Exception {
 		startServer();
+		if(debug) {
+			System.out.println("Waiting for remote debugger at port: " + REMOTE_DEBUG_PORT);
+		}
 		p = Runtime
 				.getRuntime()
-				.exec("java -cp \""
+				.exec("java " + (debug ? "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=" + REMOTE_DEBUG_PORT :"") + " -cp \""
 						+ classpath
 						+ "\"  org.testng.TestNG "
 						+ xmlFile
-						+ " -listener org.uncommons.reportng.HTMLReporter,org.testngwebrunner.app.ExecutionListener -d c:\\testng\\logs -usedefaultlisteners true");
+						+ " -listener org.testngwebrunner.app.ExecutionListener -d D:\\logs -usedefaultlisteners false");
 		p.waitFor();
 		stopServer();
+
 
 	}
 

@@ -30,8 +30,12 @@ public class Reporter {
 			executionListenerRegistry = LocateRegistry.getRegistry("localhost", Constant.EXECUTION_LISTENER_RMI_PORT);
 			executionListenerRemote = (IExecutionListenerRemote) executionListenerRegistry.lookup(Constant.EXECUTION_LISTENER_RMI_ID);
 			executionListenerRemote.report(msg);
-		} catch (RemoteException | NotBoundException e) {
+		} catch (NotBoundException e) {
 			System.out.println(e.getMessage());
+		} catch (RemoteException e) {
+			System.out.println(e.getMessage());
+		} catch (Throwable e) {
+			System.out.println(e.getMessage());			
 		}
 	}
 }
