@@ -5,6 +5,9 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
+import testng.commons.rmi.Constant;
+import testng.commons.rmi.IExecutionListenerRemote;
+
 public class Reporter {
 
 	private static Reporter instance = null;

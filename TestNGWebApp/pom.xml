@@ -95,7 +95,11 @@
 			<artifactId>qdox</artifactId>
 			<version>1.12</version>
 		</dependency>
-
+		<dependency>
+			<groupId>testng.commons</groupId>
+			<artifactId>commons</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 
 
 	</dependencies>

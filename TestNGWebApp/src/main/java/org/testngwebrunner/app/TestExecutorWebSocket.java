@@ -8,8 +8,9 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import org.testngwebrunner.app.rmi.Constant;
-import org.testngwebrunner.app.rmi.IExecutionActionRemote;
+
+import testng.commons.rmi.Constant;
+import testng.commons.rmi.IExecutionActionRemote;
 
 @WebSocket
 public class TestExecutorWebSocket {

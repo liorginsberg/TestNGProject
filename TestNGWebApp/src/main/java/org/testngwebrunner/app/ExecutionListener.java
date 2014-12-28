@@ -19,10 +19,11 @@ import org.testng.IExecutionListener;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
-import org.testngwebrunner.app.rmi.Constant;
-import org.testngwebrunner.app.rmi.IExecutionActionRemote;
-import org.testngwebrunner.app.rmi.IExecutionListenerRemote;
 import org.testngwebrunner.app.unused.MyMethodInterceptor;
+
+import testng.commons.rmi.Constant;
+import testng.commons.rmi.IExecutionActionRemote;
+import testng.commons.rmi.IExecutionListenerRemote;
 
 public class ExecutionListener implements ITestListener, IExecutionListener {
 	private boolean pause = false;

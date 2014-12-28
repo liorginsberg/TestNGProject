@@ -12,8 +12,9 @@ import org.testng.IExecutionListener;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
-import org.testngwebrunner.app.rmi.Constant;
-import org.testngwebrunner.app.rmi.IExecutionActionRemote;
+
+import testng.commons.rmi.Constant;
+import testng.commons.rmi.IExecutionActionRemote;
 
 public class TestNGListenerRmi implements IExecutionListener, ITestListener {
 

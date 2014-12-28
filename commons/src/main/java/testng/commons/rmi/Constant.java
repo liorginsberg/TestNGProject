@@ -1,4 +1,4 @@
-package org.testngwebrunner.app.rmi;
+package testng.commons.rmi;
 
 public class Constant {
 	public static final String EXECUTION_RMI_ID = "ExecutionRMI";

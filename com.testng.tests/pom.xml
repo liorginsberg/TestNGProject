@@ -22,7 +22,11 @@
 			<artifactId>reportng</artifactId>
 			<version>1.1.2</version>
 		</dependency>
-		
+		<dependency>
+			<groupId>testng.commons</groupId>
+			<artifactId>commons</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
 
