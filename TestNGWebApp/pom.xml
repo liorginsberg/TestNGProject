@@ -75,21 +75,7 @@
 
 		<!-- <dependency> <groupId>org.eclipse.jetty.websocket</groupId> <artifactId>websocket-server</artifactId> 
 			<version>9.3.0.M0</version> </dependency> -->
-		<dependency>
-			<groupId>org.testng</groupId>
-			<artifactId>testng</artifactId>
-			<version>6.8.8</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.velocity</groupId>
-			<artifactId>velocity</artifactId>
-			<version>1.7</version>
-		</dependency>
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<version>2.2.4</version>
-		</dependency>
+		
 		<dependency>
 			<groupId>com.thoughtworks.qdox</groupId>
 			<artifactId>qdox</artifactId>

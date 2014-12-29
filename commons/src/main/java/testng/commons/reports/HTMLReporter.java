@@ -1,4 +1,4 @@
-package com.testng.tests.listeners;
+package testng.commons.reports;
 
 import java.io.File;
 import java.io.FileWriter;

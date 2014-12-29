@@ -4,13 +4,7 @@
 	<groupId>com.testng.infra</groupId>
 	<artifactId>com.testng.infra</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<dependencies>
-		<dependency>
-			<groupId>org.testng</groupId>
-			<artifactId>testng</artifactId>
-			<version>6.8.8</version>
-		</dependency>
-	</dependencies>
+	
 	<build>
 		<plugins>
 			<plugin>

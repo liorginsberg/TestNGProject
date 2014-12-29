@@ -12,17 +12,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.google.inject</groupId>
-			<artifactId>guice</artifactId>
-			<version>3.0</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.uncommons</groupId>
-			<artifactId>reportng</artifactId>
-			<version>1.1.2</version>
-		</dependency>
-		<dependency>
 			<groupId>testng.commons</groupId>
 			<artifactId>commons</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
@@ -128,35 +117,7 @@
 						</execution>
 					</executions>
 				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-failsafe-plugin</artifactId>
-					<version>2.12</version>
-					<configuration>
-						<properties>
-							<property>
-								<name>usedefaultlisteners</name>
-								<value>false</value>
-							</property>
-							<property>
-								<name>listener</name>
-								<value>org.uncommons.reportng.HTMLReporter</value>
-							</property>
-						</properties>
-						<suiteXmlFiles>
-							<suiteXmlFile>testng.xml</suiteXmlFile>
-						</suiteXmlFiles>
-						<workingDirectory>target/</workingDirectory>
-					</configuration>
-					<executions>
-						<execution>
-							<goals>
-								<goal>integration-test</goal>
-								<goal>verify</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
+				
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-source-plugin</artifactId>
